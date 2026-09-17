@@ -1,0 +1,6 @@
+{
+  "name": "SkyBridge Travel & Tourism",
+  "description": "SkyBridge Travel & Tourism provides flight, hotel, visa, holiday, honeymoon, Umrah and worldwide travel assistance with UAE and Pakistan support.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

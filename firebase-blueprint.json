@@ -1,0 +1,57 @@
+{
+  "entities": {
+    "users": {
+      "title": "User",
+      "description": "App users including CEO and staff members",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["ceo", "admin", "agent"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role"]
+    },
+    "ceoMetrics": {
+      "title": "CEOMetrics",
+      "description": "High level executive overview metrics for the CEO dashboard",
+      "type": "object",
+      "properties": {
+        "monthlyRevenue": { "type": "number" },
+        "totalBookings": { "type": "number" },
+        "activeCases": { "type": "number" },
+        "topDestinations": { "type": "string" },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      }
+    },
+    "seoCampaigns": {
+      "title": "SEOCampaign",
+      "description": "Local SEO, Google Maps rankings, and marketing campaigns managed by AI SEO Agent",
+      "type": "object",
+      "properties": {
+        "campaignName": { "type": "string" },
+        "targetCity": { "type": "string" },
+        "googleMapsKeyword": { "type": "string" },
+        "mapRankingRank": { "type": "number" },
+        "seoHealthScore": { "type": "number" },
+        "status": { "type": "string", "enum": ["Active", "Optimizing", "Review"] },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["campaignName", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "users",
+      "description": "User profiles and credentials"
+    },
+    "/ceo_metrics/{metricId}": {
+      "schema": "ceoMetrics",
+      "description": "Executive dashboard metrics"
+    },
+    "/seo_campaigns/{campaignId}": {
+      "schema": "seoCampaigns",
+      "description": "AI SEO and Google Map campaign records"
+    }
+  }
+}

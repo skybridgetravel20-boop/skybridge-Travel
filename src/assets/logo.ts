@@ -1,8 +1,8 @@
-import officialLogo from './skybridge-logo.jpg';
+import officialLogo from './SkyBridge-Logo-1.jpg';
 
 /**
  * Single Centralized SkyBridge Travel & Tourism Official Logo Asset.
- * This is the newly uploaded official logo.
+ * Updated with official "SkyBridge Logo (1).jpg" ("SkyBridge Logo 1.jpg").
  * All components, headers, footers, admin layouts, quotations, and documents
  * reference this single centralized source.
  */

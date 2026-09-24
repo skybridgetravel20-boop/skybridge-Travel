@@ -1,4 +1,9 @@
 User-agent: *
 Disallow: /admin/
 Disallow: /admin/*
+Disallow: /ceo/
+Disallow: /ceo/*
+Disallow: /case-support
 Allow: /
+
+Sitemap: https://skybridgetravelandtourism.com/sitemap.xml

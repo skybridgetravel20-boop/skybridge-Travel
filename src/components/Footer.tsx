@@ -10,7 +10,8 @@ import {
   Facebook,
   MessageCircle,
   Radio,
-  ArrowRight
+  ArrowRight,
+  Globe
 } from 'lucide-react';
 import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
 import { SkyBridgeLogo } from './SkyBridgeLogo';
@@ -208,6 +209,12 @@ export const Footer: React.FC = () => {
                 </a>
               </div>
               <div className="flex items-center gap-2.5">
+                <Globe className="w-4 h-4 text-[#4FC3F7] shrink-0" />
+                <a href={COMPANY_INFO.websiteUrl} className="hover:text-white">
+                  skybridgetravelandtourism.com
+                </a>
+              </div>
+              <div className="flex items-center gap-2.5">
                 <Clock className="w-4 h-4 text-[#FFB300] shrink-0" />
                 <span>{COMPANY_INFO.workingHours}</span>
               </div>
@@ -216,9 +223,10 @@ export const Footer: React.FC = () => {
                   href={getWhatsAppLink()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#4FC3F7]/15 hover:bg-[#4FC3F7] text-[#4FC3F7] hover:text-[#0B1B3B] text-xs font-bold transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#4FC3F7]/15 hover:bg-[#4FC3F7] text-[#4FC3F7] hover:text-[#0B1B3B] text-xs font-bold transition-colors"
                 >
-                  <span>Chat on WhatsApp</span>
+                  <MessageCircle className="w-4 h-4" />
+                  <span>Message SkyBridge Travel & Tourism on WhatsApp</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </a>
               </div>

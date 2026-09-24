@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 export const GitHubDomainManager: React.FC = () => {
-  const [domainInput, setDomainInput] = useState('skybridgetours.com');
+  const [domainInput, setDomainInput] = useState('skybridgetravelandtourism.com');
   const [githubUser, setGithubUser] = useState('');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [activeStep, setActiveStep] = useState<number>(1);
@@ -280,10 +280,10 @@ export const GitHubDomainManager: React.FC = () => {
           <div className="flex items-center justify-between bg-slate-950 rounded-xl p-3 border border-slate-800">
             <div>
               <div className="text-[11px] text-slate-400">Current CNAME File Target:</div>
-              <div className="text-xs font-mono font-bold text-white">{cleanDomain || 'skybridgetours.com'}</div>
+              <div className="text-xs font-mono font-bold text-white">{cleanDomain || 'skybridgetravelandtourism.com'}</div>
             </div>
             <button
-              onClick={() => handleCopy('cname-file', cleanDomain || 'skybridgetours.com')}
+              onClick={() => handleCopy('cname-file', cleanDomain || 'skybridgetravelandtourism.com')}
               className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-bold flex items-center gap-1 cursor-pointer"
             >
               {copiedKey === 'cname-file' ? <CheckCircle2 className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
@@ -297,12 +297,12 @@ export const GitHubDomainManager: React.FC = () => {
       <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-wrap items-center justify-between gap-4 text-xs">
         <div className="flex items-center gap-2 text-slate-400">
           <RefreshCw className="w-4 h-4 text-blue-400 animate-spin" />
-          <span>Verify DNS propagation worldwide after configuring Namecheap:</span>
+          <span>Verify DNS propagation worldwide after configuring DNS:</span>
         </div>
 
         <div className="flex items-center gap-3">
           <a
-            href={`https://www.whatsmydns.net/#A/${cleanDomain || 'skybridgetours.com'}`}
+            href={`https://www.whatsmydns.net/#A/${cleanDomain || 'skybridgetravelandtourism.com'}`}
             target="_blank"
             rel="noopener noreferrer"
             className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-blue-300 rounded border border-slate-700 font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
@@ -311,7 +311,7 @@ export const GitHubDomainManager: React.FC = () => {
             <ExternalLink className="w-3 h-3" />
           </a>
           <a
-            href={`https://dns.google/resolve?name=${cleanDomain || 'skybridgetours.com'}&type=A`}
+            href={`https://dns.google/resolve?name=${cleanDomain || 'skybridgetravelandtourism.com'}&type=A`}
             target="_blank"
             rel="noopener noreferrer"
             className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-300 rounded border border-slate-700 font-bold flex items-center gap-1.5 transition-colors cursor-pointer"

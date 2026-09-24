@@ -38,7 +38,8 @@ import {
   FolderOpen,
   Key,
   UploadCloud,
-  TrendingUp
+  TrendingUp,
+  Mail
 } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
@@ -109,6 +110,7 @@ export const AdminLayout: React.FC = () => {
     {
       title: 'CEO EXCLUSIVE (RESTRICTED)',
       items: [
+        { label: 'Gmail Executive Dispatch', path: '/admin/gmail-dispatch', icon: <Mail className="w-4 h-4 text-rose-400" /> },
         { label: 'Direct WhatsApp & Worldwide Support', path: '/admin/case-support', icon: <Lock className="w-4 h-4 text-amber-400" /> },
       ]
     },

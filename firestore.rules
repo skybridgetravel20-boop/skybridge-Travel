@@ -1,25 +1,99 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper function to check if user is authenticated
+    // Helper function to check authentication
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // Match users collection
+    // Test connectivity
+    match /test/{docId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Leads: Public can submit inquiries with valid contact data; staff can read & manage
+    match /leads/{leadId} {
+      allow create: if request.resource.data.fullName is string
+                    && request.resource.data.fullName.size() > 0
+                    && request.resource.data.fullName.size() <= 120
+                    && request.resource.data.email is string
+                    && request.resource.data.email.size() <= 120;
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    // Customers: Authenticated staff access
+    match /customers/{customerId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Services: Public read; staff manage
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Bookings: Authenticated staff access
+    match /bookings/{bookingId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Travel Cases: Authenticated staff access
+    match /cases/{caseId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Payments: Authenticated staff access
+    match /payments/{paymentId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Follow-ups: Authenticated staff access
+    match /follow_ups/{followUpId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Tasks: Authenticated staff access
+    match /tasks/{taskId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Suppliers: Authenticated staff access
+    match /suppliers/{supplierId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Invoices: Authenticated staff access
+    match /invoices/{invoiceId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Destinations: Public read; staff manage
+    match /destinations/{destinationId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Users: Authenticated user access
     match /users/{userId} {
       allow read, write: if isAuthenticated();
     }
 
-    // Match CEO metrics collection
+    // CEO Metrics: Public read summary, staff write
     match /ceo_metrics/{metricId} {
       allow read: if true;
       allow write: if isAuthenticated();
     }
 
-    // Match SEO campaigns collection
+    // SEO Campaigns: Public read, staff write
     match /seo_campaigns/{campaignId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Catch-all deny
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

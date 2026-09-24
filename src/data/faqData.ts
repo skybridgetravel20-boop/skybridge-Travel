@@ -58,7 +58,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     id: 'faq-10',
     question: 'How can I contact SkyBridge Travel & Tourism?',
-    answer: 'You can reach our team via WhatsApp and phone at +92 324 4444167 or +92 345 4444167, or email us directly at skybridgetravel20@gmail.com. Our registered office is located at House No 05, Gulshan Street, Nadeem Town, Multan Road, Lahore, Pakistan, with support across both the UAE and Pakistan.',
+    answer: 'You can reach our team via WhatsApp and phone at +92 324 4444167 or 0345 4444167 (WhatsApp: https://wa.me/923454444167), or email us directly at info@skybridgetravelandtourism.com. Visit our official website at https://skybridgetravelandtourism.com. Our registered office is located at House No 05, Gulshan Street, Nadeem Town, Multan Road, Lahore, Pakistan.',
     category: 'Contact'
   }
 ];

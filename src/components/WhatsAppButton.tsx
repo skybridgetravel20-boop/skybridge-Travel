@@ -31,7 +31,7 @@ export const WhatsAppButton: React.FC = () => {
             rel="noopener noreferrer"
             className="block text-center text-xs font-semibold py-2 px-3 rounded-xl bg-[#0B1B3B] hover:bg-[#4FC3F7] hover:text-[#0B1B3B] text-white transition-colors"
           >
-            Chat on WhatsApp
+            Message SkyBridge Travel & Tourism on WhatsApp
           </a>
         </div>
       )}
@@ -43,7 +43,8 @@ export const WhatsAppButton: React.FC = () => {
         rel="noopener noreferrer"
         onMouseEnter={() => setShowTooltip(true)}
         className="group relative flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] text-white shadow-lg hover:shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all duration-200"
-        aria-label="Chat with SkyBridge Travel & Tourism on WhatsApp"
+        aria-label="Message SkyBridge Travel & Tourism on WhatsApp"
+        title="Message SkyBridge Travel & Tourism on WhatsApp"
       >
         <span className="absolute -top-1 -right-1 flex h-4 w-4">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>

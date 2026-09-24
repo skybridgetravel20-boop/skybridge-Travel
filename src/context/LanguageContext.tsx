@@ -79,7 +79,7 @@ const TRANSLATIONS: Record<SupportedLanguage, Translations> = {
     skybridgeCrm: "SkyBridge CRM",
     ceoDashboard: "CEO Dashboard",
     publicWebsite: "Public Website",
-    whatsAppUs: "WhatsApp Us",
+    whatsAppUs: "Message SkyBridge Travel & Tourism on WhatsApp",
     pakistanOffice: "Pakistan Office",
     uaeSupport: "UAE & Pakistan Support",
 
@@ -89,7 +89,7 @@ const TRANSLATIONS: Record<SupportedLanguage, Translations> = {
     heroTitle3: "with Confidence.",
     heroSubtitle: "Worldwide travel services, verified flight bookings, premium hotel accommodations, specialized visa documentation clearance, and unforgettable tour packages tailored to your journey.",
     heroCtaConsult: "Inquire for Travel Consultation",
-    heroCtaWhatsApp: "Chat on WhatsApp",
+    heroCtaWhatsApp: "Message SkyBridge Travel & Tourism on WhatsApp",
     heroHighlight1: "Verified Travel Itineraries",
     heroHighlight2: "Embassy Documentation Guidance",
     heroHighlight3: "UAE & Pakistan Support",

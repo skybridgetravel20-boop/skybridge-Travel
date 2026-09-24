@@ -8,27 +8,38 @@ export const COMPANY_INFO = {
   tagline: "Explore The World With SkyBridge Travel & Tourism",
   subheading: "Flights • Hotels • Visa Services • Worldwide Travel Assistance • Holiday Packages",
   
-  // 🇵🇰 Pakistan Office Phone Numbers (Display both numbers):
-  phonePakistan1: "+92 324 4444167",
-  phonePakistan2: "+92 345 4444167",
-  phonePakistan2Raw: "+92 3454444167",
-  whatsAppPhone: "+92 324 4444167",
+  // Official Production Website URLs:
+  websiteUrl: "https://skybridgetravelandtourism.com",
+  canonicalDomain: "skybridgetravelandtourism.com",
+  supportedDomains: [
+    "https://skybridgetravelandtourism.com",
+    "https://www.skybridgetravelandtourism.com"
+  ],
 
-  // 🇦🇪 UAE & Global Desk:
-  uaeOfficeLabel: "UAE & Global Desk",
-  uaeOfficeDescription: "Dubai & International Partner Coordination",
-  uaeSupportDesk: "Dubai & Partner Coordination Desk",
+  // 🇵🇰 Official Customer Phone Numbers (Both Pakistan numbers, no UAE phone in customer-facing):
+  phonePakistan1: "+92 324 4444167",
+  phonePakistan2: "0345 4444167",
+  phonePakistan2Raw: "+92 345 4444167",
+  phoneDisplay: "+92 324 4444167 / 0345 4444167",
+  whatsAppPhone: "0345 4444167",
+
+  // Global Desk Coordination:
+  uaeOfficeLabel: "Global Partner Coordination Desk",
+  uaeOfficeDescription: "International Travel & Partner Coordination",
+  uaeSupportDesk: "Global Coordination Desk",
   
-  email: "skybridgetravel20@gmail.com",
+  // Official Customer-Facing Email:
+  email: "info@skybridgetravelandtourism.com",
   
-  // Exact registered office from prompt:
+  // Exact registered office:
   registeredOffice: "House No 05, Gulshan Street, Nadeem Town, Multan Road, Lahore, Pakistan",
   addressLahore: "House No 05, Gulshan Street, Nadeem Town, Multan Road, Lahore, Pakistan",
   workingHours: "Mon - Sat: 9:00 AM - 7:00 PM (PKT)",
-  regionsSupported: "UAE & Pakistan Support • Worldwide Travel Assistance",
+  regionsSupported: "Pakistan Office • Worldwide Travel Assistance",
 
-  // Official verified links provided by SkyBridge:
-  officialWhatsAppUrl: "https://wa.me/message/5VQNHABQ6NCZN1",
+  // Official Verified WhatsApp Contact:
+  officialWhatsAppUrl: "https://wa.me/923454444167",
+  whatsAppButtonText: "Message SkyBridge Travel & Tourism on WhatsApp",
   officialWhatsAppChannelUrl: "https://whatsapp.com/channel/0029VbBp5p6BA1f1hdWSCE0V",
   officialFacebookUrl: "https://www.facebook.com/share/1C5KePenAa/",
   officialInstagramUrl: "https://www.instagram.com/SkyBridge_Travel_Tourism",

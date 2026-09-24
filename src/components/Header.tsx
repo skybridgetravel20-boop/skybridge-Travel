@@ -67,10 +67,10 @@ export const Header: React.FC = () => {
               </a>
               <span className="text-white/40">•</span>
               <a
-                href={`tel:${COMPANY_INFO.phonePakistan2.replace(/\s+/g, '')}`}
+                href={`tel:${COMPANY_INFO.phonePakistan2Raw.replace(/\s+/g, '')}`}
                 className="hover:text-white transition-colors"
               >
-                {COMPANY_INFO.phonePakistan2}
+                {COMPANY_INFO.phonePakistan2Raw}
               </a>
             </div>
             <div className="flex items-center space-x-2">
@@ -280,7 +280,8 @@ export const Header: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-[#4FC3F7] text-[#0B1B3B]"
-                aria-label="WhatsApp Us"
+                aria-label="Message SkyBridge Travel & Tourism on WhatsApp"
+                title="Message SkyBridge Travel & Tourism on WhatsApp"
               >
                 <MessageCircle className="w-4 h-4 fill-[#0B1B3B] stroke-none" />
               </a>
@@ -411,10 +412,10 @@ export const Header: React.FC = () => {
                   href={getWhatsAppLink()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#4FC3F7] text-[#0B1B3B] font-bold text-sm shadow-sm"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-2 rounded-xl bg-[#4FC3F7] text-[#0B1B3B] font-bold text-xs text-center shadow-sm"
                 >
-                  <MessageCircle className="w-4 h-4 fill-[#0B1B3B] stroke-none" />
-                  <span>{t('whatsAppUs')} (Official Chat)</span>
+                  <MessageCircle className="w-4 h-4 fill-[#0B1B3B] stroke-none shrink-0" />
+                  <span>Message SkyBridge Travel & Tourism on WhatsApp</span>
                 </a>
               </div>
             </div>

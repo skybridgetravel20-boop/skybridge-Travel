@@ -18,7 +18,8 @@ import {
   Facebook,
   Instagram,
   Radio,
-  ExternalLink
+  ExternalLink,
+  Globe
 } from 'lucide-react';
 
 export const ContactPage: React.FC = () => {
@@ -186,6 +187,23 @@ export const ContactPage: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Official Website */}
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-[#E3F2FD] text-[#0B1B3B] flex items-center justify-center shrink-0 mt-0.5">
+                    <Globe className="w-5 h-5 text-[#4FC3F7]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                      Official Website
+                    </h3>
+                    <p className="text-sm font-semibold text-[#0B1B3B] mt-0.5">
+                      <a href={COMPANY_INFO.websiteUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[#4FC3F7]">
+                        skybridgetravelandtourism.com
+                      </a>
+                    </p>
+                  </div>
+                </div>
+
                 {/* Working Hours */}
                 <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-4">
                   <div className="w-10 h-10 rounded-xl bg-[#E3F2FD] text-[#0B1B3B] flex items-center justify-center shrink-0 mt-0.5">
@@ -206,7 +224,7 @@ export const ContactPage: React.FC = () => {
               <div className="p-6 rounded-3xl bg-[#25D366]/10 border border-[#25D366]/30 space-y-3">
                 <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
                   <MessageCircle className="w-5 h-5 text-[#25D366]" />
-                  <span>Official WhatsApp Chat</span>
+                  <span>Official WhatsApp Contact</span>
                 </div>
                 <p className="text-xs text-emerald-900 leading-relaxed">
                   Need quick advice or want to share documents for preliminary review? Chat directly with our consultants on WhatsApp.
@@ -217,7 +235,7 @@ export const ContactPage: React.FC = () => {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold text-xs shadow-md transition-colors"
                 >
-                  <span>Start WhatsApp Chat</span>
+                  <span>Message SkyBridge Travel & Tourism on WhatsApp</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </a>
               </div>

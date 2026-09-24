@@ -12,6 +12,176 @@
       },
       "required": ["email", "role"]
     },
+    "leads": {
+      "title": "Lead",
+      "description": "Customer inquiry and lead record",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string", "maxLength": 120 },
+        "email": { "type": "string", "format": "email", "maxLength": 120 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "service": { "type": "string", "maxLength": 80 },
+        "destination": { "type": "string", "maxLength": 80 },
+        "source": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "maxLength": 40 },
+        "priority": { "type": "string", "maxLength": 20 },
+        "estimatedValue": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 2000 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "assignedStaffName": { "type": "string", "maxLength": 80 }
+      },
+      "required": ["fullName", "email", "service", "status"]
+    },
+    "customers": {
+      "title": "Customer",
+      "description": "Verified client profile and business history",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string", "maxLength": 120 },
+        "email": { "type": "string", "format": "email", "maxLength": 120 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "country": { "type": "string", "maxLength": 80 },
+        "city": { "type": "string", "maxLength": 80 },
+        "notes": { "type": "string", "maxLength": 2000 },
+        "totalBusinessValue": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lastInteractionAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fullName", "email", "phone"]
+    },
+    "services": {
+      "title": "ServiceItem",
+      "description": "Catalog of travel and visa services offered by SkyBridge",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 120 },
+        "category": { "type": "string", "maxLength": 80 },
+        "shortDescription": { "type": "string", "maxLength": 500 },
+        "fullDescription": { "type": "string", "maxLength": 3000 },
+        "active": { "type": "boolean" }
+      },
+      "required": ["title", "category", "active"]
+    },
+    "bookings": {
+      "title": "Booking",
+      "description": "Client travel booking for flights, hotels, or visa packages",
+      "type": "object",
+      "properties": {
+        "customerId": { "type": "string", "maxLength": 80 },
+        "customerName": { "type": "string", "maxLength": 120 },
+        "type": { "type": "string", "maxLength": 80 },
+        "service": { "type": "string", "maxLength": 80 },
+        "destination": { "type": "string", "maxLength": 80 },
+        "bookingStatus": { "type": "string", "maxLength": 40 },
+        "quotedAmount": { "type": "number" },
+        "finalAmount": { "type": "number" },
+        "currency": { "type": "string", "maxLength": 10 },
+        "paymentStatus": { "type": "string", "maxLength": 30 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["customerId", "customerName", "service", "bookingStatus"]
+    },
+    "cases": {
+      "title": "TravelCase",
+      "description": "Ongoing travel or visa client case management",
+      "type": "object",
+      "properties": {
+        "customerId": { "type": "string", "maxLength": 80 },
+        "customerName": { "type": "string", "maxLength": 120 },
+        "service": { "type": "string", "maxLength": 80 },
+        "destination": { "type": "string", "maxLength": 80 },
+        "assignedStaffName": { "type": "string", "maxLength": 80 },
+        "status": { "type": "string", "maxLength": 40 },
+        "priority": { "type": "string", "maxLength": 20 },
+        "startDate": { "type": "string", "format": "date-time" },
+        "notes": { "type": "string", "maxLength": 2000 }
+      },
+      "required": ["customerId", "customerName", "service", "status"]
+    },
+    "payments": {
+      "title": "Payment",
+      "description": "Financial transactions and customer payments",
+      "type": "object",
+      "properties": {
+        "customerId": { "type": "string", "maxLength": 80 },
+        "customerName": { "type": "string", "maxLength": 120 },
+        "amount": { "type": "number" },
+        "currency": { "type": "string", "maxLength": 10 },
+        "paymentMethod": { "type": "string", "maxLength": 50 },
+        "paymentDate": { "type": "string", "format": "date-time" },
+        "transactionReference": { "type": "string", "maxLength": 100 },
+        "paymentStatus": { "type": "string", "maxLength": 30 },
+        "notes": { "type": "string", "maxLength": 1000 }
+      },
+      "required": ["customerId", "customerName", "amount", "paymentStatus"]
+    },
+    "followUps": {
+      "title": "FollowUp",
+      "description": "Client scheduled follow-ups and contact reminders",
+      "type": "object",
+      "properties": {
+        "customerName": { "type": "string", "maxLength": 120 },
+        "service": { "type": "string", "maxLength": 80 },
+        "destination": { "type": "string", "maxLength": 80 },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "staffMember": { "type": "string", "maxLength": 80 },
+        "followUpType": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "maxLength": 30 },
+        "priority": { "type": "string", "maxLength": 20 }
+      },
+      "required": ["customerName", "service", "status"]
+    },
+    "tasks": {
+      "title": "Task",
+      "description": "Operational staff task assignments",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "customerName": { "type": "string", "maxLength": 120 },
+        "assignedEmployee": { "type": "string", "maxLength": 80 },
+        "dueDate": { "type": "string" },
+        "priority": { "type": "string", "maxLength": 20 },
+        "status": { "type": "string", "maxLength": 30 }
+      },
+      "required": ["title", "assignedEmployee", "status"]
+    },
+    "suppliers": {
+      "title": "Supplier",
+      "description": "B2B travel supplier and consolidator records",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 120 },
+        "code": { "type": "string", "maxLength": 30 },
+        "category": { "type": "string", "maxLength": 80 },
+        "contactPerson": { "type": "string", "maxLength": 80 },
+        "email": { "type": "string", "format": "email", "maxLength": 120 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "currency": { "type": "string", "maxLength": 10 },
+        "status": { "type": "string", "maxLength": 30 }
+      },
+      "required": ["name", "code", "category", "status"]
+    },
+    "invoices": {
+      "title": "Invoice",
+      "description": "Billing statements and official customer invoices",
+      "type": "object",
+      "properties": {
+        "invoiceNumber": { "type": "string", "maxLength": 50 },
+        "customerId": { "type": "string", "maxLength": 80 },
+        "customerName": { "type": "string", "maxLength": 120 },
+        "customerEmail": { "type": "string", "format": "email", "maxLength": 120 },
+        "subtotal": { "type": "number" },
+        "total": { "type": "number" },
+        "paidAmount": { "type": "number" },
+        "balanceDue": { "type": "number" },
+        "status": { "type": "string", "maxLength": 30 },
+        "currency": { "type": "string", "maxLength": 10 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["invoiceNumber", "customerName", "total", "status"]
+    },
     "ceoMetrics": {
       "title": "CEOMetrics",
       "description": "High level executive overview metrics for the CEO dashboard",
@@ -44,6 +214,46 @@
     "/users/{userId}": {
       "schema": "users",
       "description": "User profiles and credentials"
+    },
+    "/leads/{leadId}": {
+      "schema": "leads",
+      "description": "Customer travel inquiries and quotation requests"
+    },
+    "/customers/{customerId}": {
+      "schema": "customers",
+      "description": "Customer records, profiles, and history"
+    },
+    "/services/{serviceId}": {
+      "schema": "services",
+      "description": "Travel and visa service catalog"
+    },
+    "/bookings/{bookingId}": {
+      "schema": "bookings",
+      "description": "Flight, hotel, visa, and package bookings"
+    },
+    "/cases/{caseId}": {
+      "schema": "cases",
+      "description": "Active travel and visa case records"
+    },
+    "/payments/{paymentId}": {
+      "schema": "payments",
+      "description": "Client payments and receipts"
+    },
+    "/follow_ups/{followUpId}": {
+      "schema": "followUps",
+      "description": "Scheduled customer follow-up actions"
+    },
+    "/tasks/{taskId}": {
+      "schema": "tasks",
+      "description": "Staff operational task assignments"
+    },
+    "/suppliers/{supplierId}": {
+      "schema": "suppliers",
+      "description": "B2B airlines, hotels, and consolidator suppliers"
+    },
+    "/invoices/{invoiceId}": {
+      "schema": "invoices",
+      "description": "Client invoices and statements"
     },
     "/ceo_metrics/{metricId}": {
       "schema": "ceoMetrics",

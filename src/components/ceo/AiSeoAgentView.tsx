@@ -246,13 +246,13 @@ export const AiSeoAgentView: React.FC = () => {
   "@context": "https://schema.org",
   "@type": "TravelAgency",
   "name": "SkyBridge Travel & Tourism",
-  "telephone": "+923237777174",
-  "email": "skybridgetravel20@gmail.com",
+  "url": "https://skybridgetravelandtourism.com",
+  "telephone": "+923244444167",
+  "email": "info@skybridgetravelandtourism.com",
   "address": [
-    { "@type": "PostalAddress", "addressLocality": "Gujranwala", "addressCountry": "PK" },
-    { "@type": "PostalAddress", "addressLocality": "Dubai", "addressCountry": "AE" }
+    { "@type": "PostalAddress", "streetAddress": "House No 05, Gulshan Street, Nadeem Town, Multan Road", "addressLocality": "Lahore", "addressCountry": "PK" }
   ],
-  "geo": { "@type": "GeoCoordinates", "latitude": 32.1877, "longitude": 74.1945 }
+  "geo": { "@type": "GeoCoordinates", "latitude": 31.5204, "longitude": 74.3587 }
 }`}
               </pre>
             </div>

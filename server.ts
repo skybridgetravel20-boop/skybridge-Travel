@@ -1,4 +1,5 @@
 import express from 'express';
+import http from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
@@ -72,6 +73,7 @@ let scanSchedulerActive = true;
 
 async function startServer() {
   const app = express();
+  const httpServer = http.createServer(app);
   const PORT = 3000;
 
   app.use(express.json({ limit: '10mb' }));
@@ -478,8 +480,12 @@ Provide a comprehensive, high-impact tactical report formatted in clean structur
 
   // Vite Middleware Setup
   if (process.env.NODE_ENV !== 'production') {
+    const isHmrDisabled = process.env.DISABLE_HMR === 'true';
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        hmr: isHmrDisabled ? false : { server: httpServer }
+      },
       appType: 'spa'
     });
     app.use(vite.middlewares);
@@ -491,7 +497,7 @@ Provide a comprehensive, high-impact tactical report formatted in clean structur
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`SkyBridge Travel Operating System Server running on http://0.0.0.0:${PORT}`);
   });
 }

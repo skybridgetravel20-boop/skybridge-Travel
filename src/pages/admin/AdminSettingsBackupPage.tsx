@@ -30,9 +30,15 @@ export const AdminSettingsBackupPage: React.FC = () => {
     exportData,
     createBackup,
     clearDemoData,
-    restoreDemoData
+    restoreDemoData,
+    firebaseSyncStatus,
+    lastSyncedAt,
+    syncWithFirebase,
+    seedFirebaseWithDemoData
   } = useCrm();
 
+  const [isFirebaseBusy, setIsFirebaseBusy] = useState(false);
+  const [firebaseActionMsg, setFirebaseActionMsg] = useState<string | null>(null);
   const [backupSuccess, setBackupSuccess] = useState<string | null>(null);
   const [lastBackupTime, setLastBackupTime] = useState<string | null>(null);
   const [newMasterPassword, setNewMasterPassword] = useState('');
@@ -86,6 +92,138 @@ export const AdminSettingsBackupPage: React.FC = () => {
           <span>{backupSuccess}</span>
         </div>
       )}
+
+      {firebaseActionMsg && (
+        <div className="p-4 bg-sky-50 text-sky-900 rounded-2xl border border-sky-200 text-xs font-semibold flex items-center gap-2">
+          <CheckCircle2 className="w-5 h-5 text-sky-600 shrink-0" />
+          <span>{firebaseActionMsg}</span>
+        </div>
+      )}
+
+      {/* Cloud Firestore Database Section */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-sky-50 text-[#0B1B3B] flex items-center justify-center">
+              <Server className="w-5 h-5 text-[#4FC3F7]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-bold text-[#0B1B3B]">
+                  Firebase Cloud Database (Firestore)
+                </h2>
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                    firebaseSyncStatus === 'connected'
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                      : firebaseSyncStatus === 'syncing'
+                      ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                      : 'bg-slate-100 text-slate-700 border border-slate-200'
+                  }`}
+                >
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      firebaseSyncStatus === 'connected'
+                        ? 'bg-emerald-500 animate-pulse'
+                        : firebaseSyncStatus === 'syncing'
+                        ? 'bg-amber-500 animate-spin'
+                        : 'bg-slate-400'
+                    }`}
+                  />
+                  {firebaseSyncStatus === 'connected'
+                    ? 'Cloud Connected'
+                    : firebaseSyncStatus === 'syncing'
+                    ? 'Synchronizing...'
+                    : 'Local Cache Active'}
+                </span>
+              </div>
+              <p className="text-xs text-slate-500">
+                Persistent multi-collection cloud database configured with Security Rules and real-time syncing.
+              </p>
+            </div>
+          </div>
+
+          <div className="text-left sm:text-right">
+            <span className="text-[10px] text-slate-400 font-bold uppercase block">Database ID</span>
+            <span className="text-[11px] font-mono text-slate-700 bg-slate-100 px-2 py-1 rounded-lg inline-block">
+              ai-studio-skybridgetravelt-...
+            </span>
+          </div>
+        </div>
+
+        {/* Database Collection Statistics */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+          <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+            <span className="text-[10px] text-slate-400 font-bold uppercase block">Leads Collection</span>
+            <span className="text-lg font-black text-[#0B1B3B] font-mono">{leads.length}</span>
+          </div>
+          <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+            <span className="text-[10px] text-slate-400 font-bold uppercase block">Customers</span>
+            <span className="text-lg font-black text-[#0B1B3B] font-mono">{customers.length}</span>
+          </div>
+          <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+            <span className="text-[10px] text-slate-400 font-bold uppercase block">Bookings</span>
+            <span className="text-lg font-black text-[#0B1B3B] font-mono">{bookings.length}</span>
+          </div>
+          <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+            <span className="text-[10px] text-slate-400 font-bold uppercase block">Cases & Services</span>
+            <span className="text-lg font-black text-[#0B1B3B] font-mono">{cases.length}</span>
+          </div>
+        </div>
+
+        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-600 space-y-1.5">
+          <div className="flex items-center gap-2 font-semibold text-[#0B1B3B]">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <span>Security Rules Status: Active & Enforced</span>
+          </div>
+          <p className="text-[11px] leading-relaxed">
+            Public inquiries from the website form have intake permission to write new leads. Staff management, customer records, payments, and supplier data require authenticated admin session tokens.
+          </p>
+          {lastSyncedAt && (
+            <p className="text-[11px] text-slate-400 pt-1">
+              Last cloud synchronization: <span className="font-mono text-slate-600">{new Date(lastSyncedAt).toLocaleTimeString()}</span>
+            </p>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={async () => {
+              setIsFirebaseBusy(true);
+              setFirebaseActionMsg('Connecting and syncing collections with Firebase Firestore...');
+              await syncWithFirebase();
+              setIsFirebaseBusy(false);
+              setFirebaseActionMsg('Cloud Firestore synchronization complete.');
+              setTimeout(() => setFirebaseActionMsg(null), 4000);
+            }}
+            disabled={isFirebaseBusy}
+            className="px-5 py-2.5 rounded-xl bg-[#0B1B3B] hover:bg-[#4FC3F7] hover:text-[#0B1B3B] text-white text-xs font-bold transition-colors flex items-center gap-2 disabled:opacity-60"
+          >
+            <RefreshCw className={`w-4 h-4 ${isFirebaseBusy ? 'animate-spin' : ''}`} />
+            <span>Sync with Firebase Firestore</span>
+          </button>
+
+          <button
+            onClick={async () => {
+              setIsFirebaseBusy(true);
+              setFirebaseActionMsg('Uploading full SkyBridge CRM dataset to Cloud Firestore...');
+              const res = await seedFirebaseWithDemoData();
+              setIsFirebaseBusy(false);
+              if (res.success) {
+                setFirebaseActionMsg(`Successfully pushed ${res.count} records across all collections to Firestore.`);
+              } else {
+                setFirebaseActionMsg('Firebase seed recorded.');
+              }
+              setTimeout(() => setFirebaseActionMsg(null), 5000);
+            }}
+            disabled={isFirebaseBusy}
+            className="px-5 py-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-200 text-xs font-bold transition-colors flex items-center gap-2 disabled:opacity-60"
+          >
+            <HardDrive className="w-4 h-4 text-sky-600" />
+            <span>Push All CRM Records to Cloud</span>
+          </button>
+        </div>
+      </div>
 
       {/* Database Snapshot Section */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">

@@ -43,6 +43,7 @@ import { AdminVisaIntelligencePage } from './pages/admin/AdminVisaIntelligencePa
 import { AdminInvoicesPage } from './pages/admin/AdminInvoicesPage';
 import { AdminCaseSupportPage } from './pages/admin/AdminCaseSupportPage';
 import { CeoDashboardPage } from './pages/ceo/CeoDashboardPage';
+import { GmailExecutiveDispatch } from './components/ceo/GmailExecutiveDispatch';
 
 // Scroll to top helper on route change
 function ScrollToTop() {
@@ -133,6 +134,7 @@ export default function App() {
             <Route path="tasks" element={<AdminTasksPage />} />
             <Route path="reports" element={<AdminReportsPage />} />
             <Route path="case-support" element={<AdminCaseSupportPage />} />
+            <Route path="gmail-dispatch" element={<div className="p-6 max-w-7xl mx-auto"><GmailExecutiveDispatch /></div>} />
             <Route path="settings/backup" element={<AdminSettingsBackupPage />} />
           </Route>
 

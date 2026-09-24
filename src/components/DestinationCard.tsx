@@ -104,11 +104,12 @@ export const DestinationCard: React.FC<DestinationCardProps> = ({
           </button>
 
           <a
-            href={getWhatsAppLink(`Hello SkyBridge, I am inquiring about visa requirements and packages for ${destName}.`)}
+            href={getWhatsAppLink(`Hello SkyBridge Travel & Tourism, I am inquiring about visa requirements and packages for ${destName}.`)}
             target="_blank"
             rel="noopener noreferrer"
             className="p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors"
-            aria-label={`WhatsApp inquiry for ${destName}`}
+            aria-label={`Message SkyBridge Travel & Tourism on WhatsApp for ${destName}`}
+            title="Message SkyBridge Travel & Tourism on WhatsApp"
           >
             <MessageCircle className="w-4 h-4" />
           </a>

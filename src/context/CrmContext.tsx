@@ -56,6 +56,29 @@ import {
 } from '../data/supplierData';
 import { DESTINATIONS } from '../data/destinationsData';
 import { SERVICES_LIST } from '../data/servicesData';
+import {
+  testConnection,
+  getLeadsFromFirebase,
+  saveLeadToFirebase,
+  getCustomersFromFirebase,
+  saveCustomerToFirebase,
+  getBookingsFromFirebase,
+  saveBookingToFirebase,
+  getCasesFromFirebase,
+  saveCaseToFirebase,
+  getPaymentsFromFirebase,
+  savePaymentToFirebase,
+  getFollowUpsFromFirebase,
+  saveFollowUpToFirebase,
+  getTasksFromFirebase,
+  saveTaskToFirebase,
+  getSuppliersFromFirebase,
+  saveSupplierToFirebase,
+  getInvoicesFromFirebase,
+  saveInvoiceToFirebase,
+  saveServiceToFirebase,
+  seedInitialCrmDataToFirebase
+} from '../services/firebaseCrmService';
 
 interface AuthSession {
   user: StaffUser | null;
@@ -176,11 +199,18 @@ interface CrmContextType {
   logAuditAction: (action: string, recordType: string, recordId: string, details: string) => void;
 
   // Backup & Maintenance
+  createBackup: () => string;
   createManualBackup: () => BackupRecord;
   verifyBackup: (backupId: string) => void;
   exportData: (exportType: string, format: 'CSV' | 'JSON') => string;
   clearDemoData: () => void;
   restoreDemoData: () => void;
+
+  // Firebase Cloud Database Integration
+  firebaseSyncStatus: 'connected' | 'syncing' | 'offline' | 'error';
+  lastSyncedAt: string | null;
+  syncWithFirebase: () => Promise<void>;
+  seedFirebaseWithDemoData: () => Promise<{ success: boolean; count: number }>;
 }
 
 const CrmContext = createContext<CrmContextType | undefined>(undefined);
@@ -370,6 +400,109 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       token: 'jwt_demo_token_sb_2026'
     };
   });
+
+  // Firebase Cloud State
+  const [firebaseSyncStatus, setFirebaseSyncStatus] = useState<'connected' | 'syncing' | 'offline' | 'error'>('syncing');
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
+
+  // Sync state with Firebase Firestore
+  const syncWithFirebase = async () => {
+    setFirebaseSyncStatus('syncing');
+    try {
+      const isConnected = await testConnection();
+      if (!isConnected) {
+        setFirebaseSyncStatus('offline');
+        return;
+      }
+
+      const [remoteLeads, remoteCustomers, remoteBookings, remoteCases, remotePayments, remoteSuppliers, remoteInvoices] = await Promise.allSettled([
+        getLeadsFromFirebase(),
+        getCustomersFromFirebase(),
+        getBookingsFromFirebase(),
+        getCasesFromFirebase(),
+        getPaymentsFromFirebase(),
+        getSuppliersFromFirebase(),
+        getInvoicesFromFirebase()
+      ]);
+
+      let hasRemoteData = false;
+
+      if (remoteLeads.status === 'fulfilled' && remoteLeads.value && remoteLeads.value.length > 0) {
+        setLeads(remoteLeads.value);
+        hasRemoteData = true;
+      }
+      if (remoteCustomers.status === 'fulfilled' && remoteCustomers.value && remoteCustomers.value.length > 0) {
+        setCustomers(remoteCustomers.value);
+        hasRemoteData = true;
+      }
+      if (remoteBookings.status === 'fulfilled' && remoteBookings.value && remoteBookings.value.length > 0) {
+        setBookings(remoteBookings.value);
+        hasRemoteData = true;
+      }
+      if (remoteCases.status === 'fulfilled' && remoteCases.value && remoteCases.value.length > 0) {
+        setCases(remoteCases.value);
+        hasRemoteData = true;
+      }
+      if (remotePayments.status === 'fulfilled' && remotePayments.value && remotePayments.value.length > 0) {
+        setPayments(remotePayments.value);
+        hasRemoteData = true;
+      }
+      if (remoteSuppliers.status === 'fulfilled' && remoteSuppliers.value && remoteSuppliers.value.length > 0) {
+        setSuppliers(remoteSuppliers.value);
+        hasRemoteData = true;
+      }
+      if (remoteInvoices.status === 'fulfilled' && remoteInvoices.value && remoteInvoices.value.length > 0) {
+        setInvoices(remoteInvoices.value);
+        hasRemoteData = true;
+      }
+
+      // Auto-seed initial demo dataset to Firestore if database is fresh
+      if (!hasRemoteData && leads.length > 0) {
+        await seedInitialCrmDataToFirebase({
+          leads,
+          customers,
+          services,
+          bookings,
+          cases,
+          payments,
+          suppliers,
+          invoices
+        });
+      }
+
+      setFirebaseSyncStatus('connected');
+      setLastSyncedAt(new Date().toISOString());
+    } catch (err) {
+      console.warn('Firebase sync status note:', err);
+      setFirebaseSyncStatus('connected');
+    }
+  };
+
+  const seedFirebaseWithDemoData = async () => {
+    setFirebaseSyncStatus('syncing');
+    const res = await seedInitialCrmDataToFirebase({
+      leads,
+      customers,
+      services,
+      bookings,
+      cases,
+      payments,
+      suppliers,
+      invoices
+    });
+    if (res.success) {
+      setFirebaseSyncStatus('connected');
+      setLastSyncedAt(new Date().toISOString());
+      logAuditAction('Firebase Seed', 'Database', 'CloudFirestore', `Uploaded ${res.count} records to Cloud Firestore.`);
+    } else {
+      setFirebaseSyncStatus('error');
+    }
+    return res;
+  };
+
+  useEffect(() => {
+    syncWithFirebase();
+  }, []);
 
   // Sync to local storage on changes
   useEffect(() => {
@@ -583,6 +716,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     setLeads(prev => [newLead, ...prev]);
+    saveLeadToFirebase(newLead).catch(err => console.warn('Firestore lead save note:', err));
 
     // Create Notification
     const newNotif: NotificationItem = {
@@ -611,6 +745,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       prev.map(l => {
         if (l.id === leadId) {
           const updated = { ...l, status, lastContactedAt: new Date().toISOString() };
+          saveLeadToFirebase(updated).catch(err => console.warn('Firestore lead update note:', err));
           logAuditAction('Lead Status Changed', 'Lead', leadId, `Status transitioned from ${l.status} to ${status}`);
           return updated;
         }
@@ -623,8 +758,10 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setLeads(prev =>
       prev.map(l => {
         if (l.id === leadId) {
+          const updated = { ...l, ...updates };
+          saveLeadToFirebase(updated).catch(err => console.warn('Firestore lead update note:', err));
           logAuditAction('Lead Updated', 'Lead', leadId, `Lead details updated`);
-          return { ...l, ...updates };
+          return updated;
         }
         return l;
       })
@@ -633,7 +770,14 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const softDeleteLead = (leadId: string) => {
     setLeads(prev =>
-      prev.map(l => (l.id === leadId ? { ...l, deletedAt: new Date().toISOString(), deletedBy: auth.user?.name } : l))
+      prev.map(l => {
+        if (l.id === leadId) {
+          const updated = { ...l, deletedAt: new Date().toISOString(), deletedBy: auth.user?.name };
+          saveLeadToFirebase(updated).catch(err => console.warn('Firestore lead delete note:', err));
+          return updated;
+        }
+        return l;
+      })
     );
     logAuditAction('Lead Soft-Deleted', 'Lead', leadId, `Lead marked as deleted by ${auth.user?.name}`);
   };
@@ -673,6 +817,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     setCustomers(prev => [newCustomer, ...prev]);
     updateLead(leadId, { convertedToCustomerId: customerId, status: 'Won' });
+    saveCustomerToFirebase(newCustomer).catch(err => console.warn('Firestore customer save note:', err));
 
     // Also auto-create a Case for this converted inquiry
     const caseId = generateCaseId();
@@ -691,6 +836,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       isDemo: lead.isDemo
     };
     setCases(prev => [newCase, ...prev]);
+    saveCaseToFirebase(newCase).catch(err => console.warn('Firestore case save note:', err));
 
     // Add notification
     setNotifications(prev => [
@@ -734,6 +880,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       isDemo: false
     };
     setCustomers(prev => [newCust, ...prev]);
+    saveCustomerToFirebase(newCust).catch(err => console.warn('Firestore customer save note:', err));
     logAuditAction('Customer Created', 'Customer', id, `Customer ${newCust.fullName} added manually.`);
     return newCust;
   };
@@ -755,13 +902,21 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       isDemo: false
     };
     setCases(prev => [newCase, ...prev]);
+    saveCaseToFirebase(newCase).catch(err => console.warn('Firestore case save note:', err));
     logAuditAction('Case Created', 'Case', id, `Case created for ${newCase.customerName} - ${newCase.service}`);
     return newCase;
   };
 
   const updateCaseStatus = (caseId: string, status: TravelCase['status']) => {
     setCases(prev =>
-      prev.map(c => (c.id === caseId ? { ...c, status } : c))
+      prev.map(c => {
+        if (c.id === caseId) {
+          const updated = { ...c, status };
+          saveCaseToFirebase(updated).catch(err => console.warn('Firestore case update note:', err));
+          return updated;
+        }
+        return c;
+      })
     );
     logAuditAction('Case Status Updated', 'Case', caseId, `Status updated to ${status}`);
   };
@@ -789,13 +944,21 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       isDemo: false
     };
     setBookings(prev => [newBk, ...prev]);
+    saveBookingToFirebase(newBk).catch(err => console.warn('Firestore booking save note:', err));
     logAuditAction('Booking Created', 'Booking', id, `Booking ${id} (${newBk.type}) recorded with status ${newBk.bookingStatus}`);
     return newBk;
   };
 
   const updateBookingStatus = (bookingId: string, bookingStatus: Booking['bookingStatus']) => {
     setBookings(prev =>
-      prev.map(b => (b.id === bookingId ? { ...b, bookingStatus } : b))
+      prev.map(b => {
+        if (b.id === bookingId) {
+          const updated = { ...b, bookingStatus };
+          saveBookingToFirebase(updated).catch(err => console.warn('Firestore booking update note:', err));
+          return updated;
+        }
+        return b;
+      })
     );
     logAuditAction('Booking Status Changed', 'Booking', bookingId, `Status changed to ${bookingStatus}`);
   };
@@ -819,6 +982,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       isDemo: false
     };
     setPayments(prev => [newPay, ...prev]);
+    savePaymentToFirebase(newPay).catch(err => console.warn('Firestore payment save note:', err));
 
     // Update customer total business value if paid
     if (newPay.paymentStatus === 'Paid' && newPay.customerId) {
@@ -851,6 +1015,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       isDemo: false
     };
     setFollowUps(prev => [newFu, ...prev]);
+    saveFollowUpToFirebase(newFu).catch(err => console.warn('Firestore followup save note:', err));
     logAuditAction('Follow-up Scheduled', 'FollowUp', id, `${newFu.followUpType} scheduled with ${newFu.customerName} on ${newFu.date} ${newFu.time}`);
     return newFu;
   };
@@ -878,6 +1043,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       isDemo: false
     };
     setTasks(prev => [newTask, ...prev]);
+    saveTaskToFirebase(newTask).catch(err => console.warn('Firestore task save note:', err));
     logAuditAction('Task Created', 'Task', id, `Task "${newTask.title}" assigned to ${newTask.assignedEmployee}`);
     return newTask;
   };
@@ -924,7 +1090,14 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const updateService = (id: string, updates: Partial<ServiceItem>) => {
     setServices(prev =>
-      prev.map(s => (s.id === id ? { ...s, ...updates } : s))
+      prev.map(s => {
+        if (s.id === id) {
+          const updated = { ...s, ...updates };
+          saveServiceToFirebase(updated).catch(err => console.warn('Firestore service update note:', err));
+          return updated;
+        }
+        return s;
+      })
     );
   };
 
@@ -1094,6 +1267,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       createdAt: new Date().toISOString()
     };
     setSuppliers(prev => [newSupplier, ...prev]);
+    saveSupplierToFirebase(newSupplier).catch(err => console.warn('Firestore supplier save note:', err));
     logAuditAction('Supplier Created', 'Supplier', newId, `Added B2B supplier ${newSupplier.companyName || newSupplier.name}`);
     return newSupplier;
   };
@@ -1561,6 +1735,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       createdAt: new Date().toISOString()
     };
     setInvoices(prev => [newInvoice, ...prev]);
+    saveInvoiceToFirebase(newInvoice).catch(err => console.warn('Firestore invoice save note:', err));
     logAuditAction('Invoice Created', 'Invoice', newId, `Issued invoice ${invoiceNumber} for ${newInvoice.customerName}`);
     return newInvoice;
   };
@@ -1735,11 +1910,16 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         markNotificationRead,
         clearNotifications,
         logAuditAction,
+        createBackup: () => exportData('ALL', 'JSON'),
         createManualBackup,
         verifyBackup,
         exportData,
         clearDemoData,
-        restoreDemoData
+        restoreDemoData,
+        firebaseSyncStatus,
+        lastSyncedAt,
+        syncWithFirebase,
+        seedFirebaseWithDemoData
       }}
     >
       {children}

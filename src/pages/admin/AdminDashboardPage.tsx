@@ -30,7 +30,8 @@ import {
   Send,
   Key,
   UploadCloud,
-  Building2
+  Building2,
+  Mail
 } from 'lucide-react';
 
 export const AdminDashboardPage: React.FC = () => {
@@ -53,7 +54,8 @@ export const AdminDashboardPage: React.FC = () => {
     rejectVisaAlert,
     triggerVisaScan,
     askAi,
-    createLead
+    createLead,
+    firebaseSyncStatus
   } = useCrm();
 
   // CEO AI Command Center State
@@ -137,9 +139,23 @@ export const AdminDashboardPage: React.FC = () => {
         <div className="flex items-center gap-4">
           <SkyBridgeLogo size="md" />
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#0B1B3B] text-white">
                 Private Executive Mode
+              </span>
+              <span
+                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                  firebaseSyncStatus === 'connected'
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    : 'bg-amber-50 text-amber-700 border border-amber-200'
+                }`}
+              >
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    firebaseSyncStatus === 'connected' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500 animate-spin'
+                  }`}
+                />
+                {firebaseSyncStatus === 'connected' ? 'Cloud Database: Live' : 'Database: Syncing...'}
               </span>
               <span className="text-xs text-slate-500 font-semibold">
                 Today: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -555,11 +571,11 @@ export const AdminDashboardPage: React.FC = () => {
           </Link>
 
           <Link
-            to="/admin/follow-ups"
-            className="p-3 rounded-2xl bg-slate-50 hover:bg-[#0B1B3B] hover:text-white transition-all text-slate-700 flex flex-col items-center gap-1.5 text-center group border border-slate-100"
+            to="/admin/gmail-dispatch"
+            className="p-3 rounded-2xl bg-rose-50/70 hover:bg-rose-600 hover:text-white transition-all text-rose-800 flex flex-col items-center gap-1.5 text-center group border border-rose-200/80"
           >
-            <Calendar className="w-4 h-4 text-rose-600 group-hover:text-white" />
-            <span>+ Follow-up</span>
+            <Mail className="w-4 h-4 text-rose-600 group-hover:text-white" />
+            <span>Gmail Dispatch</span>
           </Link>
         </div>
       </div>

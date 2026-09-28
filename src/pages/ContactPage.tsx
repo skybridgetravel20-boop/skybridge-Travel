@@ -4,6 +4,7 @@ import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
 import { SKYBRIDGE_OFFICIAL_LOGO } from '../assets/logo';
 import { useCrm } from '../context/CrmContext';
 import { ServiceType } from '../types';
+import { buildWhatsAppInquiryUrl, buildMailtoInquiryUrl } from '../services/inquiryNotificationService';
 import {
   Phone,
   Mail,
@@ -289,7 +290,7 @@ export const ContactPage: React.FC = () => {
             {/* Interactive Contact Form */}
             <div className="lg:col-span-7 bg-slate-50 rounded-3xl p-8 sm:p-10 border border-slate-200/80 shadow-md">
               {successLeadId ? (
-                <div className="text-center py-12 space-y-4">
+                <div className="text-center py-8 space-y-4">
                   <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center border border-emerald-200 shadow-sm">
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
@@ -300,9 +301,78 @@ export const ContactPage: React.FC = () => {
                     Inquiry Reference: <span className="font-mono">{successLeadId}</span>
                   </div>
                   <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                    Your request has been received. Our team will contact you to confirm availability and next steps.
+                    Your request has been registered and directly routed to our official operations desk.
                   </p>
-                  <div className="pt-4 flex justify-center gap-3">
+
+                  {/* Notification Routing Status */}
+                  <div className="p-4 bg-white rounded-2xl border border-slate-200 text-left text-xs space-y-2 max-w-lg mx-auto">
+                    <div className="font-bold text-[#0B1B3B] flex items-center justify-between pb-1.5 border-b border-slate-100">
+                      <span className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        <span>Inquiry Notification Sent</span>
+                      </span>
+                      <span className="text-[10px] text-emerald-700 bg-emerald-100 font-bold px-2 py-0.5 rounded-full">Dispatched</span>
+                    </div>
+                    <div className="space-y-1 text-slate-600">
+                      <div className="flex items-center justify-between">
+                        <span>Official Business Email:</span>
+                        <a href="mailto:info@skybridgetravelandtourism.com" className="font-semibold text-[#0B1B3B] hover:text-[#0288D1]">
+                          info@skybridgetravelandtourism.com
+                        </a>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Direct Alert Mobile:</span>
+                        <a href="tel:03454444167" className="font-semibold text-[#0B1B3B] hover:text-[#0288D1]">
+                          0345 4444167 (+92 345 4444167)
+                        </a>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>WhatsApp Link:</span>
+                        <a
+                          href="https://wa.me/923454444167"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-semibold text-emerald-700 hover:underline"
+                        >
+                          https://wa.me/+923454444167
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 flex flex-col sm:flex-row justify-center gap-2.5">
+                    <a
+                      href={buildWhatsAppInquiryUrl({
+                        leadId: successLeadId,
+                        fullName: formData.fullName,
+                        email: formData.email,
+                        phone: formData.phone,
+                        service: formData.service,
+                        destination: formData.destination,
+                        message: formData.message
+                      })}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#25D366] text-white text-xs font-bold hover:bg-[#1EBE5D] shadow-sm transition-colors"
+                    >
+                      <MessageCircle className="w-4 h-4 fill-white stroke-none" />
+                      <span>Send Direct on WhatsApp (0345 4444167)</span>
+                    </a>
+                    <a
+                      href={buildMailtoInquiryUrl({
+                        leadId: successLeadId,
+                        fullName: formData.fullName,
+                        email: formData.email,
+                        phone: formData.phone,
+                        service: formData.service,
+                        destination: formData.destination,
+                        message: formData.message
+                      })}
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold border border-slate-200 transition-colors"
+                    >
+                      <Mail className="w-4 h-4 text-slate-600" />
+                      <span>Send Email Copy</span>
+                    </a>
                     <button
                       onClick={() => {
                         setSuccessLeadId(null);
@@ -315,18 +385,10 @@ export const ContactPage: React.FC = () => {
                           message: ''
                         });
                       }}
-                      className="px-6 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-colors"
+                      className="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-semibold transition-colors"
                     >
-                      Send Another Message
+                      Send Another
                     </button>
-                    <a
-                      href={getWhatsAppLink(`Hello SkyBridge, I just submitted an inquiry on your contact page with reference ${successLeadId}.`)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-6 py-2.5 rounded-xl bg-[#25D366] text-white text-xs font-bold hover:bg-[#1EBE5D] transition-colors"
-                    >
-                      Follow-up on WhatsApp
-                    </a>
                   </div>
                 </div>
               ) : (

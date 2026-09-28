@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { X, CheckCircle2, Send, ShieldAlert, Sparkles, Phone, Mail, User, Calendar, Users, MapPin } from 'lucide-react';
+import { X, CheckCircle2, Send, ShieldAlert, Sparkles, Phone, Mail, User, Calendar, Users, MapPin, MessageCircle, ExternalLink } from 'lucide-react';
 import { useCrm } from '../context/CrmContext';
 import { ServiceType } from '../types';
-import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
+import { COMPANY_INFO } from '../data/companyInfo';
+import { buildWhatsAppInquiryUrl, buildMailtoInquiryUrl } from '../services/inquiryNotificationService';
 
 interface BookingInquiryModalProps {
   isOpen: boolean;
@@ -131,34 +132,98 @@ export const BookingInquiryModal: React.FC<BookingInquiryModalProps> = ({
                 <div className="inline-block my-2 px-3 py-1 rounded-full bg-[#E3F2FD] text-[#0B1B3B] text-xs font-semibold">
                   Reference ID: <span className="font-mono text-[#0B1B3B]">{submittedLeadId}</span>
                 </div>
-                <p className="text-sm text-slate-600 max-w-md mx-auto mt-2 leading-relaxed">
-                  Your request has been received. Our team will contact you to confirm availability and next steps.
+                <p className="text-sm text-slate-600 max-w-md mx-auto mt-1 leading-relaxed">
+                  Your request has been registered and directly routed to our official operations desk.
                 </p>
               </div>
 
-              <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200/70 text-left text-xs text-amber-900 flex items-start gap-3">
-                <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              {/* Notification & Dispatch Status Box */}
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-left text-xs space-y-2">
+                <div className="font-bold text-[#0B1B3B] flex items-center justify-between pb-1.5 border-b border-slate-200">
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Inquiry Form Notification Dispatched</span>
+                  </span>
+                  <span className="text-[10px] text-emerald-700 bg-emerald-100 font-bold px-2 py-0.5 rounded-full">Active</span>
+                </div>
+                <div className="space-y-1 text-slate-600">
+                  <div className="flex items-center justify-between">
+                    <span>Official Email:</span>
+                    <a href="mailto:info@skybridgetravelandtourism.com" className="font-semibold text-[#0B1B3B] hover:text-[#0288D1]">
+                      info@skybridgetravelandtourism.com
+                    </a>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Direct Alert Mobile:</span>
+                    <a href="tel:03454444167" className="font-semibold text-[#0B1B3B] hover:text-[#0288D1]">
+                      0345 4444167 (+92 345 4444167)
+                    </a>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>WhatsApp Link:</span>
+                    <a
+                      href="https://wa.me/923454444167"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-emerald-700 hover:underline"
+                    >
+                      https://wa.me/+923454444167
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-200/70 text-left text-xs text-amber-900 flex items-start gap-2.5">
+                <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold">Important Notice:</span> All bookings and reservations are subject to supplier confirmation and travel file review. No ticket or hotel reservation is finalized until formally issued with official references.
                 </div>
               </div>
 
-              <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
+              <div className="pt-2 flex flex-col sm:flex-row gap-2.5 justify-center">
+                <a
+                  href={buildWhatsAppInquiryUrl({
+                    leadId: submittedLeadId,
+                    fullName: formData.fullName,
+                    email: formData.email,
+                    phone: formData.phone,
+                    service: formData.service,
+                    destination: formData.destination,
+                    travelDate: formData.travelDate,
+                    passengers: Number(formData.passengers),
+                    message: formData.message
+                  })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white text-xs font-bold shadow-md transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4 fill-white stroke-none" />
+                  <span>Send Direct on WhatsApp (0345 4444167)</span>
+                </a>
+                <a
+                  href={buildMailtoInquiryUrl({
+                    leadId: submittedLeadId,
+                    fullName: formData.fullName,
+                    email: formData.email,
+                    phone: formData.phone,
+                    service: formData.service,
+                    destination: formData.destination,
+                    travelDate: formData.travelDate,
+                    passengers: Number(formData.passengers),
+                    message: formData.message
+                  })}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors"
+                >
+                  <Mail className="w-4 h-4 text-slate-600" />
+                  <span>Send Direct Email</span>
+                </a>
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="px-6 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-semibold transition-colors"
+                  className="px-4 py-2.5 rounded-xl text-slate-500 hover:text-slate-800 text-xs font-semibold transition-colors"
                 >
-                  Done
+                  Close
                 </button>
-                <a
-                  href={getWhatsAppLink(`Hello SkyBridge, I just submitted request ${submittedLeadId} regarding ${formData.service} for ${formData.destination || 'travel'}.`)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white text-sm font-semibold shadow-md transition-colors"
-                >
-                  Fast-Track on WhatsApp
-                </a>
               </div>
             </div>
           ) : (

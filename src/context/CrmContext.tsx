@@ -56,6 +56,7 @@ import {
 } from '../data/supplierData';
 import { DESTINATIONS } from '../data/destinationsData';
 import { SERVICES_LIST } from '../data/servicesData';
+import { submitInquiryNotification } from '../services/inquiryNotificationService';
 import {
   testConnection,
   getLeadsFromFirebase,
@@ -717,6 +718,19 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     setLeads(prev => [newLead, ...prev]);
     saveLeadToFirebase(newLead).catch(err => console.warn('Firestore lead save note:', err));
+    submitInquiryNotification({
+      leadId: newLead.id,
+      fullName: newLead.fullName,
+      email: newLead.email,
+      phone: newLead.phone,
+      whatsApp: newLead.whatsApp,
+      service: newLead.service,
+      destination: newLead.destination,
+      travelDate: newLead.travelDate,
+      passengers: newLead.passengers,
+      message: newLead.notes,
+      source: newLead.source
+    }).catch(err => console.warn('Inquiry dispatch notification note:', err));
 
     // Create Notification
     const newNotif: NotificationItem = {

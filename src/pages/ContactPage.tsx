@@ -5,6 +5,7 @@ import { SKYBRIDGE_OFFICIAL_LOGO } from '../assets/logo';
 import { useCrm } from '../context/CrmContext';
 import { ServiceType } from '../types';
 import { buildWhatsAppInquiryUrl, buildMailtoInquiryUrl } from '../services/inquiryNotificationService';
+import { WhatsAppIcon } from '../components/WhatsAppIcon';
 import {
   Phone,
   Mail,
@@ -224,7 +225,7 @@ export const ContactPage: React.FC = () => {
               {/* Fast WhatsApp CTA */}
               <div className="p-6 rounded-3xl bg-[#25D366]/10 border border-[#25D366]/30 space-y-3">
                 <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
-                  <MessageCircle className="w-5 h-5 text-[#25D366]" />
+                  <WhatsAppIcon className="w-5 h-5 fill-[#25D366]" />
                   <span>Official WhatsApp Contact</span>
                 </div>
                 <p className="text-xs text-emerald-900 leading-relaxed">
@@ -355,8 +356,8 @@ export const ContactPage: React.FC = () => {
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#25D366] text-white text-xs font-bold hover:bg-[#1EBE5D] shadow-sm transition-colors"
                     >
-                      <MessageCircle className="w-4 h-4 fill-white stroke-none" />
-                      <span>Send Direct on WhatsApp (0345 4444167)</span>
+                      <WhatsAppIcon className="w-4 h-4 fill-white shrink-0" />
+                      <span>Send Direct on WhatsApp (+92 345 4444167)</span>
                     </a>
                     <a
                       href={buildMailtoInquiryUrl({

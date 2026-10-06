@@ -40,6 +40,7 @@ import { AdminGoogleSheetsPage } from './pages/admin/AdminGoogleSheetsPage';
 import { AdminPriceComparisonPage } from './pages/admin/AdminPriceComparisonPage';
 import { AdminPackageCalculatorPage } from './pages/admin/AdminPackageCalculatorPage';
 import { AdminVisaIntelligencePage } from './pages/admin/AdminVisaIntelligencePage';
+import { AdminSchengenAgentPage } from './pages/admin/AdminSchengenAgentPage';
 import { AdminInvoicesPage } from './pages/admin/AdminInvoicesPage';
 import { AdminCaseSupportPage } from './pages/admin/AdminCaseSupportPage';
 import { CeoDashboardPage } from './pages/ceo/CeoDashboardPage';
@@ -128,6 +129,8 @@ export default function App() {
             <Route path="integrations/google-sheets" element={<AdminGoogleSheetsPage />} />
             <Route path="calculator" element={<AdminPackageCalculatorPage />} />
             <Route path="visa-intelligence" element={<AdminVisaIntelligencePage />} />
+            <Route path="schengen-agent" element={<AdminSchengenAgentPage />} />
+            <Route path="schengen-intelligence" element={<AdminSchengenAgentPage />} />
             <Route path="invoices" element={<AdminInvoicesPage />} />
             <Route path="bookings" element={<AdminBookingsPage />} />
             <Route path="follow-ups" element={<AdminFollowUpsPage />} />

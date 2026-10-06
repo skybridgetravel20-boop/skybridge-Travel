@@ -67,7 +67,7 @@ export const AdminSupplierPortalsPage: React.FC = () => {
     creditLimit: 1000000,
     balance: 0,
     currency: 'PKR',
-    authorizedStaff: ['CEO Saman', 'Ticketing Lead'],
+    authorizedStaff: ['Director Urwa Ali', 'Ticketing Lead'],
     status: 'Active',
     notes: 'Authorized SkyBridge staff access only. Two-factor authenticated.'
   };

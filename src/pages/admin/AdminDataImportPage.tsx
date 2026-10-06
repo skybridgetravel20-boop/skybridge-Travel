@@ -268,7 +268,7 @@ export const AdminDataImportPage: React.FC = () => {
       rowCount: rawData.length,
       recordsAdded: addedCount,
       recordsUpdated: updatedCount,
-      importedBy: auth.user?.name || 'Saman (CEO)',
+      importedBy: auth.user?.name || 'Urwa Ali (Director)',
       status: 'Completed',
       notes: `Imported with duplicate policy: ${duplicateAction}. ${addedCount} created, ${updatedCount} refreshed, ${skippedCount} skipped.`
     });

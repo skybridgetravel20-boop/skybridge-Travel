@@ -137,7 +137,7 @@ export const AdminLoginPage: React.FC = () => {
             className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs shadow-md hover:shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2"
           >
             <Sparkles className="w-4 h-4 fill-slate-950 text-slate-950" />
-            <span>Enter CEO Dashboard Instantly (Saman)</span>
+            <span>Enter Director / CEO Dashboard Instantly (Urwa Ali)</span>
           </button>
         </div>
 
@@ -240,7 +240,7 @@ export const AdminLoginPage: React.FC = () => {
               className="px-2 py-2 rounded-xl bg-[#0B1B3B] hover:bg-[#4FC3F7] hover:text-[#0B1B3B] text-white text-[11px] font-bold transition-colors text-center flex flex-col items-center justify-center gap-0.5 shadow-sm"
             >
               <Crown className="w-3.5 h-3.5 text-[#FFB300]" />
-              <span>CEO (Saman)</span>
+              <span>Director (Urwa Ali)</span>
             </button>
             <button
               type="button"

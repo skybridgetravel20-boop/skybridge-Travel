@@ -10,9 +10,11 @@ export interface InquiryNotificationPayload {
   service: string;
   destination?: string;
   travelDate?: string;
+  visaCategory?: string;
   passengers?: number;
   message?: string;
   source?: string;
+  createdAt?: string;
 }
 
 export interface InquiryDispatchResult {
@@ -26,8 +28,9 @@ export interface InquiryDispatchResult {
 }
 
 const OFFICIAL_EMAIL = 'info@skybridgetravelandtourism.com';
-const OFFICIAL_PHONE = '0345 4444167';
-const OFFICIAL_PHONE_INTL = '+92 345 4444167';
+const OFFICIAL_PHONE_1 = '+92 324 4444167';
+const OFFICIAL_PHONE_2 = '+92 345 4444167';
+const OFFICIAL_PHONE = '+92 345 4444167';
 const OFFICIAL_WHATSAPP_NUMBER = '923454444167';
 
 /**
@@ -36,17 +39,19 @@ const OFFICIAL_WHATSAPP_NUMBER = '923454444167';
  */
 export function buildWhatsAppInquiryUrl(data: InquiryNotificationPayload): string {
   const lines = [
-    `🔔 *NEW SKYBRIDGE TRAVEL INQUIRY*`,
-    data.leadId ? `🆔 *Ref:* ${data.leadId}` : '',
-    `👤 *Name:* ${data.fullName}`,
-    `📞 *Phone:* ${data.phone}`,
-    data.email ? `✉️ *Email:* ${data.email}` : '',
-    `✈️ *Service:* ${data.service}`,
-    `📍 *Destination:* ${data.destination || 'International Travel'}`,
-    data.travelDate ? `📅 *Date:* ${data.travelDate}` : '',
-    data.passengers ? `👥 *Travelers:* ${data.passengers}` : '',
-    data.message ? `📝 *Details:* ${data.message}` : '',
-    `🌐 *Sent from:* skybridgetravelandtourism.com`
+    `🔔 *NEW SKYBRIDGE CUSTOMER ENQUIRY*`,
+    `🆔 *Lead ID:* ${data.leadId || 'Web Enquiry'}`,
+    `👤 *Customer Name:* ${data.fullName || 'Not provided'}`,
+    `📞 *Phone:* ${data.phone || 'Not provided'}`,
+    `✉️ *Email:* ${data.email || 'Not provided'}`,
+    `✈️ *Service:* ${data.service || 'General Enquiry'}`,
+    `📍 *Destination:* ${data.destination || 'Not provided'}`,
+    `📅 *Travel Date:* ${data.travelDate || 'Flexible'}`,
+    `🛂 *Visa Category:* ${data.visaCategory || data.service || 'Standard'}`,
+    `👥 *Pax:* ${data.passengers || 1}`,
+    `📝 *Message:* ${data.message || 'Not provided'}`,
+    `⏰ *Submission Date/Time:* ${data.createdAt || new Date().toLocaleString('en-GB')}`,
+    `🌐 *Source:* ${data.source || 'skybridgetravelandtourism.com'}`
   ].filter(Boolean);
 
   const text = encodeURIComponent(lines.join('\n'));
@@ -55,28 +60,42 @@ export function buildWhatsAppInquiryUrl(data: InquiryNotificationPayload): strin
 
 /**
  * Builds the direct mailto: link to info@skybridgetravelandtourism.com
- * pre-filled with the inquiry form details
+ * pre-filled with the inquiry form details strictly matching Section 9 specifications
  */
 export function buildMailtoInquiryUrl(data: InquiryNotificationPayload): string {
-  const subject = encodeURIComponent(
-    `New Travel Inquiry: ${data.service} - ${data.fullName} ${data.leadId ? `[Ref: ${data.leadId}]` : ''}`
-  );
+  const subject = encodeURIComponent('SkyBridge Travel & Tourism — New Customer Enquiry');
+  const submissionTime = data.createdAt || new Date().toLocaleString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
 
   const body = encodeURIComponent(
-    `Dear SkyBridge Travel & Tourism Team,\n\n` +
-    `I would like to submit the following travel inquiry:\n\n` +
-    `• Reference ID: ${data.leadId || 'Web Inquiry'}\n` +
-    `• Full Name: ${data.fullName}\n` +
-    `• Phone / WhatsApp: ${data.phone}\n` +
-    `• Email: ${data.email || 'N/A'}\n` +
-    `• Service Required: ${data.service}\n` +
-    `• Target Destination: ${data.destination || 'International'}\n` +
+    `SkyBridge Travel & Tourism — New Customer Enquiry\n\n` +
+    `CUSTOMER ENQUIRY DOSSIER:\n` +
+    `• Lead ID: ${data.leadId || 'Web Enquiry'}\n` +
+    `• Customer Name: ${data.fullName || 'Not provided'}\n` +
+    `• Email: ${data.email || 'Not provided'}\n` +
+    `• Phone: ${data.phone || 'Not provided'}\n` +
+    `• Service: ${data.service || 'Travel Inquiry'}\n` +
+    `• Destination: ${data.destination || 'Not provided'}\n` +
     `• Travel Date: ${data.travelDate || 'Flexible'}\n` +
-    `• Number of Passengers: ${data.passengers || 1}\n` +
-    `• Additional Requirements: ${data.message || 'Please provide information and quotation.'}\n\n` +
-    `Official Website: https://skybridgetravelandtourism.com\n` +
-    `Contact Phone: ${OFFICIAL_PHONE_INTL} / ${OFFICIAL_PHONE}\n` +
-    `Official WhatsApp: https://wa.me/${OFFICIAL_WHATSAPP_NUMBER}`
+    `• Visa Category: ${data.visaCategory || data.service || 'Tourist / Standard'}\n` +
+    `• Pax: ${data.passengers || 1}\n` +
+    `• Message: ${data.message || 'Not provided'}\n` +
+    `• Submission Date/Time: ${submissionTime}\n\n` +
+    `Best regards,\n\n` +
+    `Urwa Ali\n` +
+    `Director, Skybridge Travel and Tourism\n\n` +
+    `Contact Info:\n` +
+    `Phone: ${OFFICIAL_PHONE_1} | ${OFFICIAL_PHONE_2}\n` +
+    `Email: ${OFFICIAL_EMAIL}\n` +
+    `Website: skybridgetravelandtourism.com\n\n` +
+    `Pakistan Office:\n` +
+    `House No 05, Gulshan Street, Nadeem Town, Multan Road, Lahore, Pakistan`
   );
 
   return `mailto:${OFFICIAL_EMAIL}?subject=${subject}&body=${body}`;

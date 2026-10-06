@@ -51,6 +51,8 @@ export type UserRole =
   | 'Manager'
   | 'Agent'
   | 'CEO & Founder'
+  | 'Director'
+  | 'Director, Skybridge Travel and Tourism'
   | 'Operations Manager'
   | 'Senior Visa Consultant';
 

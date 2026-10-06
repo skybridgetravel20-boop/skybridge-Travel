@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { MessageCircle, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
+import { WhatsAppIcon } from './WhatsAppIcon';
 
 export const WhatsAppButton: React.FC = () => {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -50,7 +51,7 @@ export const WhatsAppButton: React.FC = () => {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-white"></span>
         </span>
-        <MessageCircle className="w-7 h-7 fill-white stroke-none" />
+        <WhatsAppIcon className="w-8 h-8 fill-white shrink-0" />
       </a>
     </div>
   );

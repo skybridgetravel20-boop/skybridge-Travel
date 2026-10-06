@@ -162,7 +162,7 @@ export const AdminDashboardPage: React.FC = () => {
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-[#0B1B3B] tracking-tight mt-1">
-              Welcome, {auth.user?.name || 'Saman (CEO)'}
+              Welcome, {auth.user?.name || 'Urwa Ali (Director)'}
             </h1>
             <p className="text-xs text-slate-500">
               SkyBridge Travel & Tourism Autonomous Operations & Business Intelligence Command
@@ -387,6 +387,29 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
             </div>
           </Link>
+
+          {/* Schengen Intelligence AI Agent */}
+          <Link
+            to="/admin/schengen-agent"
+            className="p-3.5 rounded-2xl border border-cyan-200 bg-cyan-50/80 hover:bg-cyan-100 transition-all flex items-start gap-3 col-span-1 sm:col-span-2 lg:col-span-3 shadow-xs"
+          >
+            <span className="text-xl">🇪🇺</span>
+            <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <div className="font-bold text-cyan-950 flex items-center gap-2">
+                  <span>Schengen Visa Intelligence AI Agent (All 29 States)</span>
+                  <span className="px-2 py-0.5 rounded-full bg-cyan-600 text-white text-[10px] font-bold">Director Exclusive</span>
+                </div>
+                <div className="text-cyan-800 text-[11px] mt-0.5">
+                  Official €90 fees, VFS / BLS procedures, verifiable embassy portals, and 1-click client dossier generator.
+                </div>
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0B1B3B] text-white text-xs font-bold shrink-0 shadow-xs">
+                <span>Open Schengen Agent</span>
+                <ArrowRight className="w-3.5 h-3.5 text-[#4FC3F7]" />
+              </div>
+            </div>
+          </Link>
         </div>
       </div>
 
@@ -403,7 +426,7 @@ export const AdminDashboardPage: React.FC = () => {
                   🔴 Official Visa Fee Update Detected — Awaiting Your Decision
                 </h3>
                 <span className="text-[11px] text-rose-700">
-                  You (Saman, CEO) remain the sole decision-maker before rates apply to client calculators.
+                  You (Director Urwa Ali) remain the sole decision-maker before rates apply to client calculators.
                 </span>
               </div>
             </div>

@@ -3,9 +3,9 @@ import { Lead, Customer, TravelCase, Booking, Payment, FollowUp, Task, DocumentI
 export const INITIAL_STAFF_USERS: StaffUser[] = [
   {
     id: 'staff-1',
-    name: 'Saman (CEO)',
-    email: 'skybridgetravel20@gmail.com',
-    role: 'CEO & Founder',
+    name: 'Urwa Ali (Director)',
+    email: 'info@skybridgetravelandtourism.com',
+    role: 'Director, Skybridge Travel and Tourism',
     phone: '+92 324 4444167',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
     active: true

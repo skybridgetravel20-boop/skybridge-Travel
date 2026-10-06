@@ -1363,7 +1363,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       currency: newPrice.currency,
       changeDate: new Date().toISOString().split('T')[0],
       source: 'Manual SkyBridge Entry',
-      modifiedBy: auth.user?.name || 'Saman (CEO)'
+      modifiedBy: auth.user?.name || 'Urwa Ali (Director)'
     };
     setPriceHistory(prev => [histRecord, ...prev]);
 
@@ -1405,7 +1405,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               currency: updated.currency,
               changeDate: new Date().toISOString().split('T')[0],
               source: 'Manual Rate Update',
-              modifiedBy: auth.user?.name || 'Saman (CEO)'
+              modifiedBy: auth.user?.name || 'Urwa Ali (Director)'
             };
           }
         }
@@ -1446,7 +1446,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       creditLimit: portalInput.creditLimit ?? 500000,
       balance: portalInput.balance ?? 0,
       currency: portalInput.currency || 'PKR',
-      authorizedStaff: portalInput.authorizedStaff || ['CEO Saman', 'Ticketing Lead'],
+      authorizedStaff: portalInput.authorizedStaff || ['Director Urwa Ali', 'Ticketing Lead'],
       notes: portalInput.notes || 'Internal SkyBridge authorized staff access only.',
       status: portalInput.status || 'Active',
       lastAccessed: new Date().toISOString().split('T')[0]
@@ -1479,7 +1479,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       currency: record.currency || 'PKR',
       changeDate: record.changeDate || new Date().toISOString().split('T')[0],
       source: record.source || 'Manual CRM Action',
-      modifiedBy: record.modifiedBy || auth.user?.name || 'Saman (CEO)'
+      modifiedBy: record.modifiedBy || auth.user?.name || 'Urwa Ali (Director)'
     };
     setPriceHistory(prev => [newRecord, ...prev]);
   };
@@ -1494,7 +1494,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       supplierId: record.supplierId,
       supplierName: record.supplierName || 'Amadeus Global',
       importedAt: new Date().toISOString(),
-      importedBy: record.importedBy || auth.user?.name || 'Saman (CEO)',
+      importedBy: record.importedBy || auth.user?.name || 'Urwa Ali (Director)',
       rowCount: record.rowCount || 0,
       recordsAdded: record.recordsAdded || 0,
       recordsUpdated: record.recordsUpdated || 0,
@@ -1635,7 +1635,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       await fetch('/api/visa-intelligence/approve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, action: 'approve', approvedBy: auth.user?.name || 'Saman (CEO)' })
+        body: JSON.stringify({ id, action: 'approve', approvedBy: auth.user?.name || 'Urwa Ali (Director)' })
       }).catch(() => null);
 
       setVisaAlerts(prev =>
@@ -1645,7 +1645,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               ...item,
               status: 'Approved',
               approvedAt: new Date().toISOString(),
-              approvedBy: auth.user?.name || 'Saman (CEO)'
+              approvedBy: auth.user?.name || 'Urwa Ali (Director)'
             };
           }
           return item;
@@ -1654,12 +1654,12 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       const target = visaAlerts.find(a => a.id === id);
       if (target) {
-        logAuditAction('Visa Alert Approved', 'VisaIntelligence', id, `CEO approved fee update for ${target.country}: ${target.currency} ${target.newFee.toLocaleString()}`);
+        logAuditAction('Visa Alert Approved', 'VisaIntelligence', id, `Director approved fee update for ${target.country}: ${target.currency} ${target.newFee.toLocaleString()}`);
         setNotifications(prev => [
           {
             id: `notif-${Date.now()}`,
             title: `Fee Approved: ${target.country}`,
-            message: `CEO approved new ${target.country} visa rate (${target.currency} ${target.newFee.toLocaleString()}). Rates applied across quote calculators.`,
+            message: `Director approved new ${target.country} visa rate (${target.currency} ${target.newFee.toLocaleString()}). Rates applied across quote calculators.`,
             timestamp: new Date().toISOString(),
             type: 'task',
             read: false,
@@ -1678,7 +1678,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       await fetch('/api/visa-intelligence/approve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, action: 'reject', approvedBy: auth.user?.name || 'Saman (CEO)' })
+        body: JSON.stringify({ id, action: 'reject', approvedBy: auth.user?.name || 'Urwa Ali (Director)' })
       }).catch(() => null);
 
       setVisaAlerts(prev =>
@@ -1810,7 +1810,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const ticketSuppliers = suppliers.filter(s => s.category.toLowerCase().includes('ticket') || s.category.toLowerCase().includes('flight') || s.category.toLowerCase().includes('airline'));
         const ticketPrices = supplierPrices.filter(p => p.category.toLowerCase().includes('ticket') || p.category.toLowerCase().includes('flight') || p.category.toLowerCase().includes('airline'));
         return {
-          answer: `CEO Saman, here is your B2B Ticketing & Airline supplier intelligence:\n• Active Ticketing Partners (${ticketSuppliers.length}): ${ticketSuppliers.map(s => s.companyName || s.name).join(', ')}\n• Available Rate Sheets (${ticketPrices.length} routes registered):\n${ticketPrices.slice(0, 4).map(p => `  - ${p.product || p.serviceTitle}: ${p.currency} ${p.supplierCost.toLocaleString()} (Client Quote: ${p.currency} ${p.clientSellingPrice?.toLocaleString() || 'N/A'}, Margin: ${p.marginPercent || p.profitMarginPercent}% via ${p.supplierName})`).join('\n')}\n• Lowest Current Fare: Amadeus B2B (ISB -> DXB Return at PKR 112,000).`,
+          answer: `Director Urwa Ali, here is your B2B Ticketing & Airline supplier intelligence:\n• Active Ticketing Partners (${ticketSuppliers.length}): ${ticketSuppliers.map(s => s.companyName || s.name).join(', ')}\n• Available Rate Sheets (${ticketPrices.length} routes registered):\n${ticketPrices.slice(0, 4).map(p => `  - ${p.product || p.serviceTitle}: ${p.currency} ${p.supplierCost.toLocaleString()} (Client Quote: ${p.currency} ${p.clientSellingPrice?.toLocaleString() || 'N/A'}, Margin: ${p.marginPercent || p.profitMarginPercent}% via ${p.supplierName})`).join('\n')}\n• Lowest Current Fare: Amadeus B2B (ISB -> DXB Return at PKR 112,000).`,
           source: 'SkyBridge B2B Intelligence Core'
         };
       }
@@ -1818,7 +1818,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (q.includes('hotel') || q.includes('dubai')) {
         const hotelPrices = supplierPrices.filter(p => (p.category.toLowerCase().includes('hotel') || p.destination.toLowerCase().includes('dubai') || (p.product || '').toLowerCase().includes('hotel')));
         return {
-          answer: `CEO Saman, here are the current Dubai & Hotel supplier rates from your database:\n${hotelPrices.map(h => `• ${h.product || h.serviceTitle} (${h.supplierName}): Supplier Cost ${h.currency} ${h.supplierCost.toLocaleString()} | Client Selling ${h.currency} ${h.clientSellingPrice?.toLocaleString()} (Margin: ${h.marginPercent || h.profitMarginPercent}%)`).join('\n')}\n• Recommendation: TBO Holidays B2B has superior instant confirmation for Dubai 4★ and 5★ properties.`,
+          answer: `Director Urwa Ali, here are the current Dubai & Hotel supplier rates from your database:\n${hotelPrices.map(h => `• ${h.product || h.serviceTitle} (${h.supplierName}): Supplier Cost ${h.currency} ${h.supplierCost.toLocaleString()} | Client Selling ${h.currency} ${h.clientSellingPrice?.toLocaleString()} (Margin: ${h.marginPercent || h.profitMarginPercent}%)`).join('\n')}\n• Recommendation: TBO Holidays B2B has superior instant confirmation for Dubai 4★ and 5★ properties.`,
           source: 'SkyBridge Hotel Intelligence Engine'
         };
       }
@@ -1826,7 +1826,7 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (q.includes('price change') || q.includes('history') || q.includes('trend')) {
         const recentHist = priceHistory.slice(0, 4);
         return {
-          answer: `CEO Saman, here are the latest B2B price changes recorded in the audit log:\n${recentHist.map(h => `• ${h.productName} (${h.supplierName}): ${h.changePercent > 0 ? '+' : ''}${h.changePercent}% adjustment on ${h.changeDate} (Old: ${h.currency} ${h.oldCost.toLocaleString()} → New: ${h.currency} ${h.newCost.toLocaleString()}) by ${h.modifiedBy}`).join('\n')}\n• Status: All client price safeguards remain intact.`,
+          answer: `Director Urwa Ali, here are the latest B2B price changes recorded in the audit log:\n${recentHist.map(h => `• ${h.productName} (${h.supplierName}): ${h.changePercent > 0 ? '+' : ''}${h.changePercent}% adjustment on ${h.changeDate} (Old: ${h.currency} ${h.oldCost.toLocaleString()} → New: ${h.currency} ${h.newCost.toLocaleString()}) by ${h.modifiedBy}`).join('\n')}\n• Status: All client price safeguards remain intact.`,
           source: 'SkyBridge Price History Core'
         };
       }
@@ -1834,13 +1834,13 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (q.includes('insurance') || q.includes('europe') || q.includes('schengen')) {
         const insPrices = supplierPrices.filter(p => p.category.toLowerCase().includes('insurance') || (p.product || '').toLowerCase().includes('insurance'));
         return {
-          answer: `CEO Saman, here are your verified European Travel Insurance providers:\n${insPrices.map(i => `• ${i.product || i.serviceTitle} (${i.supplierName}): Cost ${i.currency} ${i.supplierCost.toLocaleString()} | Client Selling ${i.currency} ${i.clientSellingPrice?.toLocaleString()} (Margin: ${i.marginPercent || i.profitMarginPercent}%)`).join('\n')}\n• Compliance: EFU General Insurance meets all 100% Schengen Embassy €30,000 mandatory medical coverage standards.`,
+          answer: `Director Urwa Ali, here are your verified European Travel Insurance providers:\n${insPrices.map(i => `• ${i.product || i.serviceTitle} (${i.supplierName}): Cost ${i.currency} ${i.supplierCost.toLocaleString()} | Client Selling ${i.currency} ${i.clientSellingPrice?.toLocaleString()} (Margin: ${i.marginPercent || i.profitMarginPercent}%)`).join('\n')}\n• Compliance: EFU General Insurance meets all 100% Schengen Embassy €30,000 mandatory medical coverage standards.`,
           source: 'SkyBridge Insurance Records'
         };
       }
 
       return {
-        answer: `CEO Saman, here is the real-time record check for "${query}":\n• ${suppliers.length} Authorized B2B Suppliers active\n• ${supplierPrices.length} Internal Rate Sheets monitored\n• ${b2bPortals.length} Secured B2B Portals registered\n• ${priceAlerts.filter(a => a.status === 'Pending').length} Price Alerts awaiting CEO review\n• Outstanding unpaid invoice balance: PKR 50,000 (Invoice SB-INV-2026-042 - Kamran Siddiqui).`,
+        answer: `Director Urwa Ali, here is the real-time record check for "${query}":\n• ${suppliers.length} Authorized B2B Suppliers active\n• ${supplierPrices.length} Internal Rate Sheets monitored\n• ${b2bPortals.length} Secured B2B Portals registered\n• ${priceAlerts.filter(a => a.status === 'Pending').length} Price Alerts awaiting CEO review\n• Outstanding unpaid invoice balance: PKR 50,000 (Invoice SB-INV-2026-042 - Kamran Siddiqui).`,
         source: 'SkyBridge Local Intelligence Core'
       };
     }

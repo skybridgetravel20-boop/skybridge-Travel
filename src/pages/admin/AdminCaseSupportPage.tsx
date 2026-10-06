@@ -171,7 +171,7 @@ export const AdminCaseSupportPage: React.FC = () => {
       case 'flight':
         return `Hello, ${namePrefix}this is SkyBridge Travel & Tourism Worldwide Flight Operations. We have flagged your flight status for immediate re-issue/rerouting assistance. Please confirm your booking reference.`;
       case 'vip':
-        return `Assalam o Alaikum ${namePrefix}Greetings from Saman, CEO of SkyBridge Travel & Tourism. I am personally monitoring your worldwide travel arrangements. Please let me know how we may assist you right now.`;
+        return `Assalam o Alaikum ${namePrefix}Greetings from Urwa Ali, Director of SkyBridge Travel & Tourism. I am personally monitoring your worldwide travel arrangements. Please let me know how we may assist you right now.`;
       case 'custom':
       default:
         return customMessage || `Hello ${namePrefix}from SkyBridge Travel & Tourism Worldwide Case Support.`;
@@ -309,7 +309,7 @@ export const AdminCaseSupportPage: React.FC = () => {
             Direct WhatsApp & Worldwide Case Support
           </h1>
           <p className="text-xs text-slate-300 max-w-2xl">
-            Executive priority terminal for CEO Saman. Completely private from public visitors. Coordinates UAE & worldwide client escalations, emergency support, and direct VIP communication.
+            Executive priority terminal for Director Urwa Ali. Completely private from public visitors. Coordinates UAE & worldwide client escalations, emergency support, and direct VIP communication.
           </p>
         </div>
 

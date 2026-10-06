@@ -17,6 +17,7 @@ import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
 import { useLanguage } from '../context/LanguageContext';
 import { LanguageSelector } from './LanguageSelector';
 import { SkyBridgeLogo } from './SkyBridgeLogo';
+import { WhatsAppIcon } from './WhatsAppIcon';
 
 export const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -268,7 +269,7 @@ export const Header: React.FC = () => {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#4FC3F7] hover:bg-[#38b7ee] text-[#0B1B3B] font-bold text-xs shadow-sm hover:shadow-md transition-all transform active:scale-95"
               >
-                <MessageCircle className="w-4 h-4 fill-[#0B1B3B] stroke-none" />
+                <WhatsAppIcon className="w-4 h-4 fill-[#0B1B3B]" />
                 <span>{t('whatsAppUs')}</span>
               </a>
             </div>
@@ -283,7 +284,7 @@ export const Header: React.FC = () => {
                 aria-label="Message SkyBridge Travel & Tourism on WhatsApp"
                 title="Message SkyBridge Travel & Tourism on WhatsApp"
               >
-                <MessageCircle className="w-4 h-4 fill-[#0B1B3B] stroke-none" />
+                <WhatsAppIcon className="w-4 h-4 fill-[#0B1B3B]" />
               </a>
 
               <button
@@ -414,7 +415,7 @@ export const Header: React.FC = () => {
                   rel="noopener noreferrer"
                   className="w-full flex items-center justify-center gap-2 py-3 px-2 rounded-xl bg-[#4FC3F7] text-[#0B1B3B] font-bold text-xs text-center shadow-sm"
                 >
-                  <MessageCircle className="w-4 h-4 fill-[#0B1B3B] stroke-none shrink-0" />
+                  <WhatsAppIcon className="w-4 h-4 fill-[#0B1B3B] shrink-0" />
                   <span>Message SkyBridge Travel & Tourism on WhatsApp</span>
                 </a>
               </div>

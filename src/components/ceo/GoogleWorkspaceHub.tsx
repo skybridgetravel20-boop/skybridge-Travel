@@ -49,7 +49,7 @@ export const GoogleWorkspaceHub: React.FC = () => {
   const [chatMessages, setChatMessages] = useState([
     { id: '1', sender: 'Operations Bot', time: '10:14 AM', text: 'System notification: Kamran Siddiqui Schengen dossier uploaded to Google Drive folder.' },
     { id: '2', sender: 'Bilal Khan (Visa Officer)', time: '11:30 AM', text: 'Approved insurance policy attached for German Schengen applicant.' },
-    { id: '3', sender: 'CEO Saman', time: '11:45 AM', text: 'Please ensure Gerrys interview documents checklist is dispatched today.' }
+    { id: '3', sender: 'Director Urwa Ali', time: '11:45 AM', text: 'Please ensure Gerrys interview documents checklist is dispatched today.' }
   ]);
 
   // Tasks state
@@ -71,8 +71,43 @@ export const GoogleWorkspaceHub: React.FC = () => {
   };
 
   // Export to Google Sheets
-  const handleExportSheets = (type: 'bookings' | 'leads' | 'invoices') => {
-    if (type === 'bookings') {
+  const handleExportSheets = (type: 'bookings' | 'leads' | 'invoices' | 'enquiries') => {
+    if (type === 'enquiries') {
+      // Strictly matching Section 8 Google Sheets Enquiries specification
+      const headers = [
+        'Lead ID',
+        'Date/Time',
+        'Name',
+        'Email',
+        'Phone',
+        'WhatsApp',
+        'Service',
+        'Destination',
+        'Travel Date',
+        'Visa Category',
+        'Pax',
+        'Message',
+        'Source',
+        'Status'
+      ];
+      const rows = leads.map(l => [
+        l.id || 'Not provided',
+        l.createdAt ? new Date(l.createdAt).toLocaleString('en-GB') : 'Not provided',
+        l.fullName || l.name || 'Not provided',
+        l.email || 'Not provided',
+        l.phone || 'Not provided',
+        l.whatsApp || l.phone || 'Not provided',
+        l.service || l.serviceType || 'Not provided',
+        l.destination || 'Not provided',
+        l.travelDate || l.travelDates || 'Not provided',
+        (l as any).visaCategory || (l.service && l.service.toLowerCase().includes('visa') ? l.service : 'Not provided'),
+        l.passengers || (l as any).pax || 1,
+        l.notes || (l as any).message || 'Not provided',
+        l.source || 'Website',
+        l.status || 'New'
+      ]);
+      downloadCrmDataAsSheet('SkyBridge_Customer_Enquiries_Register_2026', headers, rows);
+    } else if (type === 'bookings') {
       const headers = ['Booking ID', 'Customer Name', 'Service', 'Destination', 'Total Amount (PKR)', 'Status', 'Date'];
       const rows = bookings.map(b => [b.id, b.leadName || 'Client', b.serviceType || 'Travel', b.destination || 'Global', b.totalAmount || 0, b.status || 'Confirmed', b.bookingDate || '']);
       downloadCrmDataAsSheet('SkyBridge_GoogleSheets_Bookings_Sync', headers, rows);
@@ -82,7 +117,7 @@ export const GoogleWorkspaceHub: React.FC = () => {
       downloadCrmDataAsSheet('SkyBridge_GoogleSheets_Financial_Ledger', headers, rows);
     } else {
       const headers = ['Lead ID', 'Name', 'Destination', 'Service', 'Estimated Value', 'Status', 'Phone'];
-      const rows = leads.map(l => [l.id, l.name, l.destination, l.serviceType, l.estimatedBudget || 0, l.status, l.phone]);
+      const rows = leads.map(l => [l.id, l.name || l.fullName, l.destination, l.serviceType || l.service, l.estimatedBudget || 0, l.status, l.phone]);
       downloadCrmDataAsSheet('SkyBridge_GoogleSheets_Leads_Pipeline', headers, rows);
     }
     setActionSuccess(`Spreadsheet data downloaded & synced for Google Sheets.`);
@@ -94,7 +129,7 @@ export const GoogleWorkspaceHub: React.FC = () => {
     if (!chatMessage.trim()) return;
     setChatMessages(prev => [
       ...prev,
-      { id: Date.now().toString(), sender: 'CEO Saman', time: 'Just now', text: chatMessage }
+      { id: Date.now().toString(), sender: 'Director Urwa Ali', time: 'Just now', text: chatMessage }
     ]);
     setChatMessage('');
   };
@@ -202,6 +237,13 @@ export const GoogleWorkspaceHub: React.FC = () => {
               </div>
 
               <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => handleExportSheets('enquiries')}
+                  className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-md shadow-emerald-600/25"
+                  title="Export complete enquiries register with 14 verified columns (no undefined values)"
+                >
+                  <Download className="w-3.5 h-3.5" /> Export Enquiries Sheet (14 Fields)
+                </button>
                 <button
                   onClick={() => handleExportSheets('bookings')}
                   className="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 text-xs font-medium flex items-center gap-1.5 cursor-pointer"
@@ -513,7 +555,7 @@ export const GoogleWorkspaceHub: React.FC = () => {
                   <CheckSquare className="w-5 h-5 text-teal-400" /> Google Tasks Executive Action List
                 </h3>
                 <p className="text-slate-400 text-xs mt-0.5">
-                  Synchronized with CEO Saman’s Google Tasks account on mobile and desktop.
+                  Synchronized with Director Urwa Ali’s Google Tasks account on mobile and desktop.
                 </p>
               </div>
             </div>

@@ -59,12 +59,13 @@ const STORAGE_KEY_DISPATCHED = 'skybridge_ceo_dispatched_emails';
 // Contact constants strictly matching official business details:
 // Pakistan numbers only (no UAE numbers in customer-facing emails), official domain, and official WhatsApp URL
 const CONTACT_PAKISTAN_1 = '+92 324 4444167';
-const CONTACT_PAKISTAN_2 = '0345 4444167';
+const CONTACT_PAKISTAN_2 = '+92 345 4444167';
 const CONTACT_EMAIL = 'info@skybridgetravelandtourism.com';
 const CONTACT_WHATSAPP_URL = 'https://wa.me/923454444167';
-const CONTACT_WEBSITE_URL = 'https://skybridgetravelandtourism.com';
+const CONTACT_WEBSITE_URL = 'skybridgetravelandtourism.com';
+const PAKISTAN_OFFICE_ADDRESS = 'House No 05, Gulshan Street, Nadeem Town, Multan Road, Lahore, Pakistan';
 
-const OFFICIAL_EMAIL_SIGNATURE = `Warm regards,\n\nSkyBridge Travel & Tourism\n\nPhone:\n${CONTACT_PAKISTAN_1}\n${CONTACT_PAKISTAN_2}\n\nEmail:\n${CONTACT_EMAIL}\n\nWhatsApp:\n${CONTACT_WHATSAPP_URL}\n\nMessage SkyBridge Travel & Tourism on WhatsApp\n\nWebsite:\n${CONTACT_WEBSITE_URL}`;
+const OFFICIAL_EMAIL_SIGNATURE = `Best regards,\n\nUrwa Ali\nDirector, Skybridge Travel and Tourism\n\nContact Info:\nPhone: ${CONTACT_PAKISTAN_1} | ${CONTACT_PAKISTAN_2}\nEmail: ${CONTACT_EMAIL}\nWebsite: ${CONTACT_WEBSITE_URL}\n\nPakistan Office:\n${PAKISTAN_OFFICE_ADDRESS}`;
 
 export const GmailExecutiveDispatch: React.FC = () => {
   const {
@@ -693,7 +694,21 @@ ${OFFICIAL_EMAIL_SIGNATURE}`;
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setEmailTo('info@skybridgetravelandtourism.com');
+              setCustomerName('SkyBridge Operations Desk');
+              setEmailSubject('SkyBridge Travel & Tourism — Executive Signature Verification Test');
+              setEmailBody(`Dear Operations Desk,\n\nThis is an official verification test of the SkyBridge Travel & Tourism executive email dispatch system.\n\nAll customer-facing communications, case notifications, quotations, and official notices are configured with the official Director signature below.\n\n${OFFICIAL_EMAIL_SIGNATURE}`);
+            }}
+            className="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            title="Load Section 19 Verification Test Email to info@skybridgetravelandtourism.com"
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Test Signature (Urwa Ali)
+          </button>
+
           <button
             type="button"
             onClick={() => {
@@ -712,7 +727,7 @@ ${OFFICIAL_EMAIL_SIGNATURE}`;
             rel="noreferrer"
             className="px-3.5 py-1.5 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/40 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
           >
-            <ExternalLink className="w-3.5 h-3.5" /> Launch Blank in Gmail
+            <ExternalLink className="w-3.5 h-3.5" /> Launch in Gmail
           </a>
         </div>
       </div>
@@ -1015,53 +1030,48 @@ ${OFFICIAL_EMAIL_SIGNATURE}`;
                   {emailBody}
                 </div>
 
-                {/* Standard Customer Email Contact Details Card (Pakistan office numbers + WhatsApp) */}
+                {/* Standard Customer Email Signature Card */}
                 <div className="mt-4 pt-4 border-t border-slate-200 bg-slate-50 p-3.5 rounded-xl space-y-2">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#0B1B3B]">
-                    Official Customer Contact
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-bold text-[#0B1B3B]">Urwa Ali</div>
+                      <div className="text-[10px] text-slate-500 font-semibold">Director, Skybridge Travel and Tourism</div>
+                    </div>
+                    <span className="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                      Official Signature
+                    </span>
                   </div>
 
-                  <div className="text-[11px] text-slate-600 space-y-1.5">
+                  <div className="text-[11px] text-slate-600 space-y-1.5 pt-1 border-t border-slate-200">
                     <div>
-                      <span className="font-semibold text-slate-700">Phone:</span>
-                      <div className="font-mono text-slate-900 font-bold ml-1">
-                        {CONTACT_PAKISTAN_1}
-                      </div>
-                      <div className="font-mono text-slate-900 font-bold ml-1">
-                        {CONTACT_PAKISTAN_2}
-                      </div>
+                      <span className="font-semibold text-slate-700">Phone:</span>{' '}
+                      <span className="font-mono text-slate-900 font-medium">
+                        <a href={`tel:${CONTACT_PAKISTAN_1.replace(/\s+/g, '')}`} className="hover:underline">{CONTACT_PAKISTAN_1}</a>
+                        {' | '}
+                        <a href={`tel:${CONTACT_PAKISTAN_2.replace(/\s+/g, '')}`} className="hover:underline">{CONTACT_PAKISTAN_2}</a>
+                      </span>
                     </div>
 
                     <div>
                       <span className="font-semibold text-slate-700">Email:</span>{' '}
-                      <span className="font-mono text-slate-900 font-medium">{CONTACT_EMAIL}</span>
-                    </div>
-
-                    <div>
-                      <span className="font-semibold text-slate-700">WhatsApp:</span>{' '}
-                      <a
-                        href={CONTACT_WHATSAPP_URL}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-emerald-700 font-semibold underline ml-1"
-                      >
-                        wa.me/923454444167
-                      </a>
-                      <div className="text-[10px] text-emerald-800 font-semibold mt-0.5">
-                        Message SkyBridge Travel & Tourism on WhatsApp
-                      </div>
+                      <a href={`mailto:${CONTACT_EMAIL}`} className="font-mono text-sky-700 font-medium hover:underline">{CONTACT_EMAIL}</a>
                     </div>
 
                     <div>
                       <span className="font-semibold text-slate-700">Website:</span>{' '}
                       <a
-                        href={CONTACT_WEBSITE_URL}
+                        href={`https://${CONTACT_WEBSITE_URL}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-sky-700 font-semibold underline ml-1"
+                        className="text-sky-700 font-semibold underline font-mono"
                       >
-                        skybridgetravelandtourism.com
+                        {CONTACT_WEBSITE_URL}
                       </a>
+                    </div>
+
+                    <div className="pt-1 text-[10px] text-slate-500">
+                      <strong className="text-slate-700">Pakistan Office:</strong><br />
+                      {PAKISTAN_OFFICE_ADDRESS}
                     </div>
                   </div>
                 </div>

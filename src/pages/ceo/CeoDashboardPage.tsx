@@ -89,7 +89,7 @@ export const CeoDashboardPage: React.FC = () => {
               <div className="flex items-center gap-2">
                 <h1 className="text-base font-bold text-white tracking-tight">CEO Executive Command Suite</h1>
                 <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-bold uppercase tracking-wider">
-                  Saman (CEO)
+                  Urwa Ali (Director)
                 </span>
               </div>
               <p className="text-[11px] text-slate-400">

@@ -41,11 +41,26 @@ export function createGmailComposeUrl(params: {
   return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(params.to)}&su=${encodeURIComponent(params.subject)}&body=${encodeURIComponent(params.body)}`;
 }
 
-// Helper to export CSV/Sheets format
-export function downloadCrmDataAsSheet(filename: string, headers: string[], rows: (string | number)[][]) {
+// Helper to sanitize Google Sheets cell value strictly per Section 8 guidelines:
+// Fix existing problems where fields show "undefined". If information was not supplied: "Not provided".
+export function cleanSheetValue(val: any): string {
+  if (
+    val === undefined ||
+    val === null ||
+    val === 'undefined' ||
+    val === 'null' ||
+    (typeof val === 'string' && val.trim() === '')
+  ) {
+    return 'Not provided';
+  }
+  return String(val);
+}
+
+// Helper to export CSV/Sheets format ensuring all undefined/null values are replaced with 'Not provided'
+export function downloadCrmDataAsSheet(filename: string, headers: string[], rows: any[][]) {
   const csvContent = [
-    headers.join(','),
-    ...rows.map(row => row.map(val => `"${String(val).replace(/"/g, '""')}"`).join(','))
+    headers.map(h => `"${cleanSheetValue(h).replace(/"/g, '""')}"`).join(','),
+    ...rows.map(row => row.map(val => `"${cleanSheetValue(val).replace(/"/g, '""')}"`).join(','))
   ].join('\n');
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

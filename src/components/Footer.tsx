@@ -8,13 +8,14 @@ import {
   ShieldCheck,
   Instagram,
   Facebook,
-  MessageCircle,
   Radio,
   ArrowRight,
-  Globe
+  Globe,
+  Lock
 } from 'lucide-react';
 import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
 import { SkyBridgeLogo } from './SkyBridgeLogo';
+import { WhatsAppIcon } from './WhatsAppIcon';
 
 export const Footer: React.FC = () => {
   return (
@@ -55,9 +56,9 @@ export const Footer: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Official WhatsApp Chat"
-                className="w-9 h-9 rounded-xl bg-white/5 hover:bg-[#4FC3F7] hover:text-[#0B1B3B] text-slate-300 flex items-center justify-center transition-colors"
+                className="w-9 h-9 rounded-xl bg-white/5 hover:bg-[#25D366] hover:text-white text-[#25D366] flex items-center justify-center transition-colors shadow-xs"
               >
-                <MessageCircle className="w-4 h-4" />
+                <WhatsAppIcon className="w-4 h-4 fill-current" />
               </a>
               <a
                 href={COMPANY_INFO.officialWhatsAppChannelUrl}
@@ -223,9 +224,9 @@ export const Footer: React.FC = () => {
                   href={getWhatsAppLink()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#4FC3F7]/15 hover:bg-[#4FC3F7] text-[#4FC3F7] hover:text-[#0B1B3B] text-xs font-bold transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366] text-[#25D366] hover:text-white text-xs font-bold transition-all shadow-sm"
                 >
-                  <MessageCircle className="w-4 h-4" />
+                  <WhatsAppIcon className="w-4 h-4 fill-current shrink-0" />
                   <span>Message SkyBridge Travel & Tourism on WhatsApp</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </a>
@@ -255,10 +256,18 @@ export const Footer: React.FC = () => {
             </Link>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-5 sm:gap-6 flex-wrap">
             <span className="hover:text-slate-200 cursor-pointer">Terms of Service</span>
             <span className="hover:text-slate-200 cursor-pointer">Privacy Policy</span>
             <span className="hover:text-slate-200 cursor-pointer">Sitemap</span>
+            <Link
+              to="/admin/login"
+              className="text-slate-400 hover:text-[#4FC3F7] transition-colors flex items-center gap-1.5 font-medium"
+              title="Direct Private Login for Director & Staff"
+            >
+              <Lock className="w-3 h-3 text-[#4FC3F7]" />
+              <span>Director & Staff Portal</span>
+            </Link>
           </div>
         </div>
       </div>

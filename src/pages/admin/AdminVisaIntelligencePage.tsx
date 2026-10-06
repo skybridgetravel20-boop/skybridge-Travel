@@ -111,7 +111,7 @@ export const AdminVisaIntelligencePage: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] text-slate-400 block uppercase">Human In Loop</span>
-            <span className="font-bold text-[#4FC3F7]">Saman (CEO) Required</span>
+            <span className="font-bold text-[#4FC3F7]">Urwa Ali (Director) Required</span>
           </div>
           <div>
             <span className="text-[10px] text-slate-400 block uppercase">Last Executed</span>
@@ -268,7 +268,7 @@ export const AdminVisaIntelligencePage: React.FC = () => {
                     <div className="text-right text-xs">
                       <div className="flex items-center gap-1 text-emerald-700 font-bold">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                        <span>Approved by {item.approvedBy || 'Saman (CEO)'}</span>
+                        <span>Approved by {item.approvedBy || 'Urwa Ali (Director)'}</span>
                       </div>
                       <span className="text-[10px] text-slate-400">
                         Active in customer quotations

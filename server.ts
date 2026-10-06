@@ -83,7 +83,8 @@ async function startServer() {
     res.json({
       status: 'ok',
       service: 'SkyBridge Digital Operating System Backend',
-      ceo: 'Saman',
+      director: 'Urwa Ali',
+      ceo: 'Urwa Ali',
       timestamp: new Date().toISOString()
     });
   });
@@ -118,9 +119,9 @@ async function startServer() {
   });
 
   // 4. CEO Review & Approve Workflow
-  // CEO Saman is the final decision-maker before updates are applied
+  // Director / CEO Urwa Ali is the final decision-maker before updates are applied
   app.post('/api/visa-intelligence/approve', (req, res) => {
-    const { id, action, approvedBy = 'Saman (CEO)' } = req.body;
+    const { id, action, approvedBy = 'Urwa Ali (Director)' } = req.body;
     const target = officialVisaAlerts.find(a => a.id === id);
 
     if (!target) {
@@ -163,15 +164,15 @@ async function startServer() {
 
       if (ai) {
         const prompt = `You are the executive AI Travel Intelligence Agent for SkyBridge Travel & Tourism.
-The CEO is Saman. You assist CEO Saman in operating the business with precision.
+The Director / CEO is Urwa Ali. You assist Director Urwa Ali in operating the business with precision.
 You have direct access to the live agency database snapshot:
 
 ${databaseSnapshot ? JSON.stringify(databaseSnapshot, null, 2).slice(0, 4000) : 'Live operational data loaded.'}
 
-CEO Question: "${query}"
+Executive Question: "${query}"
 
 Guidelines:
-1. Address the CEO respectfully as Saman or CEO Saman.
+1. Address the Director respectfully as Urwa Ali or Director Urwa Ali.
 2. Provide direct, factual, data-driven answers based on the database.
 3. If reporting monetary figures or numbers, format cleanly in PKR or relevant currency.
 4. Give a concise executive summary followed by actionable next steps.
@@ -194,39 +195,39 @@ Guidelines:
       let answer = '';
 
       if (q.includes('europe') || q.includes('next month') || q.includes('travelling')) {
-        answer = `**CEO Saman - Europe Travel Summary (Next Month):**\n` +
+        answer = `**Director Urwa Ali - Europe Travel Summary (Next Month):**\n` +
           `• **Kamran Siddiqui** (Lead SB-2026-00001): 2 Passengers travelling to **France**, departure on **15 Oct 2026**. Status: Documents under vetting. Dossier balance: PKR 50,000.\n` +
           `• **Recommended Action**: Follow up with Bilal Khan regarding hotel confirmation vouchers for Paris.`;
       } else if (q.includes('unpaid') || q.includes('invoice') || q.includes('outstanding') || q.includes('payment')) {
-        answer = `**CEO Saman - Outstanding Payments & Unpaid Invoices:**\n` +
+        answer = `**Director Urwa Ali - Outstanding Payments & Unpaid Invoices:**\n` +
           `• **Invoice SB-INV-2026-042** (Kamran Siddiqui): Total PKR 130,000 | Paid: PKR 80,000 | **Balance Due: PKR 50,000** (Due: 20 Sep 2026).\n` +
           `• Total Receivables Pending: **PKR 50,000**.\n` +
           `• All other active bookings are fully settled or on confirmed milestone terms.`;
       } else if (q.includes('visa fee') || q.includes('visa news') || q.includes('changed this week')) {
-        answer = `**CEO Saman - Official Visa Intelligence Alerts:**\n` +
+        answer = `**Director Urwa Ali - Official Visa Intelligence Alerts:**\n` +
           `🔴 **Germany Schengen Short-Stay Visa**: Detected rate adjustment from PKR 26,500 to **PKR 29,500** (Auswärtiges Amt Official Gazette). Status: **Awaiting Your Approval**.\n` +
           `🔴 **UK Standard Visitor Visa**: Rate adjustment from PKR 42,000 to **PKR 45,500** (UKVI statutory instrument). Status: **Awaiting Your Approval**.\n` +
-          `• You can review and approve directly in the CEO Intelligence panel.`;
+          `• You can review and approve directly in the Executive Intelligence panel.`;
       } else if (q.includes('dubai') || q.includes('hotel') || q.includes('supplier')) {
-        answer = `**CEO Saman - B2B Hotel Rates (Dubai):**\n` +
+        answer = `**Director Urwa Ali - B2B Hotel Rates (Dubai):**\n` +
           `• **Best Supplier**: WebBeds Wholesale Hospitality (Code: WBD-HOTEL).\n` +
           `• **Contracted Rate**: Swissôtel Al Murooj Dubai @ **AED 520 / night** (Client Selling: AED 650, Margin: 25%).\n` +
           `• **Alternative**: Arabian Pacific DMC @ AED 545 with private airport transfer included.`;
       } else if (q.includes('sale') || q.includes('revenue') || q.includes('profit') || q.includes('how much')) {
-        answer = `**CEO Saman - Monthly Financial Performance:**\n` +
+        answer = `**Director Urwa Ali - Monthly Financial Performance:**\n` +
           `• **Total Gross Bookings**: PKR 1,675,000\n` +
           `• **Net Supplier Cost**: PKR 1,288,000\n` +
           `• **Estimated Gross Profit**: **PKR 387,000** (~23.1% average agency margin)\n` +
           `• **Collected Cash**: PKR 1,425,000\n` +
           `• Outstanding Receivables: PKR 50,000.`;
       } else if (q.includes('task') || q.includes('today')) {
-        answer = `**CEO Saman - Today's Priority Tasks:**\n` +
+        answer = `**Director Urwa Ali - Today's Priority Tasks:**\n` +
           `1. [High] Review Germany Schengen fee change detected by backend crawler.\n` +
           `2. [High] Verify flight booking confirmation for Dr. Tariq Mahmood (Dubai).\n` +
           `3. [Medium] Dispatch Allianz travel medical insurance policy for Schengen applicants.\n` +
           `4. [Medium] Assign new walk-in inquiry from Gulshan Street branch.`;
       } else {
-        answer = `**CEO Saman - SkyBridge Operational Briefing:**\n` +
+        answer = `**Director Urwa Ali - SkyBridge Operational Briefing:**\n` +
           `Database check complete for: "${query}".\n` +
           `• 5 Active Leads in Pipeline (2 High Priority)\n` +
           `• 2 Visa Intelligence Updates awaiting review\n` +
@@ -419,7 +420,7 @@ Provide a comprehensive, high-impact tactical report formatted in clean structur
    - High-ROI campaign structure for Visa & Umrah packages
    - Negative keywords to eliminate ad waste
    - High-converting ad copy and headlines
-4. **Immediate 7-Day Action Plan for CEO Saman**:
+4. **Immediate 7-Day Action Plan for Director Urwa Ali**:
    - Specific day-by-day executive steps to reach #1 on Google Maps.`;
 
         // Using gemini-3.8-flash with googleSearch tool for real-time market grounding
@@ -475,6 +476,155 @@ Provide a comprehensive, high-impact tactical report formatted in clean structur
       });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
+    }
+  });
+
+  // 8B. Dedicated Schengen Visa Intelligence AI Specialist Agent Endpoint
+  app.post('/api/schengen-agent/ask', async (req, res) => {
+    const { query, country, applicantProfile } = req.body;
+
+    if (!query || typeof query !== 'string') {
+      return res.status(400).json({ error: 'Query string is required' });
+    }
+
+    try {
+      const ai = getAi();
+      const profile = applicantProfile || {
+        nationality: 'Pakistani',
+        employmentStatus: 'Employed / Business',
+        familyTravel: false,
+        durationDays: 15
+      };
+
+      if (ai) {
+        const prompt = `You are SkyBridge Travel & Tourism's Senior Schengen Visa Intelligence Specialist Agent.
+Your Director / CEO is Urwa Ali.
+Your client/consultant query: "${query}"
+Specific Schengen Country of Interest: ${country || 'All Schengen Member States'}
+Applicant Profile: ${JSON.stringify(profile)}
+
+Your mission:
+Provide 100% authoritative, fact-checked, actionable consular intelligence for Schengen Visa (Type C Short-Stay Tourist/Business/Visit) applications for Pakistani passport holders (and UAE residents where relevant).
+
+Structure your response clearly with:
+1. 🛂 **Official Visa Application Procedure & Step-by-Step Path**:
+   - Exact portal where application must be completed (e.g., France-Visas, VIDEX for Germany, ApplyVisa for Denmark, etc.)
+   - Designated biometric submission partner in Pakistan (VFS Global / BLS International / TLScontact / Embassy Direct) and appointment booking procedure in Islamabad, Lahore, or Karachi.
+2. 💶 **Official Fees & Financial Requirements**:
+   - Official Statutory Visa Fee (€90 for adults, €45 for minors 6-12, free under 6; equivalent in PKR ~PKR 29,500).
+   - Mandatory appointment center service fee (approx PKR 9,500 - PKR 12,500).
+   - Recommended minimum bank closing balance and 6-month cash flow standards for successful approval (e.g., PKR 1,500,000 - 2,500,000).
+3. 🌐 **Official Portals & Direct Links**:
+   - Official Ministry / Embassy Portal URL
+   - Official Appointment Booking URL (VFS / BLS / TLS)
+4. 📄 **Comprehensive Mandatory Document Checklist**:
+   - Passport requirements, photo specifications, cover letter format
+   - Financial proofs (6-month stamped bank statement, account maintenance certificate)
+   - Professional proofs (NOC from employer / salary slips OR NTN, active taxpayer status, Chamber ID, tax returns)
+   - Family ties (NADRA FRC, MRC)
+   - Travel bookings (verifiable hotel reservations, roundtrip flight bookings, €30,000 compliant travel insurance)
+5. ⚠️ **Critical Rejection Pitfalls & SkyBridge Director Advice**:
+   - Common refusal grounds (Article 32 grounds: justification of purpose, doubts on return intent, financial insufficiency).
+   - Specific advice from Director Urwa Ali to secure guaranteed compliance.
+
+If the user asked in Urdu, provide a bilingual answer (Urdu explanation + English official checklist) or respond in fluent, professional Urdu so Director Urwa Ali can understand directly and forward to clients.`;
+
+        try {
+          const response = await ai.models.generateContent({
+            model: 'gemini-3.8-flash',
+            contents: prompt,
+            config: {
+              tools: [{ googleSearch: {} }]
+            }
+          });
+
+          if (response.text) {
+            return res.json({
+              success: true,
+              agentName: 'SkyBridge Schengen Visa Intelligence AI Agent',
+              query,
+              country: country || 'Schengen Area',
+              response: response.text,
+              officialFeeEur: 90,
+              officialFeePkr: 29500,
+              source: 'Gemini AI Consular Intelligence Engine (Google Search Grounded)',
+              timestamp: new Date().toISOString()
+            });
+          }
+        } catch (aiErr) {
+          console.warn('[SCHENGEN AGENT] AI quota or network notice, serving authoritative fallback:', aiErr);
+        }
+      }
+
+      // Authoritative fallback response if AI key is not available
+      const q = query.toLowerCase();
+      let targetedCountry = country || 'Germany / Schengen General';
+      let portalUrl = 'https://home-affairs.ec.europa.eu/policies/schengen-borders-and-visa/visa-policy_en';
+      let appointmentUrl = 'https://visa.vfsglobal.com/pak/en/deu';
+      let center = 'VFS Global (Islamabad, Lahore, Karachi)';
+
+      if (q.includes('france') || q.includes('فرانس')) {
+        targetedCountry = 'France';
+        portalUrl = 'https://france-visas.gouv.fr';
+        appointmentUrl = 'https://visa.vfsglobal.com/pak/en/fra';
+      } else if (q.includes('italy') || q.includes('اٹلی')) {
+        targetedCountry = 'Italy';
+        portalUrl = 'https://vistoperitalia.esteri.it';
+        appointmentUrl = 'https://visa.vfsglobal.com/pak/en/ita';
+      } else if (q.includes('spain') || q.includes('اسپین')) {
+        targetedCountry = 'Spain';
+        portalUrl = 'https://www.exteriores.gob.es';
+        appointmentUrl = 'https://pakistan.blsspainvisa.com';
+        center = 'BLS International (Islamabad, Lahore, Karachi)';
+      } else if (q.includes('switzerland') || q.includes('سوئٹزرلینڈ')) {
+        targetedCountry = 'Switzerland';
+        portalUrl = 'https://www.sem.admin.ch';
+        appointmentUrl = 'https://visa.vfsglobal.com/pak/en/che';
+      }
+
+      const fallbackIntelligence = `### 🇪🇺 SkyBridge Schengen Visa Intelligence Dossier: ${targetedCountry}
+
+#### 1. 🛂 آفیشل طریقہ کار (Official Visa Procedure):
+- **آن لائن رجسٹریشن**: سب سے پہلے آفیشل پورٹل پر جا کر ایپلیکیشن فارم بھریں اور بارکوڈ سلپ ڈاؤن لوڈ کریں۔
+- **بایومیٹرک اپائنٹمنٹ**: ${center} کے ذریعے اپائنٹمنٹ بک کریں اور اپنے تمام اصل دستاویزات جمع کروائیں۔
+- **پروسیسنگ ٹائم**: بایومیٹرک جمع کروانے کے بعد 15 سے 45 دن۔
+
+#### 2. 💶 آفیشل ویزا فیس (Official Visa Fees 2026):
+- **بڑوں کے لیے ویزا فیس**: **€90** (تقریباً **PKR 29,500**)
+- **بچوں کے لیے (6 سے 12 سال)**: **€45** (تقریباً **PKR 14,750**)
+- **6 سال سے کم بچے**: **مفت (€0)**
+- **VFS / BLS سروس فیس**: تقریباً **PKR 10,000 - 12,500**
+
+#### 3. 🌐 سرکاری ویب سائٹس (Official Portals):
+- **سرکاری ویزا پورٹل**: [${portalUrl}](${portalUrl})
+- **اپائنٹمنٹ بکنگ پورٹل**: [${appointmentUrl}](${appointmentUrl})
+
+#### 4. 📄 لازمی دستاویزات (Required Documents Checklist):
+1. **اصل پاسپورٹ**: کم از کم 3 ماہ کی مدت واپسی کی تاریخ کے بعد اور 2 خالی صفحات۔
+2. **دو عدد بایومیٹرک تصاویر**: 35x45mm، سفید/ہلکا گرے بیک گراؤنڈ۔
+3. **بینک اسٹیٹمنٹ (6 ماہ)**: بینک مینیجر کے دستخط و مہر کے ساتھ، کم از کم بیلنس 15 سے 25 لاکھ روپے تجویز کیا جاتا ہے۔
+4. **اکاؤنٹ مینٹیننس سرٹیفکیٹ (AMC)**۔
+5. **ملازمت کا لیٹر (NOC)** / 3 ماہ کی تنخواہ کی پرچیاں (تنخواہ دار طبقے کے لیے)۔
+6. **بزنس ڈاکومنٹس**: NTN، ٹیکس گوشوارے (3 سال)، چیمبر آف کامرس سرٹیفکیٹ (کاروباری حضرات کے لیے)۔
+7. **نادرا فیملی رجسٹریشن سرٹیفکیٹ (FRC)**۔
+8. **شینگن ٹریول میڈیکل انشورنس**: کم از کم €30,000 کوریج۔
+9. **کنفرم ہوٹل بکنگ اور ریٹرن فلائٹ ریزرویشن**۔
+10. **کور لیٹر اور تفصیلی ٹریول پلان (Day-by-Day Itinerary)**۔`;
+
+      return res.json({
+        success: true,
+        agentName: 'SkyBridge Schengen Visa Intelligence AI Agent',
+        query,
+        country: targetedCountry,
+        response: fallbackIntelligence,
+        officialFeeEur: 90,
+        officialFeePkr: 29500,
+        source: 'SkyBridge Schengen Intelligence Database Core',
+        timestamp: new Date().toISOString()
+      });
+    } catch (err: any) {
+      console.error('Schengen Agent error:', err);
+      res.status(500).json({ error: err.message || 'Error processing Schengen query' });
     }
   });
 

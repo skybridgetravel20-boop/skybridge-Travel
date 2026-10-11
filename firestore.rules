@@ -14,12 +14,17 @@ service cloud.firestore {
 
     // Leads: Public can submit inquiries with valid contact data; staff can read & manage
     match /leads/{leadId} {
-      allow create: if request.resource.data.fullName is string
-                    && request.resource.data.fullName.size() > 0
-                    && request.resource.data.fullName.size() <= 120
-                    && request.resource.data.email is string
-                    && request.resource.data.email.size() <= 120;
+      allow create: if isAuthenticated()
+                    || (request.resource.data.fullName is string
+                        && request.resource.data.fullName.size() > 0
+                        && request.resource.data.fullName.size() <= 120
+                        && (!('email' in request.resource.data) || request.resource.data.email is string));
       allow read, update, delete: if isAuthenticated();
+    }
+
+    // Discovered Leads (Lead Hunter AI): Authenticated staff access
+    match /discovered_leads/{leadId} {
+      allow read, write: if isAuthenticated();
     }
 
     // Customers: Authenticated staff access

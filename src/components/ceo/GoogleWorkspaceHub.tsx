@@ -39,6 +39,34 @@ export const GoogleWorkspaceHub: React.FC = () => {
   const [syncing, setSyncing] = useState(false);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
+  // Exact System Connectors state (persistable in localStorage)
+  const [exactDocUrl, setExactDocUrl] = useState(() => {
+    return localStorage.getItem('skybridge_ceo_google_doc_url') || 'https://docs.google.com/document/u/1/?usp=direct_web';
+  });
+  const [exactSheetUrl, setExactSheetUrl] = useState(() => {
+    return localStorage.getItem('skybridge_ceo_google_sheet_url') || 'https://docs.google.com/spreadsheets/u/1/';
+  });
+  const [exactTikTokUrl, setExactTikTokUrl] = useState(() => {
+    return localStorage.getItem('skybridge_ceo_tiktok_url') || 'https://www.tiktok.com/@skybridgetravel';
+  });
+  const [exactExcelUrl, setExactExcelUrl] = useState(() => {
+    return localStorage.getItem('skybridge_ceo_excel_url') || 'https://docs.google.com/spreadsheets/u/1/';
+  });
+  const [connectorSaved, setConnectorSaved] = useState(false);
+
+  const saveConnectors = () => {
+    localStorage.setItem('skybridge_ceo_google_doc_url', exactDocUrl);
+    localStorage.setItem('skybridge_ceo_google_sheet_url', exactSheetUrl);
+    localStorage.setItem('skybridge_ceo_tiktok_url', exactTikTokUrl);
+    localStorage.setItem('skybridge_ceo_excel_url', exactExcelUrl);
+    setConnectorSaved(true);
+    setActionSuccess('✅ System connectors updated and synchronized across SkyBridge!');
+    setTimeout(() => {
+      setConnectorSaved(false);
+      setActionSuccess(null);
+    }, 4000);
+  };
+
   // Calendar Event state
   const [calTitle, setCalTitle] = useState('SkyBridge VIP Embassy Visa Appointment');
   const [calLocation, setCalLocation] = useState('German Embassy VFS Center, Islamabad / Gerrys Lahore');
@@ -416,7 +444,11 @@ export const GoogleWorkspaceHub: React.FC = () => {
                       startDate: calDate,
                       endDate: '20261015T103000Z'
                     });
-                    window.open(url, '_blank');
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    link.click();
                   }}
                   className="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-cyan-600/20"
                 >
@@ -450,30 +482,147 @@ export const GoogleWorkspaceHub: React.FC = () => {
         {/* 5. GOOGLE DOCS */}
         {activeTab === 'docs' && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
                   <FileText className="w-5 h-5 text-indigo-400" /> Google Docs Proposal & Embassy Letter Generator
                 </h3>
                 <p className="text-slate-400 text-xs mt-0.5">
-                  Generate professional official cover letters, travel visa guarantees, and hotel booking contracts.
+                  Connected directly with your Google Workspace (/u/1/) account for info@skybridgetravelandtourism.com.
                 </p>
               </div>
-              <a
-                href="https://docs.google.com"
-                target="_blank"
-                rel="noreferrer"
-                className="px-3.5 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 text-xs font-medium flex items-center gap-1.5"
-              >
-                <ExternalLink className="w-3.5 h-3.5" /> Open Google Docs
-              </a>
+              <div className="flex items-center gap-2">
+                <a
+                  href={exactDocUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-600/20 cursor-pointer"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" /> Open My Exact Google Doc
+                </a>
+              </div>
             </div>
 
+            {/* Exact System Connector Panel */}
+            <div className="p-5 rounded-2xl bg-slate-900 border border-indigo-500/30 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+                  <Sparkles className="w-4 h-4 text-indigo-400" />
+                  <span>Exact System Connectors (Google Docs, TikTok, Excel & Social)</span>
+                </div>
+                <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono">
+                  Synced Across System
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Connect your exact document URLs and social media platforms. Whenever you click to open Google Docs, Sheets, or social channels from this dashboard, it opens your exact active files and accounts.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-400 mb-1 uppercase tracking-wider">
+                    My Google Doc URL (File or Workspace)
+                  </label>
+                  <input
+                    type="url"
+                    value={exactDocUrl}
+                    onChange={(e) => setExactDocUrl(e.target.value)}
+                    placeholder="https://docs.google.com/document/d/..."
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white font-mono text-[11px] focus:outline-none focus:border-indigo-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-400 mb-1 uppercase tracking-wider">
+                    My Central Google Sheet / Excel URL
+                  </label>
+                  <input
+                    type="url"
+                    value={exactSheetUrl}
+                    onChange={(e) => setExactSheetUrl(e.target.value)}
+                    placeholder="https://docs.google.com/spreadsheets/d/..."
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white font-mono text-[11px] focus:outline-none focus:border-indigo-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-400 mb-1 uppercase tracking-wider">
+                    My TikTok Account / Leads Webhook URL
+                  </label>
+                  <input
+                    type="text"
+                    value={exactTikTokUrl}
+                    onChange={(e) => setExactTikTokUrl(e.target.value)}
+                    placeholder="https://www.tiktok.com/@skybridgetravel"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white font-mono text-[11px] focus:outline-none focus:border-indigo-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-400 mb-1 uppercase tracking-wider">
+                    Additional Excel / Cloud Drive Folder Link
+                  </label>
+                  <input
+                    type="url"
+                    value={exactExcelUrl}
+                    onChange={(e) => setExactExcelUrl(e.target.value)}
+                    placeholder="https://drive.google.com/drive/folders/..."
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white font-mono text-[11px] focus:outline-none focus:border-indigo-400"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                <div className="text-[11px] text-slate-400">
+                  {connectorSaved ? (
+                    <span className="text-emerald-400 font-bold flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Connectors saved and linked!
+                    </span>
+                  ) : (
+                    <span>Links persist automatically in your browser storage.</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={exactDocUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" /> Test Open Doc
+                  </a>
+                  <button
+                    type="button"
+                    onClick={saveConnectors}
+                    className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Save Connectors
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Template Generator Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { title: 'Embassy Visa Cover Letter', type: 'Schengen / UK / US', desc: 'Formal introduction of applicant with day-by-day travel itinerary and financial guarantee.' },
-                { title: 'Traveler Sponsorship Declaration', type: 'Family / Business', desc: 'Notarized sponsorship guarantee format required by European and UK visa authorities.' },
-                { title: 'VIP Package Booking Contract', type: 'Honeymoon / Umrah', desc: 'Comprehensive terms, cancellation policies, and flight & hotel inclusions document.' }
+                {
+                  title: 'Embassy Visa Cover Letter',
+                  type: 'Schengen / UK / US',
+                  desc: 'Formal introduction of applicant with day-by-day travel itinerary and financial guarantee.',
+                  sample: `TO THE EMBASSY VISA SECTION,\nSubject: Application for Short-Stay Tourist Visa\n\nRespected Visa Officer,\nI am writing to formally submit my visa application for travel on behalf of SkyBridge Travel & Tourism client...\n\n1. Flight Reservations: Confirmed roundtrip\n2. Hotel Accommodations: Verified voucher attached\n3. Financial Means: 6-month certified bank statement\n\nSincerely,\nDirector Urwa Ali\nSkyBridge Travel & Tourism`
+                },
+                {
+                  title: 'Traveler Sponsorship Declaration',
+                  type: 'Family / Business',
+                  desc: 'Notarized sponsorship guarantee format required by European and UK visa authorities.',
+                  sample: `AFFIDAVIT OF FINANCIAL SPONSORSHIP & GUARANTEE\n\nI, the undersigned sponsor, do hereby declare and affirm that I will be financially responsible for all travel, boarding, lodging, and medical insurance expenses...\n\nSponsor National Tax Number (NTN): Provided\nRelationship to Applicant: First-degree\n\nVerified by SkyBridge Legal Documentation Desk`
+                },
+                {
+                  title: 'VIP Package Booking Contract',
+                  type: 'Honeymoon / Umrah',
+                  desc: 'Comprehensive terms, cancellation policies, and flight & hotel inclusions document.',
+                  sample: `SKYBRIDGE TRAVEL & TOURISM — VIP CLIENT BOOKING CONTRACT\n\nClient Name: VIP Traveler\nPackage: Luxury Umrah 14-Days / Clock Tower Makkah\nInclusions:\n- Direct return flights (PIA / Saudia)\n- 5-Star Makkah & Madinah hotels\n- Private GMC ground transfers\n\nSkyBridge Travel & Tourism (info@skybridgetravelandtourism.com)`
+                }
               ].map((doc, idx) => (
                 <div key={idx} className="p-4 rounded-xl border border-indigo-500/30 bg-indigo-500/5 flex flex-col justify-between">
                   <div>
@@ -483,15 +632,21 @@ export const GoogleWorkspaceHub: React.FC = () => {
                     <h4 className="text-sm font-bold text-white mt-2">{doc.title}</h4>
                     <p className="text-slate-400 text-xs mt-1">{doc.desc}</p>
                   </div>
-                  <button
-                    onClick={() => {
-                      setActionSuccess(`Created new Google Doc template for "${doc.title}".`);
-                      setTimeout(() => setActionSuccess(null), 3000);
-                    }}
-                    className="mt-4 py-2 px-3 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/40 text-indigo-200 border border-indigo-500/40 text-xs font-medium flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" /> Create in Google Docs
-                  </button>
+                  <div className="mt-4 flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(doc.sample);
+                        setActionSuccess(`Copied "${doc.title}" template to clipboard and launching Google Docs...`);
+                        setTimeout(() => {
+                          window.open('https://docs.google.com/document/u/1/create', '_blank');
+                          setActionSuccess(null);
+                        }, 800);
+                      }}
+                      className="flex-1 py-2 px-3 rounded-lg bg-indigo-600/40 hover:bg-indigo-600/60 text-white border border-indigo-500/50 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Create in Google Docs
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

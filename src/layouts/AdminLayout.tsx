@@ -40,8 +40,20 @@ import {
   UploadCloud,
   TrendingUp,
   Mail,
-  Compass
+  Compass,
+  Cpu,
+  GraduationCap,
+  Plane,
+  Hotel,
+  Tag,
+  Activity,
+  Globe,
+  Share2,
+  Megaphone,
+  ShieldCheck as ShieldCheckIcon
 } from 'lucide-react';
+import { BackendLiveCopilot } from '../components/admin/BackendLiveCopilot';
+import { openOfficialBusinessEmail, OFFICIAL_BUSINESS_EMAIL } from '../utils/businessEmail';
 
 export const AdminLayout: React.FC = () => {
   const { auth, logout, notifications, markNotificationRead, clearNotifications, clearDemoData, restoreDemoData, leads } = useCrm();
@@ -68,59 +80,71 @@ export const AdminLayout: React.FC = () => {
 
   const navGroups = [
     {
-      title: 'EXECUTIVE',
+      title: '1. EXECUTIVE COMMAND',
       items: [
-        { label: 'CEO Dashboard', path: '/admin/dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
+        { label: 'CEO Executive Suite', path: '/ceo', icon: <ShieldCheckIcon className="w-4 h-4 text-amber-400" /> },
+        { label: 'CEO Overview', path: '/admin/dashboard', icon: <LayoutDashboard className="w-4 h-4 text-amber-500" /> },
+        { label: 'AI Agent Control Centre', path: '/admin/ai-agents', icon: <Cpu className="w-4 h-4 text-indigo-500" /> },
+        { label: 'Intelligence Hub (Decrees)', path: '/admin/intelligence-hub', icon: <ShieldAlert className="w-4 h-4 text-sky-500" /> },
+        { label: 'Reports & Commercial Intelligence', path: '/admin/reports', icon: <FileSpreadsheet className="w-4 h-4 text-blue-500" /> },
+        { label: 'Notifications & Alerts', path: '/admin/notifications', icon: <Bell className="w-4 h-4 text-amber-500" /> },
       ]
     },
     {
-      title: 'LEADS & PIPELINE',
+      title: '2. INTELLIGENCE & RESEARCH',
       items: [
-        { label: 'Leads Pipeline', path: '/admin/leads', icon: <Users className="w-4 h-4" /> },
-        { label: 'Customers', path: '/admin/customers', icon: <Briefcase className="w-4 h-4" /> },
-        { label: 'Cases & Documents', path: '/admin/cases', icon: <Stamp className="w-4 h-4" /> },
+        { label: 'Visa Intelligence AI Agent', path: '/admin/schengen-agent', icon: <Compass className="w-4 h-4 text-cyan-500" /> },
+        { label: 'Manpower & Recruitment Agent', path: '/admin/manpower-agent', icon: <Briefcase className="w-4 h-4 text-emerald-500" /> },
+        { label: 'Scholarship Intelligence', path: '/admin/scholarships', icon: <GraduationCap className="w-4 h-4 text-teal-500" /> },
+        { label: 'Consular Tariff Updates', path: '/admin/visa-intelligence', icon: <Shield className="w-4 h-4 text-blue-500" /> },
       ]
     },
     {
-      title: 'B2B & SUPPLIERS',
+      title: '3. SUPPLIERS & WHOLESALE',
       items: [
-        { label: 'B2B Suppliers', path: '/admin/suppliers', icon: <Building2 className="w-4 h-4" /> },
-        { label: 'Portals & Vault', path: '/admin/supplier-portals', icon: <Key className="w-4 h-4" /> },
-        { label: 'Supplier Rate Sheets', path: '/admin/price-check', icon: <DollarSign className="w-4 h-4" /> },
-        { label: 'Price Comparison', path: '/admin/price-comparison', icon: <TrendingUp className="w-4 h-4" /> },
-        { label: 'Excel / CSV Import', path: '/admin/data-import', icon: <UploadCloud className="w-4 h-4" /> },
-        { label: 'Google Sheets Sync', path: '/admin/integrations/google-sheets', icon: <FileSpreadsheet className="w-4 h-4" /> },
+        { label: 'Supplier Master Directory', path: '/admin/suppliers', icon: <Building2 className="w-4 h-4 text-blue-600" /> },
+        { label: 'Flight Suppliers & FlyNow', path: '/admin/flight-suppliers', icon: <Plane className="w-4 h-4 text-sky-600" /> },
+        { label: 'Umrah Suppliers & DMC', path: '/admin/umrah-suppliers', icon: <Compass className="w-4 h-4 text-amber-600" /> },
+        { label: 'Hotel Suppliers & Bedbanks', path: '/admin/hotel-suppliers', icon: <Hotel className="w-4 h-4 text-purple-600" /> },
+        { label: 'Insurance Suppliers', path: '/admin/insurance-suppliers', icon: <Shield className="w-4 h-4 text-emerald-600" /> },
+        { label: 'Other Travel Suppliers', path: '/admin/other-suppliers', icon: <Layers className="w-4 h-4 text-slate-600" /> },
+        { label: 'Portals Vault & Passwords', path: '/admin/supplier-portals', icon: <Key className="w-4 h-4 text-amber-600" /> },
+        { label: 'Supplier Rate Sheets', path: '/admin/price-check', icon: <DollarSign className="w-4 h-4 text-emerald-600" /> },
+        { label: 'Price & Margin Comparison', path: '/admin/price-comparison', icon: <TrendingUp className="w-4 h-4 text-indigo-600" /> },
       ]
     },
     {
-      title: 'PACKAGING & BILLING',
+      title: '4. CRM, LEADS & BILLING',
       items: [
-        { label: 'Package Builder & Quotes', path: '/admin/calculator', icon: <Calculator className="w-4 h-4" /> },
-        { label: 'Invoices & Billing', path: '/admin/invoices', icon: <FileText className="w-4 h-4" /> },
-        { label: 'Bookings & Payments', path: '/admin/bookings', icon: <CreditCard className="w-4 h-4" /> },
+        { label: 'Customers Database', path: '/admin/customers', icon: <Briefcase className="w-4 h-4 text-indigo-600" /> },
+        { label: 'Leads & CRM Pipeline', path: '/admin/leads', icon: <Users className="w-4 h-4 text-blue-600" /> },
+        { label: 'Quotations & Calculator', path: '/admin/calculator', icon: <Calculator className="w-4 h-4 text-emerald-600" /> },
+        { label: 'Bookings Management', path: '/admin/bookings', icon: <CreditCard className="w-4 h-4 text-indigo-600" /> },
+        { label: 'Payments & Reconciliation', path: '/admin/invoices', icon: <FileText className="w-4 h-4 text-amber-600" /> },
+        { label: 'Daily Operations & Follow-ups', path: '/admin/follow-ups', icon: <Calendar className="w-4 h-4 text-slate-600" /> },
+        { label: 'Tasks & Workflow', path: '/admin/tasks', icon: <CheckSquare className="w-4 h-4 text-slate-600" /> },
       ]
     },
     {
-      title: 'OPERATIONS & COMPLIANCE',
+      title: '5. GROWTH, SEO & SOCIAL MARKETING',
       items: [
-        { label: 'Daily Operations & Follow-ups', path: '/admin/follow-ups', icon: <Calendar className="w-4 h-4" /> },
-        { label: 'Tasks & Workflow', path: '/admin/tasks', icon: <CheckSquare className="w-4 h-4" /> },
-        { label: 'Visa Intelligence & Alerts', path: '/admin/visa-intelligence', icon: <ShieldAlert className="w-4 h-4" /> },
+        { label: 'SkyBridge Lead Hunter AI', path: '/admin/lead-hunter', icon: <Search className="w-4 h-4 text-blue-500" /> },
+        { label: 'Traffic Growth AI & SEO Audit', path: '/admin/traffic-growth', icon: <Globe className="w-4 h-4 text-emerald-500" /> },
+        { label: 'Social Media Growth Center', path: '/admin/social-media', icon: <Share2 className="w-4 h-4 text-purple-500" /> },
+        { label: 'Marketing Campaign Center', path: '/admin/campaigns', icon: <Megaphone className="w-4 h-4 text-amber-500" /> },
+        { label: 'Approved Website Offers', path: '/admin/website-offers', icon: <Tag className="w-4 h-4 text-rose-500" /> },
+        { label: 'Content Calendar & Social', path: '/admin/content-calendar', icon: <Calendar className="w-4 h-4 text-indigo-500" /> },
       ]
     },
     {
-      title: 'CEO EXCLUSIVE (RESTRICTED)',
+      title: '6. GOOGLE WORKSPACE & INTEGRATIONS',
       items: [
-        { label: 'Schengen Visa AI Agent', path: '/admin/schengen-agent', icon: <Compass className="w-4 h-4 text-cyan-400" /> },
-        { label: 'Gmail Executive Dispatch', path: '/admin/gmail-dispatch', icon: <Mail className="w-4 h-4 text-rose-400" /> },
-        { label: 'Direct WhatsApp & Worldwide Support', path: '/admin/case-support', icon: <Lock className="w-4 h-4 text-amber-400" /> },
-      ]
-    },
-    {
-      title: 'ANALYTICS & SETTINGS',
-      items: [
-        { label: 'Reports & Analytics', path: '/admin/reports', icon: <FileSpreadsheet className="w-4 h-4" /> },
-        { label: 'Google Sheets, Backups & Settings', path: '/admin/settings/backup', icon: <Database className="w-4 h-4" /> },
+        { label: 'Google Sheets 21-Tab Sync', path: '/admin/integrations/google-sheets', icon: <FileSpreadsheet className="w-4 h-4 text-emerald-600" /> },
+        { label: 'Google Drive Document Register', path: '/admin/document-register', icon: <FolderOpen className="w-4 h-4 text-indigo-600" /> },
+        { label: 'Integration Status Centre', path: '/admin/integration-status', icon: <Activity className="w-4 h-4 text-teal-600" /> },
+        { label: 'Operational Audit Logs', path: '/admin/audit-logs', icon: <ShieldCheckIcon className="w-4 h-4 text-slate-700" /> },
+        { label: 'Settings, Backup & Data', path: '/admin/settings/backup', icon: <Database className="w-4 h-4 text-slate-600" /> },
+        { label: 'Case Support & Worldwide Desk', path: '/admin/case-support', icon: <Lock className="w-4 h-4 text-amber-600" /> },
       ]
     }
   ];
@@ -370,6 +394,16 @@ export const AdminLayout: React.FC = () => {
                 )}
               </div>
 
+              {/* Official Business Email Launcher (info@skybridgetravelandtourism.com) */}
+              <button
+                onClick={(e) => openOfficialBusinessEmail({}, e)}
+                title={`Open Official Business Email (${OFFICIAL_BUSINESS_EMAIL}) in browser (Never Outlook)`}
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 text-xs font-semibold transition-colors border border-sky-200 shadow-sm"
+              >
+                <Mail className="w-3.5 h-3.5 text-sky-600" />
+                <span className="font-mono text-[11px]">info@</span>
+              </button>
+
               {/* Language Selector in Admin Header */}
               <div className="hidden sm:block">
                 <LanguageSelector variant="compact" />
@@ -392,6 +426,9 @@ export const AdminLayout: React.FC = () => {
           </main>
         </div>
       </div>
+
+      {/* Persistent Live AI Copilot (Gemini Assistant for Director Urwa Ali) */}
+      <BackendLiveCopilot />
     </div>
   );
 };

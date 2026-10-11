@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useCrm } from '../../context/CrmContext';
-import { LeadPriority, LeadStatus, ServiceType, Lead } from '../../types';
+import { LeadPriority, LeadStatus, ServiceType, Lead, LeadCategory } from '../../types';
 import { getWhatsAppLink } from '../../data/companyInfo';
+import { getOfficialBusinessEmailUrl, openOfficialBusinessEmail } from '../../utils/businessEmail';
 import {
   Users,
   Search,
@@ -17,7 +18,11 @@ import {
   Trash2,
   CheckCircle2,
   Calendar,
-  Sparkles
+  Sparkles,
+  Plane,
+  Building,
+  Tag,
+  Briefcase
 } from 'lucide-react';
 
 export const AdminLeadsPage: React.FC = () => {
@@ -27,6 +32,7 @@ export const AdminLeadsPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [statusFilter, setStatusFilter] = useState<string>('All');
+  const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [priorityFilter, setPriorityFilter] = useState<string>('All');
   const [serviceFilter, setServiceFilter] = useState<string>('All');
 
@@ -37,6 +43,7 @@ export const AdminLeadsPage: React.FC = () => {
     phone: '',
     email: '',
     service: 'Tourist Visa' as ServiceType,
+    leadCategory: 'Visa Documentation Customer' as LeadCategory,
     destination: '',
     priority: 'Medium' as LeadPriority,
     notes: '',
@@ -50,9 +57,33 @@ export const AdminLeadsPage: React.FC = () => {
     }
   }, [searchParams]);
 
+  const getLeadCategoryBadge = (category?: string) => {
+    switch (category) {
+      case 'Flight Booking Customer':
+        return { label: 'Flight Booking Customer', icon: '✈️', color: 'bg-sky-100 text-sky-800 border-sky-200' };
+      case 'Umrah Customer':
+        return { label: 'Umrah Customer', icon: '🕋', color: 'bg-amber-100 text-amber-850 border-amber-300 font-bold' };
+      case 'Hotel Booking Customer':
+        return { label: 'Hotel Booking Customer', icon: '🏨', color: 'bg-indigo-100 text-indigo-800 border-indigo-200' };
+      case 'Holiday Package Customer':
+        return { label: 'Holiday Package Customer', icon: '🏖️', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' };
+      case 'Visa Documentation Customer':
+        return { label: 'Visa Documentation Customer', icon: '🛂', color: 'bg-purple-100 text-purple-850 border-purple-300' };
+      case 'Travel Insurance Customer':
+        return { label: 'Travel Insurance Customer', icon: '🛡️', color: 'bg-teal-100 text-teal-800 border-teal-200' };
+      case 'Corporate Travel Customer':
+      case 'Corporate Travel Client':
+        return { label: 'Corporate Travel Client', icon: '🏢', color: 'bg-slate-200 text-slate-900 border-slate-300 font-bold' };
+      case 'Travel Agency Partner':
+        return { label: 'Travel Agency Partner', icon: '🤝', color: 'bg-blue-100 text-blue-800 border-blue-200' };
+      default:
+        return { label: category || 'Customer Lead', icon: '🏷️', color: 'bg-slate-100 text-slate-700 border-slate-200' };
+    }
+  };
+
   // Filtered Leads
   const filteredLeads = leads.filter(lead => {
-    // Search query matching Name, Phone, Email, Destination, ID, Service
+    // Search query matching Name, Phone, Email, Destination, ID, Service, Category
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       const matches =
@@ -62,11 +93,13 @@ export const AdminLeadsPage: React.FC = () => {
         (lead.email && lead.email.toLowerCase().includes(q)) ||
         (lead.destination && lead.destination.toLowerCase().includes(q)) ||
         lead.service.toLowerCase().includes(q) ||
+        (lead.leadCategory && lead.leadCategory.toLowerCase().includes(q)) ||
         lead.assignedStaff.toLowerCase().includes(q);
       if (!matches) return false;
     }
 
     if (statusFilter !== 'All' && lead.status !== statusFilter) return false;
+    if (categoryFilter !== 'All' && lead.leadCategory !== categoryFilter) return false;
     if (priorityFilter !== 'All' && lead.priority !== priorityFilter) return false;
     if (serviceFilter !== 'All' && lead.service !== serviceFilter) return false;
 
@@ -80,6 +113,7 @@ export const AdminLeadsPage: React.FC = () => {
       phone: formData.phone,
       email: formData.email,
       service: formData.service,
+      leadCategory: formData.leadCategory,
       destination: formData.destination || 'International Travel',
       priority: formData.priority,
       source: 'Direct Contact',
@@ -92,6 +126,7 @@ export const AdminLeadsPage: React.FC = () => {
       phone: '',
       email: '',
       service: 'Tourist Visa',
+      leadCategory: 'Visa Documentation Customer',
       destination: '',
       priority: 'Medium',
       notes: '',
@@ -204,6 +239,26 @@ export const AdminLeadsPage: React.FC = () => {
             <option value="Low">Low Priority</option>
           </select>
 
+          {/* Category filter */}
+          <select
+            value={categoryFilter}
+            onChange={e => setCategoryFilter(e.target.value)}
+            className="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#4FC3F7]"
+          >
+            <option value="All">All Categories</option>
+            <option value="Flight Booking Customer">✈️ Flight Booking Customer</option>
+            <option value="Umrah Customer">🕋 Umrah Customer</option>
+            <option value="Hotel Booking Customer">🏨 Hotel Booking Customer</option>
+            <option value="Holiday Package Customer">🏖️ Holiday Package Customer</option>
+            <option value="Visa Documentation Customer">🛂 Visa Documentation Customer</option>
+            <option value="Travel Insurance Customer">🛡️ Travel Insurance Customer</option>
+            <option value="Corporate Travel Client">🏢 Corporate Travel Client</option>
+            <option value="Travel Agency Partner">🤝 Travel Agency Partner</option>
+            <option value="Recruitment Agency Partner">💼 Recruitment Agency Partner</option>
+            <option value="Employer or Hiring Company">👥 Employer or Hiring Company</option>
+            <option value="Scholarship Opportunity">🎓 Scholarship Opportunity</option>
+          </select>
+
           {/* Service filter */}
           <select
             value={serviceFilter}
@@ -236,7 +291,8 @@ export const AdminLeadsPage: React.FC = () => {
                 <tr>
                   <th className="py-3 px-4">Lead ID</th>
                   <th className="py-3 px-4">Client Name</th>
-                  <th className="py-3 px-4">Phone / WhatsApp</th>
+                  <th className="py-3 px-4">Lead Category</th>
+                  <th className="py-3 px-4">Phone / Email</th>
                   <th className="py-3 px-4">Service & Destination</th>
                   <th className="py-3 px-4">Priority</th>
                   <th className="py-3 px-4">Status</th>
@@ -248,7 +304,7 @@ export const AdminLeadsPage: React.FC = () => {
               <tbody className="divide-y divide-slate-100 text-slate-700">
                 {filteredLeads.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="py-12 text-center text-slate-400">
+                    <td colSpan={10} className="py-12 text-center text-slate-400">
                       No leads match the specified criteria.
                     </td>
                   </tr>
@@ -269,6 +325,17 @@ export const AdminLeadsPage: React.FC = () => {
                         )}
                       </td>
                       <td className="py-3 px-4">
+                        {(() => {
+                          const badge = getLeadCategoryBadge(lead.leadCategory);
+                          return (
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border inline-flex items-center gap-1 ${badge.color}`}>
+                              <span>{badge.icon}</span>
+                              <span className="whitespace-nowrap">{badge.label}</span>
+                            </span>
+                          );
+                        })()}
+                      </td>
+                      <td className="py-3 px-4">
                         <div className="flex items-center gap-1.5">
                           <span>{lead.phone}</span>
                           <a
@@ -280,6 +347,29 @@ export const AdminLeadsPage: React.FC = () => {
                           >
                             <MessageCircle className="w-3.5 h-3.5" />
                           </a>
+                          {lead.email && (
+                            <a
+                              href={getOfficialBusinessEmailUrl({
+                                to: lead.email,
+                                subject: `SkyBridge Travel & Tourism — Travel Inquiry ${lead.id}`
+                              })}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) =>
+                                openOfficialBusinessEmail(
+                                  {
+                                    to: lead.email,
+                                    subject: `SkyBridge Travel & Tourism — Travel Inquiry ${lead.id}`
+                                  },
+                                  e
+                                )
+                              }
+                              className="text-sky-600 hover:text-sky-700 cursor-pointer"
+                              title="Compose email from official info@skybridgetravelandtourism.com account"
+                            >
+                              <Mail className="w-3.5 h-3.5" />
+                            </a>
+                          )}
                         </div>
                       </td>
                       <td className="py-3 px-4">
@@ -376,7 +466,17 @@ export const AdminLeadsPage: React.FC = () => {
                       </div>
 
                       <div className="font-bold text-slate-900 truncate">{lead.fullName}</div>
-                      <div className="text-[11px] text-slate-500 truncate">{lead.service}</div>
+                      <div className="flex items-center justify-between gap-1 text-[11px]">
+                        <span className="text-slate-500 truncate">{lead.service}</span>
+                        {lead.leadCategory && (() => {
+                          const badge = getLeadCategoryBadge(lead.leadCategory);
+                          return (
+                            <span className={`px-1.5 py-0.2 rounded text-[9px] font-bold border shrink-0 ${badge.color}`}>
+                              {badge.icon} {badge.label.replace(' Customer', '').replace(' Client', '')}
+                            </span>
+                          );
+                        })()}
+                      </div>
 
                       <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
                         <span className="font-mono text-[11px] font-semibold text-slate-700">
@@ -451,7 +551,15 @@ export const AdminLeadsPage: React.FC = () => {
                   <label className="block text-xs font-bold text-slate-700 mb-1">Service Type</label>
                   <select
                     value={formData.service}
-                    onChange={e => setFormData({ ...formData, service: e.target.value as ServiceType })}
+                    onChange={e => {
+                      const s = e.target.value as ServiceType;
+                      let defaultCat: LeadCategory = 'Visa Documentation Customer';
+                      if (s === 'Flight Booking') defaultCat = 'Flight Booking Customer';
+                      else if (s === 'Umrah Package') defaultCat = 'Umrah Customer';
+                      else if (s === 'Hotel Booking') defaultCat = 'Hotel Booking Customer';
+                      else if (s === 'Tour Package' || s === 'Honeymoon Package') defaultCat = 'Holiday Package Customer';
+                      setFormData({ ...formData, service: s, leadCategory: defaultCat });
+                    }}
                     className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#4FC3F7]"
                   >
                     <option value="Tourist Visa">Tourist Visa Assistance</option>
@@ -464,6 +572,28 @@ export const AdminLeadsPage: React.FC = () => {
                     <option value="Umrah Package">Umrah Package</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Lead Category */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Lead Categorization (Sales CRM)</label>
+                <select
+                  value={formData.leadCategory}
+                  onChange={e => setFormData({ ...formData, leadCategory: e.target.value as LeadCategory })}
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#4FC3F7] font-semibold text-slate-800"
+                >
+                  <option value="Flight Booking Customer">✈️ Flight Booking Customer</option>
+                  <option value="Umrah Customer">🕋 Umrah Customer</option>
+                  <option value="Hotel Booking Customer">🏨 Hotel Booking Customer</option>
+                  <option value="Holiday Package Customer">🏖️ Holiday Package Customer</option>
+                  <option value="Visa Documentation Customer">🛂 Visa Documentation Customer</option>
+                  <option value="Travel Insurance Customer">🛡️ Travel Insurance Customer</option>
+                  <option value="Corporate Travel Client">🏢 Corporate Travel Client</option>
+                  <option value="Travel Agency Partner">🤝 Travel Agency Partner</option>
+                  <option value="Recruitment Agency Partner">💼 Recruitment Agency Partner</option>
+                  <option value="Employer or Hiring Company">👥 Employer or Hiring Company</option>
+                  <option value="Scholarship Opportunity">🎓 Scholarship Opportunity</option>
+                </select>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

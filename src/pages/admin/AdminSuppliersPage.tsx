@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useCrm } from '../../context/CrmContext';
 import { Supplier, SupplierCategory } from '../../types';
+import { openOfficialBusinessEmail, getOfficialBusinessEmailUrl } from '../../utils/businessEmail';
 import {
   Building2,
   ExternalLink,
@@ -548,9 +549,12 @@ export const AdminSuppliersPage: React.FC = () => {
                             )}
                             {sup.email && (
                               <a
-                                href={`mailto:${sup.email}`}
-                                className="text-sky-600 hover:text-sky-700 p-1 rounded bg-sky-50 hover:bg-sky-100 transition-colors"
-                                title={sup.email}
+                                href={getOfficialBusinessEmailUrl({ to: sup.email })}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => openOfficialBusinessEmail({ to: sup.email }, e)}
+                                className="text-sky-600 hover:text-sky-700 p-1 rounded bg-sky-50 hover:bg-sky-100 transition-colors cursor-pointer"
+                                title={`Compose to ${sup.email} via official business email`}
                               >
                                 <Mail className="w-3 h-3" />
                               </a>
@@ -786,9 +790,12 @@ export const AdminSuppliersPage: React.FC = () => {
                     )}
                     {sup.email && (
                       <a
-                        href={`mailto:${sup.email}`}
-                        className="p-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-[#0288D1] transition-colors"
-                        title="Email"
+                        href={getOfficialBusinessEmailUrl({ to: sup.email })}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => openOfficialBusinessEmail({ to: sup.email }, e)}
+                        className="p-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-[#0288D1] transition-colors cursor-pointer"
+                        title={`Compose to ${sup.email} via official business email`}
                       >
                         <Mail className="w-3.5 h-3.5" />
                       </a>

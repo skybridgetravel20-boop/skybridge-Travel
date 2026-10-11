@@ -14,23 +14,64 @@
     },
     "leads": {
       "title": "Lead",
-      "description": "Customer inquiry and lead record",
+      "description": "Customer inquiry and lead record with sales CRM categorization and status tracking",
       "type": "object",
       "properties": {
         "fullName": { "type": "string", "maxLength": 120 },
         "email": { "type": "string", "format": "email", "maxLength": 120 },
         "phone": { "type": "string", "maxLength": 30 },
         "service": { "type": "string", "maxLength": 80 },
+        "leadCategory": {
+          "type": "string",
+          "description": "Sales CRM category: Flight Booking Customer, Umrah Customer, Hotel Booking Customer, Holiday Package Customer, Visa Documentation Customer, Travel Insurance Customer, Airport Transfer Customer, Corporate Travel Client, Overseas Recruitment Client, Scholarship Applicant, Travel Agency Partner, Employer / Business Partner, Other Enquiry",
+          "maxLength": 100
+        },
         "destination": { "type": "string", "maxLength": 80 },
         "source": { "type": "string", "maxLength": 50 },
-        "status": { "type": "string", "maxLength": 40 },
+        "status": {
+          "type": "string",
+          "description": "CRM lifecycle status: New, Contacted, Qualified, Proposal/Quotation Sent, In Negotiation, Won / Booking Confirmed, Lost, Follow-Up Scheduled, On Hold, Archived",
+          "maxLength": 60
+        },
         "priority": { "type": "string", "maxLength": 20 },
         "estimatedValue": { "type": "number" },
+        "companyName": { "type": "string", "maxLength": 120 },
+        "leadScore": { "type": "number" },
+        "verificationStatus": { "type": "string", "maxLength": 40 },
         "notes": { "type": "string", "maxLength": 2000 },
         "createdAt": { "type": "string", "format": "date-time" },
         "assignedStaffName": { "type": "string", "maxLength": 80 }
       },
       "required": ["fullName", "email", "service", "status"]
+    },
+    "discovered_leads": {
+      "title": "DiscoveredLead",
+      "description": "Leads discovered by SkyBridge Lead Hunter AI from permitted public platforms",
+      "type": "object",
+      "properties": {
+        "companyOrOrgName": { "type": "string", "maxLength": 150 },
+        "contactPerson": { "type": "string", "maxLength": 120 },
+        "businessEmail": { "type": "string", "format": "email", "maxLength": 120 },
+        "businessPhone": { "type": "string", "maxLength": 40 },
+        "website": { "type": "string", "maxLength": 255 },
+        "sourcePlatform": { "type": "string", "maxLength": 80 },
+        "sourceUrl": { "type": "string", "maxLength": 500 },
+        "country": { "type": "string", "maxLength": 80 },
+        "city": { "type": "string", "maxLength": 80 },
+        "leadCategory": { "type": "string", "maxLength": 100 },
+        "potentialServiceRequired": { "type": "string", "maxLength": 100 },
+        "estimatedBusinessValue": { "type": "number" },
+        "leadScore": { "type": "number" },
+        "verificationStatus": { "type": "string", "maxLength": 50 },
+        "consentStatus": { "type": "string", "maxLength": 50 },
+        "leadStatus": { "type": "string", "maxLength": 50 },
+        "assignedStaff": { "type": "string", "maxLength": 80 },
+        "followUpDate": { "type": "string", "maxLength": 40 },
+        "notes": { "type": "string", "maxLength": 2000 },
+        "nextRecommendedAction": { "type": "string", "maxLength": 500 },
+        "dateDiscovered": { "type": "string", "maxLength": 40 }
+      },
+      "required": ["companyOrOrgName", "leadCategory", "leadStatus"]
     },
     "customers": {
       "title": "Customer",
@@ -218,6 +259,10 @@
     "/leads/{leadId}": {
       "schema": "leads",
       "description": "Customer travel inquiries and quotation requests"
+    },
+    "/discovered_leads/{leadId}": {
+      "schema": "discovered_leads",
+      "description": "AI-discovered leads and qualification statuses"
     },
     "/customers/{customerId}": {
       "schema": "customers",

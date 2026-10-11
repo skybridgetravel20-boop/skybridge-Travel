@@ -6,6 +6,7 @@ import { useCrm } from '../context/CrmContext';
 import { ServiceType } from '../types';
 import { buildWhatsAppInquiryUrl, buildMailtoInquiryUrl } from '../services/inquiryNotificationService';
 import { WhatsAppIcon } from '../components/WhatsAppIcon';
+import { openOfficialBusinessEmail, getOfficialBusinessEmailUrl } from '../utils/businessEmail';
 import {
   Phone,
   Mail,
@@ -182,7 +183,14 @@ export const ContactPage: React.FC = () => {
                       Official Inquiries Email
                     </h3>
                     <p className="text-sm font-semibold text-[#0B1B3B] mt-0.5">
-                      <a href={`mailto:${COMPANY_INFO.email}`} className="hover:text-[#4FC3F7]">
+                      <a
+                        href={getOfficialBusinessEmailUrl({
+                          to: COMPANY_INFO.email,
+                          subject: 'Website Enquiry — SkyBridge Travel & Tourism'
+                        })}
+                        className="hover:text-[#4FC3F7]"
+                        title={`Send email to ${COMPANY_INFO.email}`}
+                      >
                         {COMPANY_INFO.email}
                       </a>
                     </p>
@@ -317,7 +325,14 @@ export const ContactPage: React.FC = () => {
                     <div className="space-y-1 text-slate-600">
                       <div className="flex items-center justify-between">
                         <span>Official Business Email:</span>
-                        <a href="mailto:info@skybridgetravelandtourism.com" className="font-semibold text-[#0B1B3B] hover:text-[#0288D1]">
+                        <a
+                          href={getOfficialBusinessEmailUrl({
+                            to: 'info@skybridgetravelandtourism.com',
+                            subject: 'Website Enquiry — SkyBridge Travel & Tourism'
+                          })}
+                          className="font-semibold text-[#0B1B3B] hover:text-[#0288D1]"
+                          title="Send email to info@skybridgetravelandtourism.com"
+                        >
                           info@skybridgetravelandtourism.com
                         </a>
                       </div>
@@ -369,10 +384,13 @@ export const ContactPage: React.FC = () => {
                         destination: formData.destination,
                         message: formData.message
                       })}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold border border-slate-200 transition-colors"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold border border-slate-200 transition-colors cursor-pointer"
+                      title="Open official email in browser"
                     >
                       <Mail className="w-4 h-4 text-slate-600" />
-                      <span>Send Email Copy</span>
+                      <span>Send Email Copy (info@)</span>
                     </a>
                     <button
                       onClick={() => {

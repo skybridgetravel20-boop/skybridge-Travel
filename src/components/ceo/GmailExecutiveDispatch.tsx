@@ -23,6 +23,7 @@ import {
 import { useCrm } from '../../context/CrmContext';
 import { createGmailComposeUrl } from '../../lib/googleWorkspace';
 import { SKYBRIDGE_OFFICIAL_LOGO } from '../../assets/logo';
+import { openOfficialBusinessEmail } from '../../utils/businessEmail';
 
 export type EmailPurpose =
   | 'CUSTOMER_NOTICE'
@@ -636,8 +637,12 @@ ${OFFICIAL_EMAIL_SIGNATURE}`;
       body: emailBody
     });
 
-    // 2. Open Gmail compose window
-    window.open(composeUrl, '_blank');
+    // 2. Open Official Business Gmail compose window (info@skybridgetravelandtourism.com)
+    openOfficialBusinessEmail({
+      to: emailTo,
+      subject: emailSubject,
+      body: emailBody
+    });
 
     // 3. Record email activity in CRM
     const newRecord: DispatchedEmailRecord = {
@@ -1054,7 +1059,15 @@ ${OFFICIAL_EMAIL_SIGNATURE}`;
 
                     <div>
                       <span className="font-semibold text-slate-700">Email:</span>{' '}
-                      <a href={`mailto:${CONTACT_EMAIL}`} className="font-mono text-sky-700 font-medium hover:underline">{CONTACT_EMAIL}</a>
+                      <a
+                        href="https://mail.google.com/mail/u/1/?fs=1&to=info@skybridgetravelandtourism.com&tf=cm"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono text-sky-700 font-medium hover:underline"
+                        title="Open in official Gmail /u/1/ web interface"
+                      >
+                        {CONTACT_EMAIL}
+                      </a>
                     </div>
 
                     <div>

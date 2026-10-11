@@ -1,5 +1,6 @@
 import { COMPANY_INFO } from '../data/companyInfo';
 import { Lead } from '../types';
+import { getOfficialBusinessEmailUrl, OFFICIAL_BUSINESS_EMAIL } from '../utils/businessEmail';
 
 export interface InquiryNotificationPayload {
   leadId?: string;
@@ -59,11 +60,12 @@ export function buildWhatsAppInquiryUrl(data: InquiryNotificationPayload): strin
 }
 
 /**
- * Builds the direct mailto: link to info@skybridgetravelandtourism.com
- * pre-filled with the inquiry form details strictly matching Section 9 specifications
+ * Builds the official browser email compose link to info@skybridgetravelandtourism.com
+ * pre-filled with the inquiry form details strictly matching Section 9 specifications.
+ * Opens directly in web browser (never triggers desktop Outlook).
  */
 export function buildMailtoInquiryUrl(data: InquiryNotificationPayload): string {
-  const subject = encodeURIComponent('SkyBridge Travel & Tourism — New Customer Enquiry');
+  const subject = 'SkyBridge Travel & Tourism — New Customer Enquiry';
   const submissionTime = data.createdAt || new Date().toLocaleString('en-GB', {
     day: 'numeric',
     month: 'short',
@@ -73,7 +75,7 @@ export function buildMailtoInquiryUrl(data: InquiryNotificationPayload): string 
     hour12: true
   });
 
-  const body = encodeURIComponent(
+  const body =
     `SkyBridge Travel & Tourism — New Customer Enquiry\n\n` +
     `CUSTOMER ENQUIRY DOSSIER:\n` +
     `• Lead ID: ${data.leadId || 'Web Enquiry'}\n` +
@@ -95,10 +97,13 @@ export function buildMailtoInquiryUrl(data: InquiryNotificationPayload): string 
     `Email: ${OFFICIAL_EMAIL}\n` +
     `Website: skybridgetravelandtourism.com\n\n` +
     `Pakistan Office:\n` +
-    `House No 05, Gulshan Street, Nadeem Town, Multan Road, Lahore, Pakistan`
-  );
+    `House No 05, Gulshan Street, Nadeem Town, Multan Road, Lahore, Pakistan`;
 
-  return `mailto:${OFFICIAL_EMAIL}?subject=${subject}&body=${body}`;
+  return getOfficialBusinessEmailUrl({
+    to: OFFICIAL_EMAIL,
+    subject,
+    body
+  });
 }
 
 /**

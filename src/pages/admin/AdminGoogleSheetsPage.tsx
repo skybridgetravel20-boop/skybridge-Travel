@@ -30,12 +30,30 @@ export const AdminGoogleSheetsPage: React.FC = () => {
     updateGoogleSheetConnection,
     deleteGoogleSheetConnection,
     syncGoogleSheet,
-    suppliers
+    suppliers,
+    googleSheets21Tabs,
+    syncGoogleSheetsTab,
+    syncAllGoogleSheetsTabs
   } = useCrm();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [syncSuccessMessage, setSyncSuccessMessage] = useState<string | null>(null);
+  const [isSyncingAll, setIsSyncingAll] = useState(false);
+
+  const handleSyncAllTabs = async () => {
+    setIsSyncingAll(true);
+    const res = await syncAllGoogleSheetsTabs();
+    setIsSyncingAll(false);
+    setSyncSuccessMessage(res.message);
+    setTimeout(() => setSyncSuccessMessage(null), 5000);
+  };
+
+  const handleSyncSingleTab = async (tabName: string) => {
+    const res = await syncGoogleSheetsTab(tabName);
+    setSyncSuccessMessage(res.message);
+    setTimeout(() => setSyncSuccessMessage(null), 4000);
+  };
 
   // New Connection Form
   const [formData, setFormData] = useState<Partial<GoogleSheetConnection>>({
@@ -121,6 +139,75 @@ export const AdminGoogleSheetsPage: React.FC = () => {
           <Plus className="w-4 h-4" />
           <span>Connect New Google Sheet</span>
         </button>
+      </div>
+
+      {/* 21 Official Operational Database Tabs Matrix */}
+      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-bold text-[#0B1B3B]">21 Official Operational Database Spreadsheet Tabs</h2>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#E8F5E9] text-[#2E7D32]">
+                Zero Duplicate Upsert
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
+              Maintained with frozen headers, validation dropdowns, timestamp tracking, and immutable audit trails.
+            </p>
+          </div>
+
+          <button
+            onClick={handleSyncAllTabs}
+            disabled={isSyncingAll}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0B1B3B] text-white text-xs font-bold hover:bg-[#4FC3F7] hover:text-[#0B1B3B] transition-colors cursor-pointer disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncingAll ? 'animate-spin' : ''}`} />
+            <span>{isSyncingAll ? 'Synchronizing All 21 Tabs...' : 'Sync All 21 Tabs Now'}</span>
+          </button>
+        </div>
+
+        {/* Affiliate Postponement Compliance Notice */}
+        <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+            <span><strong>Compliance Notice:</strong> Affiliate marketing sheets and tracking functionality are deliberately postponed as specified by CEO.</span>
+          </div>
+          <span className="text-[11px] font-semibold text-amber-800">Postponed by CEO</span>
+        </div>
+
+        {/* Tabs Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {googleSheets21Tabs.map((tab, idx) => (
+            <div
+              key={idx}
+              className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 transition-all flex flex-col justify-between space-y-2.5"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="font-mono font-bold text-xs text-[#0B1B3B]">{tab.tabName}</span>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                    {tab.lastSyncStatus}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-600 mt-1 line-clamp-2">
+                  {tab.description}
+                </p>
+              </div>
+
+              <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-[11px]">
+                <span className="text-slate-500 font-mono">
+                  Records: <strong>{tab.recordCount}</strong>
+                </span>
+                <button
+                  onClick={() => handleSyncSingleTab(tab.tabName)}
+                  className="px-2.5 py-1 rounded bg-white hover:bg-slate-100 text-[#0B1B3B] font-semibold border border-slate-200 text-[10px] transition-colors cursor-pointer"
+                >
+                  Sync Tab
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Connection Info Notice */}
@@ -273,11 +360,11 @@ export const AdminGoogleSheetsPage: React.FC = () => {
                       supplierName: sup?.companyName || sup?.name || ''
                     });
                   }}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
+                  className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7] font-medium"
                 >
                   {suppliers.map(s => (
-                    <option key={s.id} value={s.id}>
-                      {s.companyName || s.name}
+                    <option key={s.id} value={s.id} className="text-slate-900 bg-white">
+                      {s.companyName || s.name} ({s.code})
                     </option>
                   ))}
                 </select>

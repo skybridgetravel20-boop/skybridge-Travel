@@ -86,7 +86,7 @@ export const OFFICIAL_DIRECTOR_SIGNATURE_HTML = `
   <div style="margin: 0 0 10px 0; font-size: 12px; color: #334155;">
     <strong style="color: #0b1b3b;">Contact Info:</strong><br />
     Phone: <a href="tel:+923244444167" style="color: #0288d1; text-decoration: none;">+92 324 4444167</a> | <a href="tel:+923454444167" style="color: #0288d1; text-decoration: none;">+92 345 4444167</a><br />
-    Email: <a href="mailto:info@skybridgetravelandtourism.com" style="color: #0288d1; text-decoration: none;">info@skybridgetravelandtourism.com</a><br />
+    Email: <a href="https://mail.google.com/mail/u/1/?fs=1&to=info@skybridgetravelandtourism.com&tf=cm" target="_blank" style="color: #0288d1; text-decoration: none;">info@skybridgetravelandtourism.com</a><br />
     Website: <a href="https://skybridgetravelandtourism.com" style="color: #0288d1; text-decoration: none;">skybridgetravelandtourism.com</a>
   </div>
   <div style="font-size: 12px; color: #475569;">

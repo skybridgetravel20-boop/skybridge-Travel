@@ -7,10 +7,16 @@ export type LeadStatus =
   | 'Documents Requested'
   | 'Documents Received'
   | 'Quotation Sent'
+  | 'Proposal / Quotation Sent'
+  | 'In Negotiation'
+  | 'Won / Booking Confirmed'
   | 'Follow-up'
+  | 'Follow-Up Scheduled'
   | 'Processing'
+  | 'On Hold'
   | 'Won'
-  | 'Lost';
+  | 'Lost'
+  | 'Archived';
 
 export type Priority = 'High' | 'Medium' | 'Low';
 export type LeadPriority = Priority;
@@ -71,6 +77,10 @@ export interface Lead {
   fullName: string;
   email: string;
   phone: string;
+  leadCategory?: LeadCategory | string;
+  companyName?: string;
+  leadScore?: number;
+  verificationStatus?: string;
   whatsApp?: string;
   country?: string;
   city?: string;
@@ -711,4 +721,518 @@ export interface Invoice {
   createdAt: string;
   isDemo?: boolean;
 }
+
+// --------------------------------------------------------------------------
+// Intelligence Hub & Verified Announcements
+// --------------------------------------------------------------------------
+export type AnnouncementCategory =
+  | 'Work Permits'
+  | 'Overseas Jobs'
+  | 'Recruitment Agencies'
+  | 'Fully Funded Scholarships'
+  | 'Student Admissions'
+  | 'Visa & Immigration Updates'
+  | 'Travel Industry News';
+
+export type VerificationStatus =
+  | 'Verified — Official Source'
+  | 'Verified — Multiple Reliable Sources'
+  | 'Partially Verified'
+  | 'Unverified'
+  | 'Suspicious'
+  | 'Expired'
+  | 'Closed'
+  | 'Rejected';
+
+export interface IntelligenceAnnouncement {
+  id: string; // ANN-2026-00001
+  title: string;
+  country: string;
+  category: AnnouncementCategory;
+  summary: string;
+  fullDescription: string;
+  announcementDate: string;
+  publicationDate: string;
+  dateDiscovered: string;
+  applicationOpenDate?: string;
+  applicationDeadline?: string;
+  officialSourceName: string;
+  officialSourceUrl: string;
+  corroboratingSources?: string[];
+  employerOrInstitution?: string;
+  recruitmentAgency?: string;
+  opportunityType?: string;
+  eligibleNationalities?: string[];
+  eligibilityRequirements?: string;
+  requiredQualifications?: string;
+  requiredExperience?: string;
+  salary?: string;
+  salaryCurrency?: string;
+  salaryPeriod?: string;
+  benefits?: string;
+  accommodationInfo?: string;
+  workPermitInfo?: string;
+  visaSponsorshipStatus?: 'Confirmed by Official Source' | 'Confirmed by Employer' | 'Reported but Not Independently Verified' | 'Not Confirmed' | 'Not Applicable' | 'Unknown';
+  scholarshipAmount?: string;
+  tuitionCoverage?: string;
+  livingAllowance?: string;
+  applicationFee?: string;
+  applicationUrl?: string;
+  contactInfo?: string;
+  verificationStatus: VerificationStatus;
+  verificationNotes?: string;
+  lastVerifiedDate: string;
+  nextVerificationDate?: string;
+  confidenceExplanation?: string;
+  internalNotes?: string;
+  recommendedAction?: string;
+  recordOwner?: string;
+  recordStatus?: 'Open' | 'Closing Soon' | 'Closed' | 'Suspended' | 'Verification Required' | 'Rejected';
+  isSaved?: boolean;
+}
+
+// --------------------------------------------------------------------------
+// Scholarship Intelligence Database
+// --------------------------------------------------------------------------
+export interface ScholarshipRecord {
+  id: string; // SCH-2026-00001
+  country: string;
+  universityName: string;
+  scholarshipName: string;
+  scholarshipProvider: string;
+  officialWebsite: string;
+  scholarshipLevel: 'Bachelor' | 'Master' | 'PhD' | 'Postdoc' | 'Vocational';
+  subjectArea: string;
+  eligibleNationalities: string[];
+  pakistanEligible: boolean;
+  academicRequirements: string;
+  languageRequirements: string;
+  tuitionCoverage: string;
+  monthlyStipend?: string;
+  stipendCurrency?: string;
+  accommodationCoverage: boolean;
+  travelCoverage: boolean;
+  insuranceCoverage: boolean;
+  otherBenefits?: string;
+  fullyFundedStatus: 'Fully Funded' | 'Partially Funded' | 'Tuition Waiver Only' | 'Funding Not Confirmed';
+  fundingEvidence: string;
+  applicationOpenDate?: string;
+  applicationDeadline: string;
+  academicYear: string;
+  requiredDocuments: string[];
+  applicationProcess: string;
+  officialApplicationUrl: string;
+  officialSourceUrl: string;
+  verificationStatus: VerificationStatus;
+  verificationNotes?: string;
+  lastVerifiedDate: string;
+  nextReviewDate?: string;
+  scholarshipStatus: 'Open' | 'Closing Soon' | 'Closed' | 'Upcoming';
+  internalNotes?: string;
+  recordOwner?: string;
+  updatedAt: string;
+}
+
+// --------------------------------------------------------------------------
+// SkyBridge Lead Hunter AI (Discovered Leads)
+// --------------------------------------------------------------------------
+export type LeadCategory =
+  | 'Flight Booking Customer'
+  | 'Hotel Booking Customer'
+  | 'Holiday Package Customer'
+  | 'Umrah Customer'
+  | 'Visa Documentation Customer'
+  | 'Travel Insurance Customer'
+  | 'Airport Transfer Customer'
+  | 'Corporate Travel Customer'
+  | 'Travel Agency Partner'
+  | 'Recruitment Agency Partner'
+  | 'Employer or Hiring Company'
+  | 'Scholarship Opportunity'
+  | 'Tourism Partner'
+  | 'Supplier'
+  | 'Other Business Opportunity';
+
+export type DiscoveredLeadStatus =
+  | 'New'
+  | 'Unverified'
+  | 'Verification Required'
+  | 'Verified'
+  | 'Qualified'
+  | 'Contact Permission Required'
+  | 'Ready for Approved Outreach'
+  | 'Contacted'
+  | 'Responded'
+  | 'Interested'
+  | 'Quotation Sent'
+  | 'Follow-up Required'
+  | 'Converted'
+  | 'Lost'
+  | 'Do Not Contact'
+  | 'Archived';
+
+export type SourcePlatform =
+  | 'Google Search'
+  | 'Facebook'
+  | 'Instagram'
+  | 'TikTok'
+  | 'YouTube'
+  | 'LinkedIn'
+  | 'Pinterest'
+  | 'Google Business Profile and Maps'
+  | 'Public Directory'
+  | 'Career Page'
+  | 'Official Source'
+  | 'Manual Import';
+
+export interface DiscoveredLead {
+  id: string; // LEAD-HUNT-00001
+  dateDiscovered: string;
+  companyOrOrgName: string;
+  contactPerson?: string;
+  businessEmail?: string;
+  businessPhone?: string;
+  website?: string;
+  sourcePlatform: SourcePlatform | string;
+  sourceUrl: string;
+  country: string;
+  city?: string;
+  leadCategory: LeadCategory | string;
+  potentialServiceRequired: string;
+  estimatedBusinessValue?: number;
+  leadScore: number; // 0 - 100
+  scoreReasons: string[];
+  verificationStatus: 'Verified' | 'Qualified' | 'Verification Required' | 'Unverified' | 'Do Not Contact';
+  consentStatus?: 'Consent Verified' | 'Public Business Listing' | 'Contact Permission Required';
+  lastVerifiedDate: string;
+  assignedStaff?: string;
+  followUpDate?: string;
+  leadStatus: DiscoveredLeadStatus;
+  notes: string;
+  nextRecommendedAction: string;
+  convertedToCrmLeadId?: string;
+  doNotContact?: boolean;
+}
+
+// --------------------------------------------------------------------------
+// SkyBridge Traffic Growth AI & SEO Types
+// --------------------------------------------------------------------------
+export interface SeoAuditCheck {
+  id: string;
+  checkName: string;
+  category: 'Technical' | 'Content' | 'Conversion' | 'Compliance';
+  status: 'Pass' | 'Notice' | 'Warning' | 'Action Required';
+  description: string;
+  recommendation: string;
+  targetUrl?: string;
+}
+
+export interface SeoContentPlanItem {
+  id: string;
+  targetAudience: string;
+  searchIntent: 'Informational' | 'Commercial' | 'Transactional' | 'Navigational';
+  suggestedTitle: string;
+  mainKeyword: string;
+  relatedKeywords: string[];
+  metaDescription: string;
+  suggestedPageUrl: string;
+  articleOutline: string[];
+  internalLinkingRecommendations: string[];
+  callToAction: string;
+  suggestedPublicationDate: string;
+  status: 'Planned' | 'In Writing' | 'Under Review' | 'Published';
+}
+
+export interface LandingPagePlanItem {
+  url: string;
+  title: string;
+  category: string;
+  status: 'Live & Active' | 'Needs Optimization' | 'Recommended to Create';
+  primaryCta: string;
+  targetAudience: string;
+}
+
+// --------------------------------------------------------------------------
+// Social Media Growth Center & Approval Workflow
+// --------------------------------------------------------------------------
+export type SocialPlatform = 'Facebook' | 'Instagram' | 'TikTok' | 'YouTube' | 'LinkedIn' | 'Pinterest';
+export type SocialContentApprovalStatus = 'Draft' | 'CEO Review' | 'Approved' | 'Ready to Publish' | 'Published' | 'Performance Review';
+
+export interface SocialMediaPostItem {
+  id: string;
+  platform: SocialPlatform;
+  postType: 'Standard Post' | 'Reel / Short Script' | 'Video Script' | 'Carousel' | 'Pin / Board' | 'B2B Article';
+  campaignName: string;
+  topic: string;
+  captionOrScript: string;
+  hashtags: string[];
+  callToAction: string;
+  mediaNote: string;
+  targetAudience: string;
+  plannedDate: string;
+  contentStatus: SocialContentApprovalStatus;
+  ceoApprovedBy?: string;
+  ceoApprovalDate?: string;
+  rejectionReason?: string;
+  createdAt: string;
+}
+
+// --------------------------------------------------------------------------
+// Marketing Campaign & Promotional Message Center
+// --------------------------------------------------------------------------
+export interface MarketingCampaignRecord {
+  id: string; // CAMP-2026-0001
+  campaignName: string;
+  campaignObjective: string;
+  serviceCategory: string;
+  targetAudience: string;
+  countryOrRegion: string;
+  language: string;
+  offerTitle: string;
+  offerDescription: string;
+  validFromDate: string;
+  validUntilDate: string;
+  verifiedPrice: number;
+  currency: string;
+  termsAndConditions: string;
+  landingPage: string;
+  campaignSource: string;
+  trackingParameters: string;
+  approvalStatus: 'Draft' | 'CEO Review' | 'Approved' | 'Active' | 'Paused' | 'Completed' | 'Rejected';
+  channels: ('Website' | 'Email' | 'WhatsApp Business' | 'Facebook' | 'Instagram' | 'TikTok' | 'YouTube' | 'LinkedIn' | 'Pinterest')[];
+  results?: {
+    impressions?: number;
+    clicks?: number;
+    enquiries?: number;
+    conversions?: number;
+  };
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// --------------------------------------------------------------------------
+// AI Agent Control Centre Registry
+// --------------------------------------------------------------------------
+export type AgentOperationalStatus =
+  | 'Active and Tested'
+  | 'Active but Not Fully Tested'
+  | 'Needs Configuration'
+  | 'Authentication Required'
+  | 'API Required'
+  | 'Permission Required'
+  | 'Paused'
+  | 'Failed'
+  | 'Disabled';
+
+export interface AiAgentRegistryItem {
+  id: string; // AGENT-001
+  name: string;
+  shortCode: string;
+  purpose: string;
+  responsibilities: string[];
+  dataSources: string[];
+  permittedTools: string[];
+  readPermissions: string[];
+  writePermissions: string[];
+  schedule: string;
+  lastExecution?: string;
+  nextScheduledExecution?: string;
+  lastSuccessfulExecution?: string;
+  errorStatus?: string;
+  operationalStatus: AgentOperationalStatus;
+  owner: string;
+  version: string;
+  configurationNotes?: string;
+  lastTestedDate?: string;
+  testPassed?: boolean;
+}
+
+// --------------------------------------------------------------------------
+// Content Calendar & Marketing Campaigns
+// --------------------------------------------------------------------------
+export interface MarketingContentItem {
+  id: string; // CONT-2026-00001
+  plannedDate: string;
+  platform: 'Website' | 'Facebook' | 'Instagram' | 'TikTok' | 'LinkedIn' | 'X' | 'YouTube' | 'WhatsApp';
+  contentCategory: string;
+  campaignName: string;
+  topic: string;
+  country?: string;
+  service?: string;
+  caption: string;
+  hashtags: string[];
+  callToAction: string;
+  contentStatus: 'Draft' | 'CEO Review' | 'Approved' | 'Ready to Publish' | 'Published';
+  factCheckStatus: 'Verified' | 'Pending Verification' | 'Rejected';
+  sourceReference?: string;
+  performanceNotes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// --------------------------------------------------------------------------
+// CEO Reports & Executive Analytics
+// --------------------------------------------------------------------------
+export interface CeoReportItem {
+  id: string; // REPORT-2026-00001
+  reportType: 'Daily Intelligence & Operations' | 'Weekly Growth & Pipeline' | 'Monthly Executive Review';
+  title: string;
+  period: string;
+  generatedAt: string;
+  summary: string;
+  metrics: {
+    newLeads: number;
+    verifiedLeads: number;
+    activeBookings: number;
+    pipelineValuePkr: number;
+    totalRevenuePkr: number;
+    openInquiries: number;
+    verifiedAnnouncements: number;
+    urgentAlertsCount: number;
+  };
+  recommendedPriorities: string[];
+  urgentAlerts: string[];
+  operationalHighlights: string[];
+}
+
+// --------------------------------------------------------------------------
+// Section 20: Affiliate Tracking & Travelpayouts Programs
+// --------------------------------------------------------------------------
+export interface AffiliateTrackingRecord {
+  id: string; // AFF-2026-00001
+  affiliateNetwork: string; // Travelpayouts / Direct
+  brandName: string; // Booking.com, Trip.com, Viator, Agoda, etc.
+  brandCategory: 'Hotel' | 'Flight' | 'Tours & Activities' | 'eSIM / Telecom' | 'Car Rental' | 'Airport Transfers' | 'Insurance' | 'Packages';
+  country?: string;
+  destination?: string;
+  projectName: string;
+  affiliateAccountStatus: 'Registered' | 'Application Pending' | 'Approved' | 'Suspended';
+  programApplicationStatus: 'Approved' | 'Pending' | 'Needs Application';
+  programApprovalStatus: 'Approved' | 'Pending Approval' | 'Under Review';
+  rewardRate: string; // e.g. "4% - 6% of booking"
+  rewardRateType: 'Percentage' | 'Fixed Fee' | 'Tiered';
+  cookieDuration: string; // e.g. "30 days"
+  affiliateUrl: string;
+  deepLink?: string;
+  subId: string;
+  placement: string;
+  landingPageUrl: string;
+  campaignName: string;
+  linkStatus: 'Active' | 'Needs Testing' | 'Inactive';
+  linkLastTested: string;
+  apiAvailable: boolean;
+  widgetAvailable: boolean;
+  integrationStatus: 'Level 1: Manual Links' | 'Level 2: Authorized Widgets' | 'Level 3: Authorized API / White-Label';
+  reportedClicks: number;
+  reportedConversions: number;
+  reportedCommission: number;
+  commissionCurrency: string;
+  pendingCommission: number;
+  approvedCommission: number;
+  paidCommission: number;
+  lastReportDate: string;
+  notes: string;
+  updatedAt: string;
+}
+
+// --------------------------------------------------------------------------
+// Section 21: Website Offers (Approved Customer-Facing Deals)
+// --------------------------------------------------------------------------
+export interface WebsiteOfferRecord {
+  id: string; // OFFER-2026-00001
+  offerTitle: string;
+  offerCategory: 'Flight' | 'Hotel' | 'Umrah' | 'Holiday Package' | 'Visa Assistance' | 'Overseas Opportunity' | 'Scholarship' | 'Insurance';
+  destination: string;
+  shortDescription: string;
+  fullDescription: string;
+  imageUrl?: string;
+  displayPrice: number;
+  priceCurrency: string;
+  priceLastChecked: string;
+  priceSource: string;
+  availabilityStatus: 'Available' | 'Limited Seats' | 'Call to Confirm' | 'Expired';
+  supplierId?: string;
+  affiliateRecordId?: string;
+  actualAffiliateUrl?: string;
+  ctaText: string;
+  landingPageUrl: string;
+  displayLocation: 'Homepage Hero' | 'Featured Packages' | 'Deals Banner' | 'Visa Portal' | 'Umrah Desk';
+  publishStartDate: string;
+  publishEndDate: string;
+  offerStatus: 'Draft' | 'Published' | 'Paused' | 'Archived';
+  adminApproved: boolean;
+  lastVerifiedDate: string;
+  updatedAt: string;
+}
+
+// --------------------------------------------------------------------------
+// Section 23: Google Drive Document Register
+// --------------------------------------------------------------------------
+export interface DocumentRegisterRecord {
+  id: string; // DOC-2026-00001
+  documentName: string;
+  documentCategory:
+    | 'Company Registration'
+    | 'Travel Agency Licence'
+    | 'NTN'
+    | 'NOC'
+    | 'Supplier Agreement'
+    | 'Supplier Rate Sheet'
+    | 'Customer Documents'
+    | 'Visa Documents'
+    | 'Job Documents'
+    | 'Scholarship Documents'
+    | 'Booking Documents'
+    | 'Invoice'
+    | 'Receipt'
+    | 'Marketing Creative'
+    | 'Other';
+  relatedCustomerId?: string;
+  relatedCustomerName?: string;
+  relatedSupplierId?: string;
+  relatedJobId?: string;
+  relatedScholarshipId?: string;
+  relatedBookingId?: string;
+  driveFileId?: string;
+  driveFileUrl: string;
+  documentOwner: string;
+  accessClassification: 'Restricted (CEO & Ops Only)' | 'Confidential' | 'Internal Team' | 'Public Documentation';
+  documentStatus: 'Active & Verified' | 'Pending Review' | 'Expired' | 'Archived';
+  expiryDate?: string;
+  lastVerifiedDate: string;
+  createdAt: string;
+  updatedAt: string;
+  notes: string;
+}
+
+// --------------------------------------------------------------------------
+// Section 32: Integration Status Centre
+// --------------------------------------------------------------------------
+export interface IntegrationStatusItem {
+  id: string;
+  name: string;
+  category: 'Google Workspace' | 'Suppliers & Portals' | 'Affiliate Networks' | 'Communication & CRM' | 'Cloud & AI Infrastructure';
+  purpose: string;
+  connectionStatus:
+    | 'Connected and Tested'
+    | 'Connected but Not Tested'
+    | 'Authentication Required'
+    | 'Permission Required'
+    | 'API Credentials Required'
+    | 'Supplier Approval Required'
+    | 'Configuration Required'
+    | 'Error'
+    | 'Disabled'
+    | 'Not Supported';
+  authStatus: 'Authorized' | 'Pending OAuth' | 'Token Expired' | 'Manual Portal Credential' | 'Public Grounded API';
+  permissionStatus: 'Full Operational' | 'Read Only' | 'Pending Approval' | 'Needs Admin Consent';
+  apiStatus: 'Operational' | 'Testing Pending' | 'No Public API' | 'API Pending Approval';
+  lastSuccessfulTest?: string;
+  lastError?: string;
+  requiredNextAction: string;
+  documentationUrl?: string;
+  responsibleAdministrator: string;
+}
+
 

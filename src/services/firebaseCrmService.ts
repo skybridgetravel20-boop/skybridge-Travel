@@ -20,7 +20,8 @@ import {
   Task,
   Supplier,
   Invoice,
-  ServiceItem
+  ServiceItem,
+  DiscoveredLead
 } from '../types';
 
 export enum OperationType {
@@ -73,6 +74,7 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
 
 export const CRM_COLLECTIONS = {
   LEADS: 'leads',
+  DISCOVERED_LEADS: 'discovered_leads',
   CUSTOMERS: 'customers',
   SERVICES: 'services',
   BOOKINGS: 'bookings',
@@ -152,6 +154,49 @@ export function subscribeToLeads(onData: (leads: Lead[]) => void): Unsubscribe {
     },
     (err) => {
       handleFirestoreError(err, OperationType.GET, CRM_COLLECTIONS.LEADS);
+    }
+  );
+}
+
+// -------------------------------------------------------------
+// DISCOVERED LEADS (LEAD HUNTER AI)
+// -------------------------------------------------------------
+export async function getDiscoveredLeadsFromFirebase(): Promise<DiscoveredLead[]> {
+  try {
+    const snap = await getDocs(collection(db, CRM_COLLECTIONS.DISCOVERED_LEADS));
+    return snap.docs.map(d => ({ ...d.data(), id: d.id } as DiscoveredLead));
+  } catch (err) {
+    handleFirestoreError(err, OperationType.LIST, CRM_COLLECTIONS.DISCOVERED_LEADS);
+  }
+}
+
+export async function saveDiscoveredLeadToFirebase(lead: DiscoveredLead): Promise<void> {
+  const path = `${CRM_COLLECTIONS.DISCOVERED_LEADS}/${lead.id}`;
+  try {
+    await setDoc(doc(db, CRM_COLLECTIONS.DISCOVERED_LEADS, lead.id), cleanData(lead));
+  } catch (err) {
+    handleFirestoreError(err, OperationType.WRITE, path);
+  }
+}
+
+export async function deleteDiscoveredLeadFromFirebase(leadId: string): Promise<void> {
+  const path = `${CRM_COLLECTIONS.DISCOVERED_LEADS}/${leadId}`;
+  try {
+    await deleteDoc(doc(db, CRM_COLLECTIONS.DISCOVERED_LEADS, leadId));
+  } catch (err) {
+    handleFirestoreError(err, OperationType.DELETE, path);
+  }
+}
+
+export function subscribeToDiscoveredLeads(onData: (leads: DiscoveredLead[]) => void): Unsubscribe {
+  return onSnapshot(
+    collection(db, CRM_COLLECTIONS.DISCOVERED_LEADS),
+    (snap) => {
+      const items = snap.docs.map(d => ({ ...d.data(), id: d.id } as DiscoveredLead));
+      onData(items);
+    },
+    (err) => {
+      handleFirestoreError(err, OperationType.GET, CRM_COLLECTIONS.DISCOVERED_LEADS);
     }
   );
 }

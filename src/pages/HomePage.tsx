@@ -35,6 +35,7 @@ import { TRAVEL_TIPS_DATA } from '../data/travelTipsData';
 import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
 import { ServiceType, Destination, TravelPackage, ServiceItem } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { AirlinePartnersMarquee } from '../components/AirlinePartnersMarquee';
 
 export const HomePage: React.FC = () => {
   const { t, language } = useLanguage();
@@ -865,6 +866,9 @@ export const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* 21. AIRLINE PARTNERS MARQUEE SECTION */}
+      <AirlinePartnersMarquee />
     </div>
   );
 };

@@ -426,11 +426,11 @@ export const AdminSupplierPortalsPage: React.FC = () => {
                         supplierName: s?.companyName || s?.name || ''
                       });
                     }}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7] font-medium"
                   >
                     {suppliers.map(s => (
-                      <option key={s.id} value={s.id}>
-                        {s.companyName || s.name}
+                      <option key={s.id} value={s.id} className="text-slate-900 bg-white">
+                        {s.companyName || s.name} ({s.code})
                       </option>
                     ))}
                   </select>

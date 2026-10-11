@@ -4,6 +4,7 @@ import { PageHero } from '../components/PageHero';
 import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
 import { SKYBRIDGE_OFFICIAL_LOGO } from '../assets/logo';
 import { ServiceType } from '../types';
+import { openOfficialBusinessEmail, getOfficialBusinessEmailUrl } from '../utils/businessEmail';
 import {
   ShieldCheck,
   Compass,
@@ -232,7 +233,14 @@ export const AboutPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2.5">
                   <Mail className="w-4 h-4 text-slate-400 shrink-0" />
-                  <a href={`mailto:${COMPANY_INFO.email}`} className="hover:text-[#0288D1]">
+                  <a
+                    href={getOfficialBusinessEmailUrl({
+                      to: COMPANY_INFO.email,
+                      subject: 'Website Enquiry — SkyBridge Travel & Tourism'
+                    })}
+                    className="hover:text-[#0288D1]"
+                    title={`Send email to ${COMPANY_INFO.email}`}
+                  >
                     {COMPANY_INFO.email}
                   </a>
                 </div>

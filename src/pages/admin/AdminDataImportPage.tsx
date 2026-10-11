@@ -159,7 +159,7 @@ export const AdminDataImportPage: React.FC = () => {
   // Execute Import
   const handleExecuteImport = () => {
     if (!mapping.product && !mapping.supplierCost) {
-      alert('Please select at least Product / Service and Supplier Cost columns.');
+      setParsingError('Please select at least Product / Service and Supplier Cost columns.');
       return;
     }
 

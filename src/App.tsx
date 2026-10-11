@@ -41,10 +41,28 @@ import { AdminPriceComparisonPage } from './pages/admin/AdminPriceComparisonPage
 import { AdminPackageCalculatorPage } from './pages/admin/AdminPackageCalculatorPage';
 import { AdminVisaIntelligencePage } from './pages/admin/AdminVisaIntelligencePage';
 import { AdminSchengenAgentPage } from './pages/admin/AdminSchengenAgentPage';
+import { AdminManpowerAgentPage } from './pages/admin/AdminManpowerAgentPage';
 import { AdminInvoicesPage } from './pages/admin/AdminInvoicesPage';
 import { AdminCaseSupportPage } from './pages/admin/AdminCaseSupportPage';
 import { CeoDashboardPage } from './pages/ceo/CeoDashboardPage';
 import { GmailExecutiveDispatch } from './components/ceo/GmailExecutiveDispatch';
+
+// New Master Architecture Pages
+import { AdminAgentControlPage } from './pages/admin/AdminAgentControlPage';
+import { AdminIntelligenceHubPage } from './pages/admin/AdminIntelligenceHubPage';
+import { AdminScholarshipIntelligencePage } from './pages/admin/AdminScholarshipIntelligencePage';
+import { AdminSpecialistSuppliersPage } from './pages/admin/AdminSpecialistSuppliersPage';
+import { AdminAffiliateOffersPage } from './pages/admin/AdminAffiliateOffersPage';
+import { AdminWebsiteOffersPage } from './pages/admin/AdminWebsiteOffersPage';
+import { AdminContentCalendarPage } from './pages/admin/AdminContentCalendarPage';
+import { AdminDocumentRegisterPage } from './pages/admin/AdminDocumentRegisterPage';
+import { AdminIntegrationStatusPage } from './pages/admin/AdminIntegrationStatusPage';
+import { AdminNotificationsPage } from './pages/admin/AdminNotificationsPage';
+import { AdminAuditLogsPage } from './pages/admin/AdminAuditLogsPage';
+import { AdminLeadHunterPage } from './pages/admin/AdminLeadHunterPage';
+import { AdminTrafficGrowthPage } from './pages/admin/AdminTrafficGrowthPage';
+import { AdminSocialMediaGrowthPage } from './pages/admin/AdminSocialMediaGrowthPage';
+import { AdminCampaignCenterPage } from './pages/admin/AdminCampaignCenterPage';
 
 // Scroll to top helper on route change
 function ScrollToTop() {
@@ -131,10 +149,33 @@ export default function App() {
             <Route path="visa-intelligence" element={<AdminVisaIntelligencePage />} />
             <Route path="schengen-agent" element={<AdminSchengenAgentPage />} />
             <Route path="schengen-intelligence" element={<AdminSchengenAgentPage />} />
+            <Route path="manpower-agent" element={<AdminManpowerAgentPage />} />
+            <Route path="overseas-recruitment" element={<AdminManpowerAgentPage />} />
             <Route path="invoices" element={<AdminInvoicesPage />} />
             <Route path="bookings" element={<AdminBookingsPage />} />
             <Route path="follow-ups" element={<AdminFollowUpsPage />} />
             <Route path="tasks" element={<AdminTasksPage />} />
+            {/* Master Sections Navigation Routes */}
+            <Route path="ai-agents" element={<AdminAgentControlPage />} />
+            <Route path="intelligence-hub" element={<AdminIntelligenceHubPage />} />
+            <Route path="scholarships" element={<AdminScholarshipIntelligencePage />} />
+            <Route path="lead-hunter" element={<AdminLeadHunterPage />} />
+            <Route path="traffic-growth" element={<AdminTrafficGrowthPage />} />
+            <Route path="social-media" element={<AdminSocialMediaGrowthPage />} />
+            <Route path="campaigns" element={<AdminCampaignCenterPage />} />
+            <Route path="flight-suppliers" element={<AdminSpecialistSuppliersPage initialCategory="Airline / Ticketing" title="Flight Suppliers & Ticketing Systems" />} />
+            <Route path="umrah-suppliers" element={<AdminSpecialistSuppliersPage initialCategory="Umrah" title="Umrah Suppliers & Makkah-Madinah Operators" />} />
+            <Route path="hotel-suppliers" element={<AdminSpecialistSuppliersPage initialCategory="Hotel / Bedbank" title="Hotel Inventory & Bedbank Suppliers" />} />
+            <Route path="insurance-suppliers" element={<AdminSpecialistSuppliersPage initialCategory="Insurance" title="Travel Insurance Suppliers & Policies" />} />
+            <Route path="other-suppliers" element={<AdminSpecialistSuppliersPage initialCategory="All" title="Other Travel & Transportation Suppliers" />} />
+            <Route path="affiliate-offers" element={<AdminAffiliateOffersPage />} />
+            <Route path="website-offers" element={<AdminWebsiteOffersPage />} />
+            <Route path="content-calendar" element={<AdminContentCalendarPage />} />
+            <Route path="document-register" element={<AdminDocumentRegisterPage />} />
+            <Route path="integration-status" element={<AdminIntegrationStatusPage />} />
+            <Route path="notifications" element={<AdminNotificationsPage />} />
+            <Route path="audit-logs" element={<AdminAuditLogsPage />} />
+
             <Route path="reports" element={<AdminReportsPage />} />
             <Route path="case-support" element={<AdminCaseSupportPage />} />
             <Route path="gmail-dispatch" element={<div className="p-6 max-w-7xl mx-auto"><GmailExecutiveDispatch /></div>} />

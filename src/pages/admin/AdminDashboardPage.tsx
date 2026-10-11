@@ -410,6 +410,29 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
             </div>
           </Link>
+
+          {/* Global Manpower & Visa Sponsor Research Agent */}
+          <Link
+            to="/admin/manpower-agent"
+            className="p-3.5 rounded-2xl border border-emerald-200 bg-emerald-50/80 hover:bg-emerald-100 transition-all flex items-start gap-3 col-span-1 sm:col-span-2 lg:col-span-3 shadow-xs"
+          >
+            <span className="text-xl">🌐</span>
+            <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <div className="font-bold text-emerald-950 flex items-center gap-2">
+                  <span>Overseas Manpower & Visa Sponsor Research Agent</span>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold">International Hiring</span>
+                </div>
+                <div className="text-emerald-800 text-[11px] mt-0.5">
+                  Researches companies hiring workers (Caregivers, Teachers, Housekeepers, Construction, Hospitality, Agriculture) with confirmed visa sponsorship in Gulf & Europe + B2B pitch generator.
+                </div>
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shrink-0 shadow-xs">
+                <span>Open Manpower Agent</span>
+                <ArrowRight className="w-3.5 h-3.5 text-emerald-200" />
+              </div>
+            </div>
+          </Link>
         </div>
       </div>
 

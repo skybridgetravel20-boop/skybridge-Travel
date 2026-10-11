@@ -5,6 +5,10 @@ export interface SchengenCountryData {
   flag: string;
   officialPortalName: string;
   officialPortalUrl: string;
+  officialVisaApplyUrl: string;
+  officialVisaFormPdfUrl: string;
+  visaType?: string;
+  officialVisaFeeLocal?: string;
   appointmentPartner: 'VFS Global' | 'TLScontact' | 'BLS International' | 'Embassy Direct' | 'Gerrys / VFS';
   appointmentUrl: string;
   submissionCentersInPakistan: string[];
@@ -19,6 +23,8 @@ export interface SchengenCountryData {
   popularTouristDestinations: string[];
 }
 
+export const OFFICIAL_HARMONIZED_SCHENGEN_FORM_PDF = 'https://home-affairs.ec.europa.eu/system/files/2020-02/harmonised_application_form_en.pdf';
+
 export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
   {
     id: 'germany',
@@ -27,6 +33,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇩🇪',
     officialPortalName: 'Federal Foreign Office Germany (Auswärtiges Amt)',
     officialPortalUrl: 'https://www.auswaertiges-amt.de',
+    officialVisaApplyUrl: 'https://videx.diplo.de/videx/desktop/index.html#start',
+    officialVisaFormPdfUrl: 'https://visa.vfsglobal.com/one-pager/germany/pakistan/english/pdf/schengen-visa-application-form.pdf',
     appointmentPartner: 'VFS Global',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/deu',
     submissionCentersInPakistan: ['Islamabad (VFS)', 'Lahore (VFS)', 'Karachi (Consulate / VFS)'],
@@ -72,6 +80,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇫🇷',
     officialPortalName: 'France-Visas (Official French Government Visa Portal)',
     officialPortalUrl: 'https://france-visas.gouv.fr',
+    officialVisaApplyUrl: 'https://france-visas.gouv.fr/en/web/france-visas/online-application',
+    officialVisaFormPdfUrl: 'https://france-visas.gouv.fr/documents/66002/100067/Formulaire_Schengen_EN.pdf',
     appointmentPartner: 'VFS Global',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/fra',
     submissionCentersInPakistan: ['Islamabad (VFS)', 'Lahore (VFS)', 'Karachi (VFS)'],
@@ -113,6 +123,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇮🇹',
     officialPortalName: 'Ministry of Foreign Affairs and International Cooperation Italy (Farnesina)',
     officialPortalUrl: 'https://vistoperitalia.esteri.it',
+    officialVisaApplyUrl: 'https://visa.vfsglobal.com/pak/en/ita/apply-visa',
+    officialVisaFormPdfUrl: 'https://vistoperitalia.esteri.it/moduli/it/domanda_visto_schengen.pdf',
     appointmentPartner: 'VFS Global',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/ita',
     submissionCentersInPakistan: ['Islamabad (VFS)', 'Lahore (VFS)', 'Karachi (Consulate / VFS)'],
@@ -153,6 +165,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇪🇸',
     officialPortalName: 'Ministry of Foreign Affairs Spain (Exteriores)',
     officialPortalUrl: 'https://www.exteriores.gob.es',
+    officialVisaApplyUrl: 'https://pakistan.blsspainvisa.com/book_appointment.php',
+    officialVisaFormPdfUrl: 'https://pakistan.blsspainvisa.com/pdf/Schengen-Visa-Application-Form.pdf',
     appointmentPartner: 'BLS International',
     appointmentUrl: 'https://pakistan.blsspainvisa.com',
     submissionCentersInPakistan: ['Islamabad (BLS)', 'Lahore (BLS)', 'Karachi (BLS)'],
@@ -194,6 +208,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇨🇭',
     officialPortalName: 'State Secretariat for Migration (SEM Switzerland)',
     officialPortalUrl: 'https://www.sem.admin.ch',
+    officialVisaApplyUrl: 'https://www.swiss-visa.ch/',
+    officialVisaFormPdfUrl: 'https://www.sem.admin.ch/dam/sem/en/data/einreise/visumantragsformulare/visumantrag-schengen-en.pdf',
     appointmentPartner: 'VFS Global',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/che',
     submissionCentersInPakistan: ['Islamabad (VFS)', 'Lahore (VFS)', 'Karachi (VFS)'],
@@ -234,6 +250,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇳🇱',
     officialPortalName: 'Government of the Netherlands (NetherlandsWorldwide)',
     officialPortalUrl: 'https://www.netherlandsandyou.nl',
+    officialVisaApplyUrl: 'https://consular.mfaservices.nl/',
+    officialVisaFormPdfUrl: 'https://www.netherlandsworldwide.nl/binaries/content/documents/mfa-en/binaries/documents/publications/2020/02/02/schengen-visa-application-form/schengen-visa-application-form.pdf',
     appointmentPartner: 'VFS Global',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/nld',
     submissionCentersInPakistan: ['Islamabad (VFS)', 'Lahore (VFS)', 'Karachi (VFS)'],
@@ -273,6 +291,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇦🇹',
     officialPortalName: 'Austrian Ministry of Foreign Affairs (BMEIA)',
     officialPortalUrl: 'https://www.bmeia.gv.at',
+    officialVisaApplyUrl: 'https://visa.vfsglobal.com/pak/en/aut',
+    officialVisaFormPdfUrl: 'https://www.bmeia.gv.at/fileadmin/user_upload/Vertretungen/Islamabad/Dokumente/Visumantrag_C_Englisch.pdf',
     appointmentPartner: 'VFS Global',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/aut',
     submissionCentersInPakistan: ['Islamabad (VFS)', 'Lahore (VFS)', 'Karachi (VFS)'],
@@ -310,6 +330,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇧🇪',
     officialPortalName: 'Immigration Office Belgium (FPS Interior)',
     officialPortalUrl: 'https://dofi.ibz.be',
+    officialVisaApplyUrl: 'https://visaonweb.diplomatie.be/',
+    officialVisaFormPdfUrl: 'https://dofi.ibz.be/sites/default/files/2021-01/Formulaire_visa_C_EN.pdf',
     appointmentPartner: 'VFS Global',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/bel',
     submissionCentersInPakistan: ['Islamabad (VFS)', 'Lahore (VFS)', 'Karachi (VFS)'],
@@ -345,6 +367,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇬🇷',
     officialPortalName: 'Hellenic Republic Ministry of Foreign Affairs',
     officialPortalUrl: 'https://www.mfa.gr',
+    officialVisaApplyUrl: 'https://visa.vfsglobal.com/pak/en/grc',
+    officialVisaFormPdfUrl: 'https://www.mfa.gr/images/docs/visas/schengen_visa_application_en.pdf',
     appointmentPartner: 'Gerrys / VFS',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/grc',
     submissionCentersInPakistan: ['Islamabad (Gerrys/VFS)', 'Lahore (Gerrys/VFS)', 'Karachi (Gerrys/VFS)'],
@@ -379,6 +403,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇵🇹',
     officialPortalName: 'Ministry of Foreign Affairs Portugal (Vistos)',
     officialPortalUrl: 'https://vistos.mne.gov.pt',
+    officialVisaApplyUrl: 'https://pedidodevistos.mne.gov.pt/VistosOnline/',
+    officialVisaFormPdfUrl: 'https://vistos.mne.gov.pt/images/schengen_form_en.pdf',
     appointmentPartner: 'VFS Global',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/prt',
     submissionCentersInPakistan: ['Islamabad (VFS)'],
@@ -413,6 +439,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇸🇪',
     officialPortalName: 'Swedish Migration Agency (Migrationsverket)',
     officialPortalUrl: 'https://www.migrationsverket.se',
+    officialVisaApplyUrl: 'https://www.migrationsverket.se/English/Private-individuals/Visiting-Sweden.html',
+    officialVisaFormPdfUrl: 'https://www.migrationsverket.se/download/18.5e83388f141c12901a52b86/1687422363532/119031_Schengen_en.pdf',
     appointmentPartner: 'VFS Global',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/swe',
     submissionCentersInPakistan: ['Islamabad (VFS)', 'Lahore (VFS)', 'Karachi (VFS)'],
@@ -447,6 +475,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇳🇴',
     officialPortalName: 'Norwegian Directorate of Immigration (UDI)',
     officialPortalUrl: 'https://www.udi.no',
+    officialVisaApplyUrl: 'https://selfservice.udi.no/',
+    officialVisaFormPdfUrl: 'https://www.udi.no/globalassets/global/skjemaer-engelsk/application-schengen-visa.pdf',
     appointmentPartner: 'VFS Global',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/nor',
     submissionCentersInPakistan: ['Islamabad (VFS)', 'Lahore (VFS)', 'Karachi (VFS)'],
@@ -481,6 +511,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇩🇰',
     officialPortalName: 'Ministry of Foreign Affairs of Denmark (ApplyVisa)',
     officialPortalUrl: 'https://applyvisa.um.dk',
+    officialVisaApplyUrl: 'https://applyvisa.um.dk/',
+    officialVisaFormPdfUrl: 'https://applyvisa.um.dk/',
     appointmentPartner: 'VFS Global',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/dnk',
     submissionCentersInPakistan: ['Islamabad (VFS)', 'Lahore (VFS)', 'Karachi (VFS)'],
@@ -513,6 +545,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇫🇮',
     officialPortalName: 'Ministry for Foreign Affairs of Finland (FinlandVisa)',
     officialPortalUrl: 'https://finlandvisa.fi',
+    officialVisaApplyUrl: 'https://finlandvisa.fi/',
+    officialVisaFormPdfUrl: 'https://finlandvisa.fi/',
     appointmentPartner: 'VFS Global',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/fin',
     submissionCentersInPakistan: ['Islamabad (VFS)'],
@@ -541,6 +575,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇵🇱',
     officialPortalName: 'Ministry of Foreign Affairs Republic of Poland (e-Konsulat)',
     officialPortalUrl: 'https://secure.e-konsulat.gov.pl',
+    officialVisaApplyUrl: 'https://secure.e-konsulat.gov.pl/',
+    officialVisaFormPdfUrl: 'https://secure.e-konsulat.gov.pl/',
     appointmentPartner: 'Embassy Direct',
     appointmentUrl: 'https://secure.e-konsulat.gov.pl',
     submissionCentersInPakistan: ['Islamabad (Embassy of Poland)'],
@@ -571,6 +607,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇨🇿',
     officialPortalName: 'Ministry of Foreign Affairs of the Czech Republic',
     officialPortalUrl: 'https://www.mzv.cz',
+    officialVisaApplyUrl: 'https://visa.vfsglobal.com/pak/en/cze',
+    officialVisaFormPdfUrl: 'https://mzv.gov.cz/file/206967/Application_for_Schengen_Visa_EN.pdf',
     appointmentPartner: 'VFS Global',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/cze',
     submissionCentersInPakistan: ['Islamabad (VFS)'],
@@ -599,6 +637,8 @@ export const SCHENGEN_COUNTRIES: SchengenCountryData[] = [
     flag: '🇭🇺',
     officialPortalName: 'Consular Services Hungary (Konzuli Szolgálat)',
     officialPortalUrl: 'https://konzuliszolgalat.kormany.hu',
+    officialVisaApplyUrl: 'https://visa.vfsglobal.com/pak/en/hun',
+    officialVisaFormPdfUrl: 'https://konzuliszolgalat.kormany.hu/download/9/84/12000/schengen_visa_application_form_en.pdf',
     appointmentPartner: 'VFS Global',
     appointmentUrl: 'https://visa.vfsglobal.com/pak/en/hun',
     submissionCentersInPakistan: ['Islamabad (VFS)', 'Lahore (VFS)', 'Karachi (VFS)'],
@@ -632,3 +672,119 @@ export function findSchengenCountry(query: string): SchengenCountryData | undefi
          q.includes(c.name.toLowerCase())
   );
 }
+
+export interface WorldwideVisaCountry {
+  id: string;
+  name: string;
+  code: string;
+  flag: string;
+  visaType: string;
+  officialPortalName: string;
+  officialPortalUrl: string;
+  officialVisaApplyUrl: string;
+  officialVisaFormPdfUrl: string;
+  appointmentPartner: string;
+  appointmentUrl: string;
+  officialFee: string;
+  processingDays: string;
+  description: string;
+}
+
+export const WORLDWIDE_POPULAR_VISA_COUNTRIES: WorldwideVisaCountry[] = [
+  {
+    id: 'united-kingdom',
+    name: 'United Kingdom',
+    code: 'GB',
+    flag: '🇬🇧',
+    visaType: 'Standard Visitor Visa (6 Months)',
+    officialPortalName: 'UK Visas and Immigration (GOV.UK)',
+    officialPortalUrl: 'https://www.gov.uk/standard-visitor',
+    officialVisaApplyUrl: 'https://www.gov.uk/standard-visitor/apply-standard-visitor-visa',
+    officialVisaFormPdfUrl: 'https://assets.publishing.service.gov.uk/media/5a7f66e6e5274a2e87db4fa9/vaf1a.pdf',
+    appointmentPartner: 'VFS Global (Gerrys)',
+    appointmentUrl: 'https://visa.vfsglobal.com/pak/en/gbr',
+    officialFee: '£115 (approx. PKR 42,000)',
+    processingDays: '3 to 6 weeks',
+    description: 'UK Standard Visitor Visa for tourism, business meetings, and family visits.'
+  },
+  {
+    id: 'united-states',
+    name: 'United States',
+    code: 'US',
+    flag: '🇺🇸',
+    visaType: 'B1/B2 Tourist & Business Visa',
+    officialPortalName: 'U.S. Department of State (Travel.State.Gov)',
+    officialPortalUrl: 'https://travel.state.gov/content/travel/en/us-visas/tourism-visit/visitor.html',
+    officialVisaApplyUrl: 'https://ceac.state.gov/genniv/',
+    officialVisaFormPdfUrl: 'https://ceac.state.gov/genniv/',
+    appointmentPartner: 'U.S. Embassy Islamabad / Consulate Karachi',
+    appointmentUrl: 'https://www.ustraveldocs.com/pk/en/',
+    officialFee: '$185 (approx. PKR 51,500)',
+    processingDays: 'Interview wait time variable',
+    description: 'U.S. Nonimmigrant DS-160 online application and consular appointment scheduling.'
+  },
+  {
+    id: 'canada',
+    name: 'Canada',
+    code: 'CA',
+    flag: '🇨🇦',
+    visaType: 'Temporary Resident Visa (Visitor Visa)',
+    officialPortalName: 'Immigration, Refugees and Citizenship Canada (IRCC)',
+    officialPortalUrl: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada.html',
+    officialVisaApplyUrl: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada/apply-visitor-visa.html',
+    officialVisaFormPdfUrl: 'https://www.canada.ca/content/dam/ircc/migration/ircc/english/pdf/kits/forms/imm5257e.pdf',
+    appointmentPartner: 'VFS Global (Biometrics)',
+    appointmentUrl: 'https://visa.vfsglobal.com/pak/en/can',
+    officialFee: 'CAD $100 + $85 biometrics',
+    processingDays: '4 to 8 weeks',
+    description: 'Canadian Temporary Resident Visa IMM 5257 application and biometrics.'
+  },
+  {
+    id: 'saudi-arabia',
+    name: 'Saudi Arabia (Umrah & Tourist)',
+    code: 'SA',
+    flag: '🇸🇦',
+    visaType: 'Umrah Visa / Tourist E-Visa',
+    officialPortalName: 'Ministry of Hajj and Umrah / Visit Saudi (Nusuk)',
+    officialPortalUrl: 'https://www.visitsaudi.com/',
+    officialVisaApplyUrl: 'https://visa.visitsaudi.com/',
+    officialVisaFormPdfUrl: 'https://ksavisa.sa/',
+    appointmentPartner: 'Tasheer (VFS Tasheer)',
+    appointmentUrl: 'https://vc.tasheer.com/',
+    officialFee: 'SAR 300 - 450 + insurance',
+    processingDays: '24 hours (E-visa) / 3-5 days',
+    description: 'Official Saudi Umrah platform, Tasheer biometric scheduling, and multi-entry tourist visas.'
+  },
+  {
+    id: 'united-arab-emirates',
+    name: 'United Arab Emirates',
+    code: 'AE',
+    flag: '🇦🇪',
+    visaType: '30/60 Days Tourist & Entry Permit',
+    officialPortalName: 'Federal Authority for Identity & Citizenship (ICP / GDRFA)',
+    officialPortalUrl: 'https://smartservices.icp.gov.ae/',
+    officialVisaApplyUrl: 'https://smartservices.icp.gov.ae/echannels/web/client/default.html#/login',
+    officialVisaFormPdfUrl: 'https://www.gdrfad.gov.ae/en/services',
+    appointmentPartner: 'Direct Immigration Portal',
+    appointmentUrl: 'https://smartservices.icp.gov.ae/',
+    officialFee: 'AED 350 - 550',
+    processingDays: '24 to 72 hours',
+    description: 'Official Dubai GDRFA & Abu Dhabi ICP electronic entry permits.'
+  },
+  {
+    id: 'turkey',
+    name: 'Turkey',
+    code: 'TR',
+    flag: '🇹🇷',
+    visaType: 'Tourist Sticker Visa / E-Visa',
+    officialPortalName: 'Republic of Türkiye Electronic Visa Portal',
+    officialPortalUrl: 'https://www.evisa.gov.tr/en/',
+    officialVisaApplyUrl: 'https://www.evisa.gov.tr/en/apply/',
+    officialVisaFormPdfUrl: 'https://www.konsolosluk.gov.tr/Visa',
+    appointmentPartner: 'Anatolia Travel Services (Gerrys)',
+    appointmentUrl: 'https://www.anatoliatravelservices.com/',
+    officialFee: '$60 (E-visa) / PKR 26,000 (Sticker)',
+    processingDays: 'Instant (E-visa) / 10-15 days',
+    description: 'Turkish e-Visa for Schengen/UK/US visa holders, or sticker visa via Anatolia.'
+  }
+];

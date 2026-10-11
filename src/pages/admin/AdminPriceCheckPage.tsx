@@ -30,7 +30,9 @@ import {
   RefreshCw,
   Clock,
   Building2,
-  Share2
+  Share2,
+  ChevronDown,
+  Check
 } from 'lucide-react';
 
 const CATEGORIES: { label: string; value: SupplierCategory | 'All'; icon: React.ReactNode }[] = [
@@ -54,7 +56,7 @@ const CURRENCY_RATES_PKR: Record<string, number> = {
 };
 
 export const AdminPriceCheckPage: React.FC = () => {
-  const { supplierPrices, suppliers, addSupplierPrice, updateSupplierPrice, deleteSupplierPrice, auth } = useCrm();
+  const { supplierPrices, suppliers, addSupplierPrice, updateSupplierPrice, deleteSupplierPrice, addSupplier, auth } = useCrm();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -71,6 +73,33 @@ export const AdminPriceCheckPage: React.FC = () => {
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingPrice, setEditingPrice] = useState<SupplierPrice | null>(null);
+
+  // Quick Add Supplier Sub-Modal State (preserves all price rate form data)
+  const [isQuickAddSupplierModalOpen, setIsQuickAddSupplierModalOpen] = useState(false);
+  const [quickSupplierName, setQuickSupplierName] = useState('');
+  const [quickSupplierCode, setQuickSupplierCode] = useState('');
+  const [quickSupplierCategory, setQuickSupplierCategory] = useState<SupplierCategory>('Airline / Ticketing');
+  const [quickSupplierCurrency, setQuickSupplierCurrency] = useState('PKR');
+  const [quickSupplierContact, setQuickSupplierContact] = useState('');
+  const [quickSupplierPhone, setQuickSupplierPhone] = useState('');
+  const [quickSupplierEmail, setQuickSupplierEmail] = useState('');
+  const [quickAddError, setQuickAddError] = useState<string | null>(null);
+
+  // Searchable Supplier Combobox in Add Rate Modal
+  const [supplierSearchQuery, setSupplierSearchQuery] = useState('');
+  const [isSupplierComboboxOpen, setIsSupplierComboboxOpen] = useState(false);
+  const supplierComboboxRef = React.useRef<HTMLDivElement>(null);
+
+  // Close combobox when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (supplierComboboxRef.current && !supplierComboboxRef.current.contains(event.target as Node)) {
+        setIsSupplierComboboxOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Form State
   const initialFormState: Partial<SupplierPrice> = {
@@ -176,6 +205,62 @@ export const AdminPriceCheckPage: React.FC = () => {
     }
     setFormData(initialFormState);
   };
+
+  // Quick Add Supplier Handler - saves to system and immediately selects it without losing price data
+  const handleQuickAddSupplierSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickSupplierName.trim()) {
+      setQuickAddError('Supplier company name is required');
+      return;
+    }
+
+    const code = quickSupplierCode.trim() || quickSupplierName.slice(0, 3).toUpperCase() + '-SUP';
+    const newSup = addSupplier({
+      name: quickSupplierName.trim(),
+      companyName: quickSupplierName.trim(),
+      code,
+      category: quickSupplierCategory,
+      currency: quickSupplierCurrency,
+      contactPerson: quickSupplierContact.trim() || 'Direct B2B Desk',
+      phone: quickSupplierPhone.trim() || '+92 300 0000000',
+      email: quickSupplierEmail.trim() || 'partner@supplier.com',
+      status: 'Active'
+    });
+
+    // Immediately select this new supplier in formData without losing any price rate form fields!
+    setFormData(prev => ({
+      ...prev,
+      supplierId: newSup.id,
+      supplierName: newSup.companyName || newSup.name,
+      currency: newSup.currency || prev.currency || 'PKR'
+    }));
+
+    setCopiedNotification(`Supplier "${newSup.companyName || newSup.name}" added & selected!`);
+    setIsQuickAddSupplierModalOpen(false);
+    setQuickSupplierName('');
+    setQuickSupplierCode('');
+    setQuickSupplierContact('');
+    setQuickSupplierPhone('');
+    setQuickSupplierEmail('');
+    setQuickAddError(null);
+  };
+
+  // Memoized selected supplier and filtered dropdown list
+  const selectedSupplierObj = useMemo(() => {
+    return suppliers.find(s => s.id === formData.supplierId || s.companyName === formData.supplierName || s.name === formData.supplierName);
+  }, [suppliers, formData.supplierId, formData.supplierName]);
+
+  const filteredDropdownSuppliers = useMemo(() => {
+    if (!supplierSearchQuery.trim()) return suppliers;
+    const q = supplierSearchQuery.toLowerCase();
+    return suppliers.filter(s =>
+      (s.companyName || '').toLowerCase().includes(q) ||
+      (s.name || '').toLowerCase().includes(q) ||
+      (s.code || '').toLowerCase().includes(q) ||
+      (s.category || '').toLowerCase().includes(q) ||
+      (s.country || '').toLowerCase().includes(q)
+    );
+  }, [suppliers, supplierSearchQuery]);
 
   // Duplicate Price
   const handleDuplicate = (p: SupplierPrice) => {
@@ -307,13 +392,20 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
 
           <button
             onClick={() => {
-              setFormData(initialFormState);
+              const activeSup = suppliers[0];
+              setFormData({
+                ...initialFormState,
+                supplierId: activeSup?.id || '',
+                supplierName: activeSup?.companyName || activeSup?.name || 'Contracted Supplier'
+              });
+              setIsSupplierComboboxOpen(false);
+              setSupplierSearchQuery('');
               setIsAddModalOpen(true);
             }}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0B1B3B] text-white text-xs font-bold hover:bg-[#4FC3F7] hover:text-[#0B1B3B] transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4" />
-            <span>Add Rate Sheet Item</span>
+            <span>Add New Supplier Price Rate</span>
           </button>
         </div>
       </div>
@@ -589,38 +681,170 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
             </div>
 
             <form onSubmit={handleFormSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Supplier *</label>
-                  <select
-                    value={formData.supplierId}
-                    onChange={e => {
-                      const s = suppliers.find(sup => sup.id === e.target.value);
-                      setFormData({
-                        ...formData,
-                        supplierId: e.target.value,
-                        supplierName: s?.companyName || s?.name || ''
-                      });
-                    }}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
-                  >
-                    {suppliers.map(s => (
-                      <option key={s.id} value={s.id}>
-                        {s.companyName || s.name} ({s.code})
-                      </option>
-                    ))}
-                  </select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Contracted Supplier Selector with Combobox & Quick-Add */}
+                <div className="relative" ref={supplierComboboxRef}>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold text-slate-800">
+                      Contracted Supplier <span className="text-rose-500">*</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setQuickAddError(null);
+                        setIsQuickAddSupplierModalOpen(true);
+                      }}
+                      className="text-[11px] font-bold text-[#0288D1] hover:text-[#0B1B3B] hover:underline flex items-center gap-1 cursor-pointer"
+                      title="Add a new B2B supplier without losing price form data"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>+ Add New Supplier</span>
+                    </button>
+                  </div>
+
+                  {suppliers.length === 0 ? (
+                    <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center justify-between">
+                      <span>No suppliers found. Add a supplier first.</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setQuickAddError(null);
+                          setIsQuickAddSupplierModalOpen(true);
+                        }}
+                        className="px-2.5 py-1 bg-[#0B1B3B] text-white text-[11px] font-bold rounded-lg hover:bg-[#4FC3F7] hover:text-[#0B1B3B] transition-colors"
+                      >
+                        + Add Supplier
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      {/* Searchable Select Trigger */}
+                      <div
+                        onClick={() => setIsSupplierComboboxOpen(prev => !prev)}
+                        className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl cursor-pointer flex items-center justify-between shadow-2xs hover:border-[#4FC3F7] focus:outline-none transition-colors"
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          {selectedSupplierObj ? (
+                            <>
+                              <span className="font-bold text-slate-900 truncate">
+                                {selectedSupplierObj.companyName || selectedSupplierObj.name}
+                              </span>
+                              <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-mono font-bold shrink-0">
+                                {selectedSupplierObj.code}
+                              </span>
+                              <span className="text-[10px] text-slate-500 truncate hidden sm:inline">
+                                • {selectedSupplierObj.category}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-slate-400">Select a contracted supplier...</span>
+                          )}
+                        </div>
+                        <ChevronDown className="w-4 h-4 text-slate-500 shrink-0 ml-2" />
+                      </div>
+
+                      {/* Dropdown Menu with Search */}
+                      {isSupplierComboboxOpen && (
+                        <div className="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-2 space-y-1.5 animate-in fade-in zoom-in-95">
+                          <div className="relative">
+                            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                            <input
+                              type="text"
+                              autoFocus
+                              placeholder="Search supplier by name, code, or category..."
+                              value={supplierSearchQuery}
+                              onChange={e => setSupplierSearchQuery(e.target.value)}
+                              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:border-[#4FC3F7]"
+                            />
+                          </div>
+
+                          <div className="max-h-52 overflow-y-auto space-y-1 pr-1">
+                            {filteredDropdownSuppliers.length === 0 ? (
+                              <div className="p-3 text-center text-xs text-slate-400">
+                                <p>No suppliers matching "{supplierSearchQuery}"</p>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setQuickSupplierName(supplierSearchQuery);
+                                    setIsSupplierComboboxOpen(false);
+                                    setIsQuickAddSupplierModalOpen(true);
+                                  }}
+                                  className="mt-2 px-3 py-1 bg-sky-50 text-[#0288D1] rounded-lg text-[11px] font-bold hover:bg-sky-100 transition-colors"
+                                >
+                                  + Create "{supplierSearchQuery}" as Supplier
+                                </button>
+                              </div>
+                            ) : (
+                              filteredDropdownSuppliers.map(s => {
+                                const isSelected = s.id === formData.supplierId;
+                                return (
+                                  <div
+                                    key={s.id}
+                                    onClick={() => {
+                                      setFormData({
+                                        ...formData,
+                                        supplierId: s.id,
+                                        supplierName: s.companyName || s.name
+                                      });
+                                      setIsSupplierComboboxOpen(false);
+                                      setSupplierSearchQuery('');
+                                    }}
+                                    className={`p-2 rounded-xl text-xs flex items-center justify-between cursor-pointer transition-colors ${
+                                      isSelected
+                                        ? 'bg-sky-50 text-[#0288D1] font-bold'
+                                        : 'hover:bg-slate-50 text-slate-800'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 truncate">
+                                      <span className="font-semibold text-slate-900 truncate">
+                                        {s.companyName || s.name}
+                                      </span>
+                                      <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-mono font-bold">
+                                        {s.code}
+                                      </span>
+                                      <span className="text-[10px] text-slate-400">
+                                        {s.category}
+                                      </span>
+                                    </div>
+                                    {isSelected && <Check className="w-3.5 h-3.5 text-[#0288D1] shrink-0 ml-2" />}
+                                  </div>
+                                );
+                              })
+                            )}
+                          </div>
+
+                          <div className="pt-1.5 border-t border-slate-100 flex items-center justify-between px-1">
+                            <span className="text-[10px] text-slate-400">
+                              {suppliers.length} Saved Records
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsSupplierComboboxOpen(false);
+                                setIsQuickAddSupplierModalOpen(true);
+                              }}
+                              className="text-[11px] font-bold text-[#0288D1] hover:underline"
+                            >
+                              + Add New Supplier
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Category *</label>
+                  <label className="block text-xs font-bold text-slate-800 mb-1">
+                    Category <span className="text-rose-500">*</span>
+                  </label>
                   <select
                     value={formData.category}
                     onChange={e => setFormData({ ...formData, category: e.target.value as any })}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4FC3F7] shadow-2xs font-medium"
                   >
                     {CATEGORIES.filter(c => c.value !== 'All').map(c => (
-                      <option key={c.value} value={c.value}>
+                      <option key={c.value} value={c.value} className="text-slate-900 bg-white">
                         {c.label}
                       </option>
                     ))}
@@ -636,7 +860,7 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
                   value={formData.product || formData.serviceTitle || ''}
                   onChange={e => setFormData({ ...formData, product: e.target.value, serviceTitle: e.target.value })}
                   placeholder="e.g. Dubai 5-Star Hotel - Atlantis The Palm - Deluxe King Room"
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#4FC3F7]"
+                  className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7]"
                 />
               </div>
 
@@ -648,7 +872,7 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
                     value={formData.destination || ''}
                     onChange={e => setFormData({ ...formData, destination: e.target.value })}
                     placeholder="e.g. Dubai, UAE or ISB -> DXB"
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#4FC3F7]"
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7]"
                   />
                 </div>
                 <div>
@@ -656,12 +880,12 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
                   <select
                     value={formData.source}
                     onChange={e => setFormData({ ...formData, source: e.target.value as any })}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none font-medium"
                   >
-                    <option value="Direct Portal">Direct Portal</option>
-                    <option value="Excel Import">Excel Import</option>
-                    <option value="Google Sheet Sync">Google Sheet Sync</option>
-                    <option value="WhatsApp Quote">WhatsApp Quote</option>
+                    <option value="Direct Portal" className="text-slate-900 bg-white">Direct Portal</option>
+                    <option value="Excel Import" className="text-slate-900 bg-white">Excel Import</option>
+                    <option value="Google Sheet Sync" className="text-slate-900 bg-white">Google Sheet Sync</option>
+                    <option value="WhatsApp Quote" className="text-slate-900 bg-white">WhatsApp Quote</option>
                   </select>
                 </div>
               </div>
@@ -742,7 +966,7 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
                     value={formData.inclusions || ''}
                     onChange={e => setFormData({ ...formData, inclusions: e.target.value })}
                     placeholder="e.g. Daily buffet breakfast, airport pickup, taxes"
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7]"
                   />
                 </div>
                 <div>
@@ -752,7 +976,7 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
                     value={formData.cancellationPolicy || ''}
                     onChange={e => setFormData({ ...formData, cancellationPolicy: e.target.value })}
                     placeholder="e.g. Free cancellation up to 48 hours prior"
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7]"
                   />
                 </div>
               </div>
@@ -764,7 +988,7 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
                     type="date"
                     value={formData.validityEnd || ''}
                     onChange={e => setFormData({ ...formData, validityEnd: e.target.value })}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7] font-medium"
                   />
                 </div>
                 <div>
@@ -772,11 +996,11 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
                   <select
                     value={formData.availability}
                     onChange={e => setFormData({ ...formData, availability: e.target.value as any })}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none font-medium"
                   >
-                    <option value="Instant Confirm">Instant Confirm</option>
-                    <option value="On Request">On Request</option>
-                    <option value="Sold Out">Sold Out</option>
+                    <option value="Instant Confirm" className="text-slate-900 bg-white">Instant Confirm</option>
+                    <option value="On Request" className="text-slate-900 bg-white">On Request</option>
+                    <option value="Sold Out" className="text-slate-900 bg-white">Sold Out</option>
                   </select>
                 </div>
               </div>
@@ -788,7 +1012,7 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
                   value={formData.notes || ''}
                   onChange={e => setFormData({ ...formData, notes: e.target.value })}
                   placeholder="Private notes for staff, promo codes, direct desk contacts..."
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
+                  className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7]"
                 />
               </div>
 
@@ -799,15 +1023,177 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
                     setIsAddModalOpen(false);
                     setEditingPrice(null);
                   }}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50"
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#0B1B3B] text-white text-xs font-bold hover:bg-[#4FC3F7] hover:text-[#0B1B3B] transition-colors"
+                  className="px-5 py-2 rounded-xl bg-[#0B1B3B] text-white text-xs font-bold hover:bg-[#4FC3F7] hover:text-[#0B1B3B] transition-colors shadow-sm"
                 >
                   {editingPrice ? 'Save Rate Changes' : 'Add to Rate Database'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Safe Quick Add Supplier Sub-Modal (preserves rate form data) */}
+      {isQuickAddSupplierModalOpen && (
+        <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-sky-100 text-[#0288D1] flex items-center justify-center">
+                  <Building2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-[#0B1B3B]">
+                    Add New Contracted Supplier
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Saves to Supplier Management and selects immediately without losing rate data.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsQuickAddSupplierModalOpen(false);
+                  setQuickAddError(null);
+                }}
+                className="text-slate-400 hover:text-slate-600 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {quickAddError && (
+              <div className="p-3 text-xs bg-rose-50 text-rose-700 border border-rose-200 rounded-xl">
+                {quickAddError}
+              </div>
+            )}
+
+            <form onSubmit={handleQuickAddSupplierSubmit} className="space-y-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Company / Supplier Name <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Al-Rajhi Umrah & Hotel Services"
+                    value={quickSupplierName}
+                    onChange={e => setQuickSupplierName(e.target.value)}
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Supplier Code / Tag
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. RJ-UMR"
+                    value={quickSupplierCode}
+                    onChange={e => setQuickSupplierCode(e.target.value)}
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Category <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    value={quickSupplierCategory}
+                    onChange={e => setQuickSupplierCategory(e.target.value as SupplierCategory)}
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7] font-medium"
+                  >
+                    {CATEGORIES.filter(c => c.value !== 'All').map(c => (
+                      <option key={c.value} value={c.value} className="text-slate-900 bg-white">
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Settlement Currency
+                  </label>
+                  <select
+                    value={quickSupplierCurrency}
+                    onChange={e => setQuickSupplierCurrency(e.target.value)}
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7] font-medium"
+                  >
+                    {Object.keys(CURRENCY_RATES_PKR).map(c => (
+                      <option key={c} value={c} className="text-slate-900 bg-white">
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Contact Person
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Sheikh Tariq"
+                    value={quickSupplierContact}
+                    onChange={e => setQuickSupplierContact(e.target.value)}
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Phone / WhatsApp
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. +966 50 1234567"
+                    value={quickSupplierPhone}
+                    onChange={e => setQuickSupplierPhone(e.target.value)}
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="b2b@supplier.com"
+                    value={quickSupplierEmail}
+                    onChange={e => setQuickSupplierEmail(e.target.value)}
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:border-[#4FC3F7]"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsQuickAddSupplierModalOpen(false);
+                    setQuickAddError(null);
+                  }}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-[#0B1B3B] text-white text-xs font-bold hover:bg-[#4FC3F7] hover:text-[#0B1B3B] transition-colors shadow-sm"
+                >
+                  Save & Select Supplier
                 </button>
               </div>
             </form>

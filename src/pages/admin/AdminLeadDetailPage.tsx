@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useCrm } from '../../context/CrmContext';
 import { LeadPriority, LeadStatus, ServiceType } from '../../types';
 import { getWhatsAppLink } from '../../data/companyInfo';
+import { openOfficialBusinessEmail, getOfficialBusinessEmailUrl } from '../../utils/businessEmail';
 import {
   ArrowLeft,
   Phone,
@@ -111,13 +112,16 @@ export const AdminLeadDetailPage: React.FC = () => {
     setTimeout(() => setFollowUpSuccess(false), 3000);
   };
 
+  const [showConvertConfirm, setShowConvertConfirm] = useState(false);
+  const [convertSuccess, setConvertSuccess] = useState<string | null>(null);
+
   const handleConvert = () => {
-    if (confirm(`Convert lead ${lead.fullName} (${lead.id}) into an official Customer record? This will generate a unique Customer ID (CUS-2026-XXXXX) and initialize a linked travel/visa case.`)) {
-      const customer = convertToCustomer(lead.id);
-      if (customer) {
-        alert(`Successfully converted! Customer ID: ${customer.id}.`);
+    const customer = convertToCustomer(lead.id);
+    if (customer) {
+      setConvertSuccess(`Successfully converted! Customer ID: ${customer.id}`);
+      setTimeout(() => {
         navigate('/admin/customers');
-      }
+      }, 1000);
     }
   };
 
@@ -245,11 +249,26 @@ export const AdminLeadDetailPage: React.FC = () => {
 
               {lead.email && (
                 <a
-                  href={`mailto:${lead.email}?subject=SkyBridge Travel Inquiry: ${lead.id}`}
-                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-colors flex items-center gap-1.5"
+                  href={getOfficialBusinessEmailUrl({
+                    to: lead.email,
+                    subject: `SkyBridge Travel Inquiry: ${lead.id}`
+                  })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) =>
+                    openOfficialBusinessEmail(
+                      {
+                        to: lead.email,
+                        subject: `SkyBridge Travel Inquiry: ${lead.id}`
+                      },
+                      e
+                    )
+                  }
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer"
+                  title="Compose from official business email (info@skybridgetravelandtourism.com) in browser"
                 >
                   <Mail className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Email</span>
+                  <span>Email (info@)</span>
                 </a>
               )}
             </div>

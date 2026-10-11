@@ -4,6 +4,7 @@ import { useCrm } from '../context/CrmContext';
 import { ServiceType } from '../types';
 import { COMPANY_INFO } from '../data/companyInfo';
 import { buildWhatsAppInquiryUrl, buildMailtoInquiryUrl } from '../services/inquiryNotificationService';
+import { openOfficialBusinessEmail, getOfficialBusinessEmailUrl } from '../utils/businessEmail';
 
 interface BookingInquiryModalProps {
   isOpen: boolean;
@@ -149,7 +150,14 @@ export const BookingInquiryModal: React.FC<BookingInquiryModalProps> = ({
                 <div className="space-y-1 text-slate-600">
                   <div className="flex items-center justify-between">
                     <span>Official Email:</span>
-                    <a href="mailto:info@skybridgetravelandtourism.com" className="font-semibold text-[#0B1B3B] hover:text-[#0288D1]">
+                    <a
+                      href={getOfficialBusinessEmailUrl({
+                        to: 'info@skybridgetravelandtourism.com',
+                        subject: 'Website Enquiry — SkyBridge Travel & Tourism'
+                      })}
+                      className="font-semibold text-[#0B1B3B] hover:text-[#0288D1]"
+                      title="Send email to info@skybridgetravelandtourism.com"
+                    >
                       info@skybridgetravelandtourism.com
                     </a>
                   </div>
@@ -212,10 +220,13 @@ export const BookingInquiryModal: React.FC<BookingInquiryModalProps> = ({
                     passengers: Number(formData.passengers),
                     message: formData.message
                   })}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors cursor-pointer"
+                  title="Open official email in web browser"
                 >
                   <Mail className="w-4 h-4 text-slate-600" />
-                  <span>Send Direct Email</span>
+                  <span>Send Direct Email (info@)</span>
                 </a>
                 <button
                   type="button"

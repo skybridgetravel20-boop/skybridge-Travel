@@ -45,13 +45,13 @@ Deploying via Netlify connects directly to your GitHub repository and automatica
 1. In your Netlify site dashboard, navigate to **Site configuration > Domain management**.
 2. Click **Add a domain** and enter `skybridgetours.com`. Click **Verify** and confirm **Add domain**.
 3. Netlify will recommend setting up `www.skybridgetours.com` as well.
-4. In your domain registrar (e.g., Namecheap):
-   - Go to **Advanced DNS > Host Records**.
-   - Delete existing parking records.
+4. In your domain registrar DNS dashboard (cPanel, Cloudflare, GoDaddy, Hostinger, etc.):
+   - Go to **DNS Management > Records**.
+   - Delete existing default parking records.
    - Add the Netlify DNS records:
      - **A Record**: Host `@` → Value `75.2.60.5` (Netlify load balancer IP)
      - **CNAME Record**: Host `www` → Value `<your-site-name>.netlify.app`
-   *(Alternatively, you can use Netlify DNS by pointing Namecheap nameservers to Netlify's assigned nameservers).*
+   *(Alternatively, you can use Netlify DNS by pointing your domain's nameservers to Netlify's assigned nameservers).*
 5. Once DNS records resolve (typically 5–30 minutes), Netlify will automatically provision a free Let's Encrypt SSL/TLS certificate (HTTPS).
 
 ---

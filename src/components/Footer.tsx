@@ -16,6 +16,7 @@ import {
 import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
 import { SkyBridgeLogo } from './SkyBridgeLogo';
 import { WhatsAppIcon } from './WhatsAppIcon';
+import { openOfficialBusinessEmail, getOfficialBusinessEmailUrl } from '../utils/businessEmail';
 
 export const Footer: React.FC = () => {
   return (
@@ -205,7 +206,14 @@ export const Footer: React.FC = () => {
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-[#4FC3F7] shrink-0" />
-                <a href={`mailto:${COMPANY_INFO.email}`} className="hover:text-white">
+                <a
+                  href={getOfficialBusinessEmailUrl({
+                    to: COMPANY_INFO.email,
+                    subject: 'Website Enquiry — SkyBridge Travel & Tourism'
+                  })}
+                  className="hover:text-white"
+                  title={`Send email to ${COMPANY_INFO.email}`}
+                >
                   {COMPANY_INFO.email}
                 </a>
               </div>

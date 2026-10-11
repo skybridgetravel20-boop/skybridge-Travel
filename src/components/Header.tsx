@@ -18,6 +18,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { LanguageSelector } from './LanguageSelector';
 import { SkyBridgeLogo } from './SkyBridgeLogo';
 import { WhatsAppIcon } from './WhatsAppIcon';
+import { openOfficialBusinessEmail, getOfficialBusinessEmailUrl } from '../utils/businessEmail';
 
 export const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -76,7 +77,14 @@ export const Header: React.FC = () => {
             </div>
             <div className="flex items-center space-x-2">
               <Mail className="w-3.5 h-3.5 text-[#4FC3F7]" />
-              <a href={`mailto:${COMPANY_INFO.email}`} className="hover:text-white transition-colors">
+              <a
+                href={getOfficialBusinessEmailUrl({
+                  to: COMPANY_INFO.email,
+                  subject: 'Website Enquiry — SkyBridge Travel & Tourism'
+                })}
+                className="hover:text-white transition-colors"
+                title={`Send email to ${COMPANY_INFO.email}`}
+              >
                 {COMPANY_INFO.email}
               </a>
             </div>

@@ -178,21 +178,30 @@ export const AdminCaseSupportPage: React.FC = () => {
     }
   };
 
+  const [dispatchError, setDispatchError] = useState<string | null>(null);
+  const [caseModalError, setCaseModalError] = useState<string | null>(null);
+
   const handleSendWhatsApp = () => {
+    setDispatchError(null);
     const rawDigits = (dispatchCountryCode + dispatchPhone).replace(/[^0-9]/g, '');
     if (!rawDigits) {
-      alert('Please enter a valid traveler phone number.');
+      setDispatchError('Please enter a valid traveler phone number.');
       return;
     }
     const message = encodeURIComponent(getDispatchedText());
     const waUrl = `https://wa.me/${rawDigits}?text=${message}`;
-    window.open(waUrl, '_blank');
+    const link = document.createElement('a');
+    link.href = waUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.click();
   };
 
   const handleCreateCase = (e: React.FormEvent) => {
     e.preventDefault();
+    setCaseModalError(null);
     if (!newCaseData.clientName || !newCaseData.clientPhone) {
-      alert('Please provide client name and phone number.');
+      setCaseModalError('Please provide client name and phone number.');
       return;
     }
     const newCase: WorldwideCase = {
@@ -213,10 +222,8 @@ export const AdminCaseSupportPage: React.FC = () => {
   };
 
   const handleDeleteCase = (id: string) => {
-    if (confirm('Delete this case record?')) {
-      const updated = cases.filter(c => c.id !== id);
-      saveCases(updated);
-    }
+    const updated = cases.filter(c => c.id !== id);
+    saveCases(updated);
   };
 
   // PASSWORD LOCK SCREEN
@@ -527,6 +534,13 @@ export const AdminCaseSupportPage: React.FC = () => {
               </p>
             </div>
 
+            {dispatchError && (
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center justify-between">
+                <span>{dispatchError}</span>
+                <button onClick={() => setDispatchError(null)} className="font-bold">✕</button>
+              </div>
+            )}
+
             <button
               type="button"
               onClick={handleSendWhatsApp}
@@ -627,7 +641,12 @@ export const AdminCaseSupportPage: React.FC = () => {
                           const text = encodeURIComponent(
                             `Assalam o Alaikum ${c.clientName}, SkyBridge CEO Desk following up on your case (${c.id} - ${c.service}). How can we assist you right now?`
                           );
-                          window.open(`https://wa.me/${digits}?text=${text}`, '_blank');
+                          const waUrl = `https://wa.me/${digits}?text=${text}`;
+                          const link = document.createElement('a');
+                          link.href = waUrl;
+                          link.target = '_blank';
+                          link.rel = 'noopener noreferrer';
+                          link.click();
                         }}
                         className="p-1.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-800 transition-colors"
                         title="Chat on WhatsApp"

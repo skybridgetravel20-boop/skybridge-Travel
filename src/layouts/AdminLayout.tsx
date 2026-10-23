@@ -50,6 +50,7 @@ import {
   Globe,
   Share2,
   Megaphone,
+  Moon,
   ShieldCheck as ShieldCheckIcon
 } from 'lucide-react';
 import { BackendLiveCopilot } from '../components/admin/BackendLiveCopilot';
@@ -123,6 +124,7 @@ export const AdminLayout: React.FC = () => {
         { label: 'Payments & Reconciliation', path: '/admin/invoices', icon: <FileText className="w-4 h-4 text-amber-600" /> },
         { label: 'Daily Operations & Follow-ups', path: '/admin/follow-ups', icon: <Calendar className="w-4 h-4 text-slate-600" /> },
         { label: 'Tasks & Workflow', path: '/admin/tasks', icon: <CheckSquare className="w-4 h-4 text-slate-600" /> },
+        { label: 'Umrah Pilgrim Tracker', path: '/admin/dashboard#umrah-status-tracker', icon: <Moon className="w-4 h-4 text-emerald-500" /> },
       ]
     },
     {

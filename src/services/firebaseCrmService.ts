@@ -21,7 +21,8 @@ import {
   Supplier,
   Invoice,
   ServiceItem,
-  DiscoveredLead
+  DiscoveredLead,
+  UmrahPilgrimRecord
 } from '../types';
 
 export enum OperationType {
@@ -84,6 +85,7 @@ export const CRM_COLLECTIONS = {
   TASKS: 'tasks',
   SUPPLIERS: 'suppliers',
   INVOICES: 'invoices',
+  UMRAH_PILGRIMS: 'umrah_pilgrims',
   TEST: 'test'
 } as const;
 
@@ -486,4 +488,47 @@ export async function seedInitialCrmDataToFirebase(initialData: {
     console.error('Error seeding CRM data to Firebase:', err);
     return { success: false, count };
   }
+}
+
+// -------------------------------------------------------------
+// UMRAH PILGRIMS
+// -------------------------------------------------------------
+export async function getUmrahPilgrimsFromFirebase(): Promise<UmrahPilgrimRecord[]> {
+  try {
+    const snap = await getDocs(collection(db, CRM_COLLECTIONS.UMRAH_PILGRIMS));
+    return snap.docs.map(d => ({ ...d.data(), id: d.id } as UmrahPilgrimRecord));
+  } catch (err) {
+    handleFirestoreError(err, OperationType.LIST, CRM_COLLECTIONS.UMRAH_PILGRIMS);
+  }
+}
+
+export async function saveUmrahPilgrimToFirebase(pilgrim: UmrahPilgrimRecord): Promise<void> {
+  const path = `${CRM_COLLECTIONS.UMRAH_PILGRIMS}/${pilgrim.id}`;
+  try {
+    await setDoc(doc(db, CRM_COLLECTIONS.UMRAH_PILGRIMS, pilgrim.id), cleanData(pilgrim));
+  } catch (err) {
+    handleFirestoreError(err, OperationType.WRITE, path);
+  }
+}
+
+export async function deleteUmrahPilgrimFromFirebase(pilgrimId: string): Promise<void> {
+  const path = `${CRM_COLLECTIONS.UMRAH_PILGRIMS}/${pilgrimId}`;
+  try {
+    await deleteDoc(doc(db, CRM_COLLECTIONS.UMRAH_PILGRIMS, pilgrimId));
+  } catch (err) {
+    handleFirestoreError(err, OperationType.DELETE, path);
+  }
+}
+
+export function subscribeToUmrahPilgrims(onData: (pilgrims: UmrahPilgrimRecord[]) => void): Unsubscribe {
+  return onSnapshot(
+    collection(db, CRM_COLLECTIONS.UMRAH_PILGRIMS),
+    (snap) => {
+      const items = snap.docs.map(d => ({ ...d.data(), id: d.id } as UmrahPilgrimRecord));
+      onData(items);
+    },
+    (err) => {
+      handleFirestoreError(err, OperationType.GET, CRM_COLLECTIONS.UMRAH_PILGRIMS);
+    }
+  );
 }

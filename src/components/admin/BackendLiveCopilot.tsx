@@ -36,6 +36,7 @@ import {
   transcribeAndTranslateVoice,
   translateText
 } from '../../utils/speechVoiceService';
+import { CleanFormattedMessage } from '../../pages/admin/AdminSchengenAgentPage';
 
 interface ChatMessage {
   id: string;
@@ -54,6 +55,11 @@ interface ChatMessage {
 export const BackendLiveCopilot: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Completely hide on the login page to ensure it never blocks login credentials, inputs, or text
+  if (location.pathname === '/admin/login') {
+    return null;
+  }
 
   // Active state
   const [isOpen, setIsOpen] = useState(false);
@@ -384,47 +390,28 @@ export const BackendLiveCopilot: React.FC = () => {
 
   return (
     <>
-      {/* 1. Minimized Floating Trigger Button */}
+      {/* 1. Compact Minimized Floating Trigger Icon */}
       {!isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2">
-          {/* Quick Browser Email Launcher */}
-          <button
-            onClick={(e) => openOfficialBusinessEmail({}, e)}
-            title={`Open Official Business Email (${OFFICIAL_BUSINESS_EMAIL}) in browser`}
-            className="hidden sm:flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-slate-900/90 text-sky-300 border border-sky-500/30 shadow-xl backdrop-blur-md hover:bg-slate-800 hover:text-sky-200 transition-all text-xs font-semibold group"
-          >
-            <Mail className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
-            <span className="font-mono text-[11px]">info@skybridgetravelandtourism.com</span>
-          </button>
-
-          {/* Main Floating Copilot Capsule */}
+        <div className="fixed bottom-5 right-5 z-40">
           <button
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-slate-950 via-indigo-950 to-blue-900 text-white shadow-2xl border border-indigo-400/40 hover:border-cyan-400/60 hover:shadow-cyan-500/20 hover:scale-105 active:scale-95 transition-all group"
+            className="relative flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-[#0B1B3B] via-indigo-950 to-blue-900 text-white shadow-xl border border-indigo-400/40 hover:border-cyan-400 hover:shadow-cyan-500/30 hover:scale-110 active:scale-95 transition-all group focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+            title="Gemini Live Copilot (Click to open)"
+            aria-label="Open Gemini Live Copilot"
           >
-            <div className="relative">
-              <div className="w-3 h-3 rounded-full bg-cyan-400 animate-ping absolute -top-0.5 -right-0.5 opacity-75" />
-              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center text-white shadow-inner">
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
-            </div>
+            {/* Live pulsing indicator dot */}
+            <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500 border border-slate-900"></span>
+            </span>
 
-            <div className="text-left">
-              <div className="flex items-center gap-1.5 text-xs font-bold tracking-wide">
-                <span>Gemini Live Copilot</span>
-                <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono border border-emerald-500/30">
-                  LIVE
-                </span>
-              </div>
-              <div className="text-[10px] text-slate-300 flex items-center gap-1">
-                <span>Director AI Assistant</span>
-                <span className="text-cyan-400">• Voice & Validation</span>
-              </div>
-            </div>
+            {/* Glowing Icon */}
+            <Sparkles className="w-5 h-5 text-cyan-300 group-hover:text-white transition-colors" />
 
-            <div className="p-1.5 rounded-full bg-white/10 group-hover:bg-cyan-500/20 transition-colors ml-1">
-              <Mic className="w-3.5 h-3.5 text-cyan-300" />
-            </div>
+            {/* Discreet Hover Tooltip that appears only on hover without blocking */}
+            <span className="pointer-events-none absolute right-14 whitespace-nowrap px-2.5 py-1 rounded-xl bg-slate-900/95 text-slate-100 text-[11px] font-medium border border-slate-800 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              Gemini Copilot
+            </span>
           </button>
         </div>
       )}
@@ -644,7 +631,7 @@ export const BackendLiveCopilot: React.FC = () => {
                       )}
 
                       {/* Message Content */}
-                      <div className="space-y-1.5">{msg.text}</div>
+                      <CleanFormattedMessage text={msg.text} isUser={msg.sender === 'user'} />
 
                       {/* Direct Navigation / Action Button inside Chat */}
                       {msg.quickAction && (

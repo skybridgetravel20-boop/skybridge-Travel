@@ -4,6 +4,11 @@ import { PageHero } from '../components/PageHero';
 import { DOCUMENTATION_PROCESS } from '../data/servicesData';
 import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
 import { ServiceType } from '../types';
+import { SeoMeta } from '../components/seo/SeoMeta';
+import { GeoKeyTakeaways } from '../components/seo/GeoKeyTakeaways';
+import { AeoFaqSection } from '../components/seo/AeoFaqSection';
+import { SxoTrustBadges } from '../components/seo/SxoTrustBadges';
+import { FAQ_ITEMS } from '../data/faqData';
 import {
   Stamp,
   FileCheck2,
@@ -142,8 +147,84 @@ export const VisaServicesPage: React.FC = () => {
 
   const currentCategory = visaCategories.find(c => c.id === activeTab) || visaCategories[0];
 
+  const visaFaqs = FAQ_ITEMS.filter(
+      f => f.category === 'Visa Services' || f.category === 'Documentation' || f.id === 'faq-2' || f.id === 'faq-5' || f.id === 'faq-6' || f.id === 'faq-9'
+    );
+
+    const visaGeoTakeaways = [
+      {
+        label: "Official Schengen Fee 2026",
+        value: "€90 Adult | €45 Child (6-12) | Free (<6)",
+        badge: "Statutory Law",
+        highlight: true
+      },
+      {
+        label: "Bank Statement Standard",
+        value: "6-Month Stamped Statement + Maint. Certificate",
+        badge: "Financial Proof"
+      },
+      {
+        label: "Processing Turnaround",
+        value: "15 to 45 Calendar Days (Embassy Regulated)",
+        badge: "Timeline"
+      },
+      {
+        label: "Lahore Submission Centers",
+        value: "VFS Global / Gerry's / BLS International",
+        badge: "Biometrics"
+      },
+      {
+        label: "Audit & Review Standard",
+        value: "100% Pre-Submission Checklist Compliance",
+        badge: "Quality"
+      },
+      {
+        label: "Authorized Consular Advisory",
+        value: "+92 324 4444167 | +92 345 4444167",
+        badge: "Direct Line",
+        highlight: true
+      }
+    ];
+
   return (
     <div>
+      <SeoMeta
+        title="Visa Services & File Clearance Lahore | Schengen, UK, USA, Canada"
+        description="Expert tourist and visit visa consultancy in Lahore for Schengen 29 states, UK, USA B1/B2, Canada TRV, Australia, and GCC e-visas. Call +92 324 4444167."
+        canonicalPath="/visa-services"
+        keywords="Visa consultant Lahore, Schengen visa assistance Lahore, UK visit visa Pakistan, US tourist visa Lahore, Canada TRV consultant, SkyBridge Travel visa service"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "Worldwide Visa Consultancy & File Documentation Clearance",
+          "serviceType": "Visa Consultation",
+          "provider": {
+            "@type": "TravelAgency",
+            "name": "SkyBridge Travel & Tourism",
+            "url": "https://skybridgetravelandtourism.com",
+            "telephone": ["+923244444167", "+923454444167"],
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "House No 05, Gulshan Street, Nadeem Town, Multan Road",
+              "addressLocality": "Lahore",
+              "addressRegion": "Punjab",
+              "addressCountry": "PK"
+            }
+          },
+          "areaServed": "Pakistan",
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Visa File Services",
+            "itemListElement": [
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Schengen 29 States Tourist & Business Visa Assistance" } },
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "UK Standard Visitor Visa Advisory" } },
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "USA B1/B2 Non-Immigrant Visa Guidance" } },
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Canada Temporary Resident Visa (TRV)" } }
+            ]
+          }
+        }}
+      />
+
       <PageHero
         title="Visa Services & Documentation Clearance"
         subtitle="Embassy-tuned file structuring, customized cover letters, and comprehensive checklist reviews for global tourist, family, and student visas."
@@ -151,6 +232,17 @@ export const VisaServicesPage: React.FC = () => {
         breadcrumbs={[{ label: 'Visa Services' }]}
         bgImage="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1920&q=80"
       />
+
+      {/* GEO Key Takeaways Knowledge Block */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10 mb-12">
+        <GeoKeyTakeaways
+          title="Consular Intelligence & Key Visa Facts 2026"
+          subtitle="Direct, verified data for applicants and AI search engines"
+          items={visaGeoTakeaways}
+          authorityNote="All visa fees quoted are statutory government fees payable directly to embassies or their authorized biometric partners. SkyBridge provides advisory and file structuring."
+          disclaimer="SkyBridge Travel & Tourism does not guarantee visa issuance. Visa grants remain solely within consular sovereign jurisdiction."
+        />
+      </div>
 
       {/* Main Visa Navigation by Region */}
       <section className="py-20 bg-white">
@@ -394,6 +486,21 @@ export const VisaServicesPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* SXO Trust Architecture & Badges */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SxoTrustBadges />
+      </div>
+
+      {/* AEO Direct Answer Q&A Knowledge Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AeoFaqSection
+          title="Visa Documentation & Consular FAQ"
+          subtitle="Clear, verified answers to common embassy procedures, financial proofs, and appointment booking questions"
+          faqs={visaFaqs}
+          defaultOpenId="faq-2"
+        />
+      </div>
 
       {/* Mandatory Consular Statement */}
       <section className="py-12 bg-amber-50 border-t border-amber-200/80">

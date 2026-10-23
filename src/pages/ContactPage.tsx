@@ -7,6 +7,11 @@ import { ServiceType } from '../types';
 import { buildWhatsAppInquiryUrl, buildMailtoInquiryUrl } from '../services/inquiryNotificationService';
 import { WhatsAppIcon } from '../components/WhatsAppIcon';
 import { openOfficialBusinessEmail, getOfficialBusinessEmailUrl } from '../utils/businessEmail';
+import { SeoMeta } from '../components/seo/SeoMeta';
+import { GeoKeyTakeaways } from '../components/seo/GeoKeyTakeaways';
+import { AeoFaqSection } from '../components/seo/AeoFaqSection';
+import { SxoTrustBadges } from '../components/seo/SxoTrustBadges';
+import { FAQ_ITEMS } from '../data/faqData';
 import {
   Phone,
   Mail,
@@ -70,8 +75,79 @@ export const ContactPage: React.FC = () => {
     }
   };
 
+  const contactGeoTakeaways = [
+    {
+      label: "Official Head Office",
+      value: "House No 05, Gulshan St, Nadeem Town, Multan Rd, Lahore",
+      badge: "Physical Location",
+      highlight: true
+    },
+    {
+      label: "Direct Phone Lines",
+      value: "+92 324 4444167 | +92 345 4444167",
+      badge: "Voice & WhatsApp"
+    },
+    {
+      label: "Business Email",
+      value: "info@skybridgetravelandtourism.com",
+      badge: "Inquiries"
+    },
+    {
+      label: "Operating Hours",
+      value: "Mon - Sat: 9:00 AM - 11:00 PM | Sun: Appointment",
+      badge: "6 Days a Week"
+    },
+    {
+      label: "Executive Leadership",
+      value: "Urwa Ali (Director & Founder)",
+      badge: "Leadership",
+      highlight: true
+    },
+    {
+      label: "Consultation Model",
+      value: "Walk-in & Scheduled Virtual Appointments",
+      badge: "Client Service"
+    }
+  ];
+
+  const contactFaqs = FAQ_ITEMS.filter(
+    f => f.id === 'faq-1' || f.id === 'faq-10' || f.id === 'faq-2' || f.id === 'faq-8'
+  );
+
   return (
     <div>
+      <SeoMeta
+        title="Contact SkyBridge Travel & Tourism Lahore | Office Address & Phone"
+        description="Contact SkyBridge Travel & Tourism Lahore office at House No 05, Gulshan Street, Nadeem Town, Multan Road. Call +92 324 4444167 / +92 345 4444167."
+        canonicalPath="/contact"
+        keywords="Contact travel agency Lahore, SkyBridge Travel phone number, travel agent Multan Road, visa consultancy Lahore address, WhatsApp travel advisor Pakistan"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          "name": "Contact SkyBridge Travel & Tourism",
+          "url": "https://skybridgetravelandtourism.com/contact",
+          "mainEntity": {
+            "@type": "TravelAgency",
+            "name": "SkyBridge Travel & Tourism",
+            "telephone": ["+923244444167", "+923454444167"],
+            "email": "info@skybridgetravelandtourism.com",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "House No 05, Gulshan Street, Nadeem Town, Multan Road",
+              "addressLocality": "Lahore",
+              "addressRegion": "Punjab",
+              "postalCode": "54000",
+              "addressCountry": "PK"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 31.5204,
+              "longitude": 74.3587
+            }
+          }
+        }}
+      />
+
       <PageHero
         title="Contact SkyBridge Travel & Tourism"
         subtitle="Reach our international travel specialists in Lahore or connect online for flights, hotels, visa documentation, and customized holiday packages."
@@ -79,6 +155,16 @@ export const ContactPage: React.FC = () => {
         breadcrumbs={[{ label: 'Contact Us' }]}
         bgImage="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80"
       />
+
+      {/* GEO Key Takeaways Knowledge Block */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10 mb-8">
+        <GeoKeyTakeaways
+          title="SkyBridge Travel & Tourism Official Contact Directory"
+          subtitle="Direct verified coordinates for clients, partners, and search engines"
+          items={contactGeoTakeaways}
+          authorityNote="All official communications should only be conducted through verified company numbers and domains ending in skybridgetravelandtourism.com."
+        />
+      </div>
 
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -541,6 +627,21 @@ export const ContactPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* SXO Trust Signals */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SxoTrustBadges />
+      </div>
+
+      {/* AEO Direct Answer Q&A Knowledge Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AeoFaqSection
+          title="Contact & Location FAQ"
+          subtitle="Answers to common queries regarding office visits, appointments, remote online consultations, and response times"
+          faqs={contactFaqs}
+          defaultOpenId="faq-10"
+        />
+      </div>
     </div>
   );
 };

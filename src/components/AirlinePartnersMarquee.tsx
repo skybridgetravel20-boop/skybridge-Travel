@@ -307,6 +307,48 @@ const AIRLINE_PARTNERS: AirlinePartner[] = [
         </text>
       </svg>
     )
+  },
+  {
+    id: 'gulf-air',
+    name: 'Gulf Air',
+    iata: 'GF',
+    hub: 'Bahrain (BAH)',
+    alliance: 'National Carrier of Bahrain',
+    badgeColor: 'bg-[#9E7D3B] text-white',
+    renderLogo: () => (
+      <svg className="h-8 w-auto max-w-[140px]" viewBox="0 0 170 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gulf Air logo">
+        {/* Golden Falcon emblem */}
+        <path d="M14 30C18 20 28 14 36 20C28 24 22 34 14 30Z" fill="#9E7D3B" />
+        <circle cx="34" cy="18" r="2.5" fill="#9E7D3B" />
+        <text x="44" y="25" fill="#9E7D3B" fontFamily="sans-serif" fontWeight="900" fontSize="14" letterSpacing="1">
+          GULF AIR
+        </text>
+        <text x="44" y="37" fill="#64748B" fontFamily="sans-serif" fontWeight="700" fontSize="10">
+          طيران الخليج
+        </text>
+      </svg>
+    )
+  },
+  {
+    id: 'oman-air',
+    name: 'Oman Air',
+    iata: 'WY',
+    hub: 'Muscat (MCT)',
+    alliance: 'oneworld (Elect)',
+    badgeColor: 'bg-[#B5121B] text-white',
+    renderLogo: () => (
+      <svg className="h-8 w-auto max-w-[145px]" viewBox="0 0 170 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Oman Air logo">
+        {/* Silver and red swirl emblem */}
+        <circle cx="22" cy="24" r="16" fill="#1A4A7A" />
+        <path d="M14 26C16 18 26 16 30 22C24 24 18 30 14 26Z" fill="#D4AF37" />
+        <text x="46" y="25" fill="#1A4A7A" fontFamily="sans-serif" fontWeight="900" fontSize="14" letterSpacing="1">
+          OMAN AIR
+        </text>
+        <text x="46" y="37" fill="#64748B" fontFamily="sans-serif" fontWeight="700" fontSize="10">
+          الطيران العماني
+        </text>
+      </svg>
+    )
   }
 ];
 

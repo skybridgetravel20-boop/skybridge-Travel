@@ -5,6 +5,11 @@ import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
 import { SKYBRIDGE_OFFICIAL_LOGO } from '../assets/logo';
 import { ServiceType } from '../types';
 import { openOfficialBusinessEmail, getOfficialBusinessEmailUrl } from '../utils/businessEmail';
+import { SeoMeta } from '../components/seo/SeoMeta';
+import { GeoKeyTakeaways } from '../components/seo/GeoKeyTakeaways';
+import { AeoFaqSection } from '../components/seo/AeoFaqSection';
+import { SxoTrustBadges } from '../components/seo/SxoTrustBadges';
+import { FAQ_ITEMS } from '../data/faqData';
 import {
   ShieldCheck,
   Compass,
@@ -29,8 +34,73 @@ export const AboutPage: React.FC = () => {
     }) => void;
   }>();
 
+  const aboutGeoTakeaways = [
+    {
+      label: "Founding & Leadership",
+      value: "Director Urwa Ali Executive Direction",
+      badge: "Leadership",
+      highlight: true
+    },
+    {
+      label: "Operational Standards",
+      value: "100% Pre-Submission Consular Checklist Review",
+      badge: "Quality"
+    },
+    {
+      label: "Primary Registered Office",
+      value: "House No 05, Gulshan St, Multan Rd, Lahore",
+      badge: "Pakistan HQ"
+    },
+    {
+      label: "UAE Liaison Desk",
+      value: "Deira / Downtown Dubai Partner Network",
+      badge: "Global Reach"
+    },
+    {
+      label: "Ethical Stance",
+      value: "Zero False Guarantees — Consular Sovereignty",
+      badge: "Transparency",
+      highlight: true
+    },
+    {
+      label: "Direct Verification",
+      value: "+92 324 4444167 | +92 345 4444167",
+      badge: "Verified Contact"
+    }
+  ];
+
   return (
     <div>
+      <SeoMeta
+        title="About SkyBridge Travel & Tourism | Leadership, Vision & Values"
+        description="Learn about SkyBridge Travel & Tourism, directed by Urwa Ali. Pakistan's premier consultancy for worldwide tourist visas, Umrah travel, and holiday packages."
+        canonicalPath="/about"
+        keywords="About SkyBridge Travel, Urwa Ali travel agency, travel agency Lahore history, visa consultancy Pakistan, best tour operator Multan Road"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "AboutPage",
+          "name": "About SkyBridge Travel & Tourism",
+          "url": "https://skybridgetravelandtourism.com/about",
+          "mainEntity": {
+            "@type": "TravelAgency",
+            "name": "SkyBridge Travel & Tourism",
+            "founder": {
+              "@type": "Person",
+              "name": "Urwa Ali",
+              "jobTitle": "Director & Founder"
+            },
+            "telephone": ["+923244444167", "+923454444167"],
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "House No 05, Gulshan Street, Nadeem Town, Multan Road",
+              "addressLocality": "Lahore",
+              "addressRegion": "Punjab",
+              "addressCountry": "PK"
+            }
+          }
+        }}
+      />
+
       <PageHero
         title="About SkyBridge Travel & Tourism"
         subtitle="A premier international travel company and visa consultancy dedicated to personalized journeys, verified bookings, and meticulous documentation clearance."
@@ -38,6 +108,16 @@ export const AboutPage: React.FC = () => {
         breadcrumbs={[{ label: 'About Us' }]}
         bgImage="https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1920&q=80"
       />
+
+      {/* GEO Key Takeaways Knowledge Block */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10 mb-8">
+        <GeoKeyTakeaways
+          title="SkyBridge Travel & Tourism Institutional Profile"
+          subtitle="Key corporate facts, governance standards, and operational guidelines"
+          items={aboutGeoTakeaways}
+          authorityNote="SkyBridge Travel & Tourism operates in strict accordance with relevant consumer protection and travel regulations."
+        />
+      </div>
 
       {/* Company Story & Mission */}
       <section className="py-20 bg-white">
@@ -284,6 +364,21 @@ export const AboutPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* SXO Trust Signals */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SxoTrustBadges />
+      </div>
+
+      {/* AEO Direct Answer Q&A Knowledge Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AeoFaqSection
+          title="About SkyBridge Agency FAQ"
+          subtitle="Answers to common queries regarding SkyBridge Travel & Tourism credentials, services, and leadership"
+          faqs={FAQ_ITEMS.slice(0, 6)}
+          defaultOpenId="faq-1"
+        />
+      </div>
 
       {/* Mandatory Legal Disclaimer Banner */}
       <section className="py-12 bg-slate-100 border-t border-slate-200">

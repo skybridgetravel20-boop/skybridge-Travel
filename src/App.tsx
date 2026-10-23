@@ -128,8 +128,13 @@ export default function App() {
             <Route path="contact" element={<ContactPage />} />
           </Route>
 
-          {/* Admin Login Route */}
+          {/* Admin & Agent Login Routes & Direct Aliases */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/agent/login" element={<AdminLoginPage />} />
+          <Route path="/login" element={<AdminLoginPage />} />
+          <Route path="/portal" element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="/agent" element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
 
           {/* Authenticated Admin Dashboard Routes */}
           <Route path="/admin" element={<AdminLayout />}>

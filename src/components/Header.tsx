@@ -11,10 +11,14 @@ import {
   Plane,
   Compass,
   Building2,
-  Calendar
+  Calendar,
+  Crown,
+  Lock,
+  LayoutDashboard
 } from 'lucide-react';
 import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
 import { useLanguage } from '../context/LanguageContext';
+import { useCrm } from '../context/CrmContext';
 import { LanguageSelector } from './LanguageSelector';
 import { SkyBridgeLogo } from './SkyBridgeLogo';
 import { WhatsAppIcon } from './WhatsAppIcon';
@@ -26,6 +30,7 @@ export const Header: React.FC = () => {
   const [packagesOpen, setPackagesOpen] = useState(false);
   const location = useLocation();
   const { t, language } = useLanguage();
+  const { auth } = useCrm();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -90,7 +95,7 @@ export const Header: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-4">
             {/* Language Switcher */}
             <LanguageSelector variant="header-pill" />
           </div>
@@ -269,13 +274,13 @@ export const Header: React.FC = () => {
               </Link>
             </div>
 
-            {/* Right Action: Header CTA: WhatsApp Us */}
+            {/* Right Action: WhatsApp Inquiry CTA */}
             <div className="hidden lg:flex items-center space-x-2">
               <a
                 href={getWhatsAppLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#4FC3F7] hover:bg-[#38b7ee] text-[#0B1B3B] font-bold text-xs shadow-sm hover:shadow-md transition-all transform active:scale-95"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#4FC3F7] hover:bg-[#38b7ee] text-[#0B1B3B] font-bold text-xs shadow-sm hover:shadow-md transition-all transform active:scale-95"
               >
                 <WhatsAppIcon className="w-4 h-4 fill-[#0B1B3B]" />
                 <span>{t('whatsAppUs')}</span>
@@ -416,6 +421,7 @@ export const Header: React.FC = () => {
                     </a>
                   </div>
                 </div>
+
 
                 <a
                   href={getWhatsAppLink()}

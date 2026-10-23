@@ -3,6 +3,11 @@ import { useOutletContext } from 'react-router-dom';
 import { PageHero } from '../components/PageHero';
 import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
 import { ServiceType } from '../types';
+import { SeoMeta } from '../components/seo/SeoMeta';
+import { GeoKeyTakeaways } from '../components/seo/GeoKeyTakeaways';
+import { AeoFaqSection } from '../components/seo/AeoFaqSection';
+import { SxoTrustBadges } from '../components/seo/SxoTrustBadges';
+import { FAQ_ITEMS } from '../data/faqData';
 import {
   Moon,
   Building2,
@@ -45,8 +50,66 @@ export const UmrahPackagesPage: React.FC = () => {
     }
   ];
 
+  const umrahGeoTakeaways = [
+    {
+      label: "Saudi Visa Types",
+      value: "Umrah Electronic Visa & 1-Year Tourist E-Visa",
+      badge: "Fast Issuance",
+      highlight: true
+    },
+    {
+      label: "Rawdah Permit",
+      value: "Full Assistance with Official Nusuk App Slots",
+      badge: "Guaranteed Slots"
+    },
+    {
+      label: "Haramain High-Speed Train",
+      value: "Makkah to Madinah in Under 2 Hours",
+      badge: "VIP Transit"
+    },
+    {
+      label: "Courtyard Proximity",
+      value: "5-Star Hotels within 50-150m of Clock Tower",
+      badge: "Walking Distance"
+    },
+    {
+      label: "Historical Ziyarat",
+      value: "Private AC Excursions: Quba, Uhud, Cave Hira",
+      badge: "Guided Tours",
+      highlight: true
+    },
+    {
+      label: "Direct Umrah Desk",
+      value: "+92 324 4444167 | +92 345 4444167",
+      badge: "Lahore Multan Rd"
+    }
+  ];
+
+  const umrahFaqs = FAQ_ITEMS.filter(
+    f => f.category === 'Spiritual Journeys' || f.id === 'faq-1' || f.id === 'faq-8' || f.id === 'faq-10'
+  );
+
   return (
     <div>
+      <SeoMeta
+        title="Umrah Packages 2026 Lahore | Economy & VIP 5-Star Makkah & Madinah"
+        description="Book customized Umrah packages 2026 from Lahore. Luxury courtyard hotels near Haram, Nusuk Rawdah permit assistance, Haramain bullet train, and direct flights."
+        canonicalPath="/umrah-packages"
+        keywords="Umrah packages 2026 Lahore, VIP Umrah package Pakistan, cheap Umrah packages Multan Road, 5 star Umrah package Makkah Madinah, Nusuk visa Lahore"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "Customized & VIP Umrah Packages 2026",
+          "serviceType": "Pilgrimage Travel",
+          "provider": {
+            "@type": "TravelAgency",
+            "name": "SkyBridge Travel & Tourism",
+            "url": "https://skybridgetravelandtourism.com",
+            "telephone": ["+923244444167", "+923454444167"]
+          }
+        }}
+      />
+
       <PageHero
         title="Spiritual & Dignified Umrah Travel Services"
         subtitle="Experience your sacred journey with peace of mind. Premium courtyard-proximate hotels, electronic Umrah visa processing, and dedicated ground coordination."
@@ -54,6 +117,16 @@ export const UmrahPackagesPage: React.FC = () => {
         breadcrumbs={[{ label: 'Packages', link: '/tour-packages' }, { label: 'Umrah Packages' }]}
         bgImage="https://images.unsplash.com/photo-1580418827493-f2b22c0a76cb?auto=format&fit=crop&w=1920&q=80"
       />
+
+      {/* GEO Key Takeaways Knowledge Block */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10 mb-8">
+        <GeoKeyTakeaways
+          title="Umrah Travel Intelligence & Key Regulations 2026"
+          subtitle="Essential guidelines for pilgrims traveling from Pakistan to the Holy Harams"
+          items={umrahGeoTakeaways}
+          authorityNote="All pilgrimage arrangements compliant with Saudi Ministry of Hajj & Umrah and Nusuk platform standards."
+        />
+      </div>
 
       {/* Overview & Values */}
       <section className="py-20 bg-white">
@@ -260,6 +333,21 @@ export const UmrahPackagesPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* SXO Trust Signals */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SxoTrustBadges />
+      </div>
+
+      {/* AEO Direct Answer Q&A Knowledge Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AeoFaqSection
+          title="Umrah Packages & Pilgrimage Guidelines FAQ"
+          subtitle="Answers to common queries regarding Nusuk visa rules, Rawdah permits, hotel walking distances, and bullet train connections"
+          faqs={umrahFaqs}
+          defaultOpenId="faq-8"
+        />
+      </div>
     </div>
   );
 };

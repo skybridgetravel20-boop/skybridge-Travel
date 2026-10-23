@@ -60,7 +60,28 @@ export type UserRole =
   | 'Director'
   | 'Director, Skybridge Travel and Tourism'
   | 'Operations Manager'
-  | 'Senior Visa Consultant';
+  | 'Senior Visa Consultant'
+  | 'Ticketing Specialist'
+  | 'Umrah Coordinator'
+  | 'Accountant / Finance';
+
+export type AccessApprovalStatus = 'pending_approval' | 'approved' | 'rejected' | 'revoked';
+
+export interface StaffAccessRequest {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  requestedRole: string;
+  department: string;
+  reason: string;
+  status: AccessApprovalStatus;
+  assignedPassword?: string;
+  createdAt: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  rejectionReason?: string;
+}
 
 export interface StaffUser {
   id: string;
@@ -70,6 +91,12 @@ export interface StaffUser {
   phone?: string;
   avatar?: string;
   active: boolean;
+  password?: string;
+  status?: AccessApprovalStatus;
+  approvedBy?: string;
+  approvedAt?: string;
+  tempPasswordIssued?: boolean;
+  lastLoginAt?: string;
 }
 
 export interface Lead {
@@ -1233,6 +1260,82 @@ export interface IntegrationStatusItem {
   requiredNextAction: string;
   documentationUrl?: string;
   responsibleAdministrator: string;
+}
+
+// --------------------------------------------------------------------------
+// Section 33: Umrah Pilgrim Status Tracking & Document Stages
+// --------------------------------------------------------------------------
+export type UmrahVisaStage =
+  | 'Documents Pending'
+  | 'In Review'
+  | 'Biometrics Enrolled'
+  | 'Submitted to Nusuk/MOFA'
+  | 'E-Visa Issued'
+  | 'Rejected'
+  | 'Action Required';
+
+export type RawdahPermitStatus = 'Not Booked' | 'Slot Selected' | 'Confirmed & QR Ready' | 'Visited';
+
+export type UmrahPilgrimStatus =
+  | 'Document Collection'
+  | 'Visa Processing'
+  | 'Ready for Departure'
+  | 'In Kingdom'
+  | 'Completed'
+  | 'Cancelled';
+
+export interface UmrahPilgrimRecord {
+  id: string; // e.g. "UMR-2026-001"
+  leadId?: string;
+  customerId?: string;
+  pilgrimName: string;
+  gender: 'Male' | 'Female';
+  age: number;
+  passportNumber: string;
+  passportExpiry: string;
+  phone: string;
+  whatsApp: string;
+  city: string;
+  packageType: 'Economy' | '4-Star Executive' | '5-Star VIP' | 'Ramadan Special';
+  groupLeaderName?: string;
+  mehramName?: string;
+  relationWithMehram?: string;
+
+  // Travel Dates & Logistics
+  departureDate: string; // e.g. "2026-11-05"
+  returnDate: string;    // e.g. "2026-11-19"
+  flightAirline: string; // e.g. "Saudia Airlines (SV-737)"
+  flightPnr: string;     // e.g. "SV9X82"
+  makkahHotel: string;   // e.g. "Swissôtel Makkah (Clock Tower)"
+  makkahNights: number;
+  madinahHotel: string;  // e.g. "Dar Al Taqwa Madinah (Courtyard)"
+  madinahNights: number;
+  haramainTrainIncluded: boolean;
+  ziyaratIncluded: boolean;
+
+  // Document Processing Stages
+  passportSubmitted: boolean;
+  photoSubmitted: boolean;
+  polioVaccineCard: boolean;
+  biometricEnrolled: boolean;
+
+  // Visa Stage
+  visaStage: UmrahVisaStage;
+  eVisaNumber?: string;
+  visaIssueDate?: string;
+
+  // Permits & Bookings
+  rawdahPermitStatus: RawdahPermitStatus;
+  rawdahSlotTime?: string;
+  hotelVoucherIssued: boolean;
+  ticketIssued: boolean;
+  idCardIssued: boolean;
+
+  // Overall Case Status & Notes
+  status: UmrahPilgrimStatus;
+  agentNotes: string;
+  assignedAgent: string;
+  updatedAt: string;
 }
 
 

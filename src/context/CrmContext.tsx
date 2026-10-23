@@ -10,6 +10,7 @@ import {
   Task,
   DocumentItem,
   StaffUser,
+  StaffAccessRequest,
   NotificationItem,
   AuditLog,
   BackupRecord,
@@ -57,6 +58,7 @@ import {
 } from '../data/growthMarketingData';
 import {
   INITIAL_STAFF_USERS,
+  INITIAL_ACCESS_REQUESTS,
   INITIAL_DEMO_LEADS,
   INITIAL_DEMO_CUSTOMERS,
   INITIAL_DEMO_CASES,
@@ -125,7 +127,36 @@ interface CrmContextType {
   // Auth
   auth: AuthSession;
   login: (email: string, password?: string) => Promise<boolean>;
+  loginWithDetails: (email: string, password?: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
+  authError: string | null;
+
+  // Staff Access Approvals & Security Control
+  accessRequests: StaffAccessRequest[];
+  submitAccessRequest: (data: {
+    fullName: string;
+    email: string;
+    phone: string;
+    requestedRole: string;
+    department?: string;
+    reason: string;
+  }) => Promise<{ success: boolean; message: string }>;
+  approveAccessRequest: (requestId: string, assignedPassword: string, role?: string) => Promise<{ success: boolean; message: string }>;
+  rejectAccessRequest: (requestId: string, reason?: string) => Promise<{ success: boolean; message: string }>;
+  revokeStaffAccess: (staffIdOrEmail: string) => Promise<{ success: boolean; message: string }>;
+  createApprovedStaff: (staffData: {
+    name: string;
+    email: string;
+    role: any;
+    phone: string;
+    password: string;
+  }) => Promise<{ success: boolean; message: string }>;
+  updateStaffPassword: (staffEmail: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
+
+  // Password Reset & Change Operations
+  changeMasterPassword: (newPassword: string, oldPassword?: string) => Promise<{ success: boolean; message: string }>;
+  requestPasswordResetToken: (email: string) => Promise<{ success: boolean; token: string; message: string }>;
+  resetPasswordWithToken: (email: string, token: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
 
   // Data
   leads: Lead[];
@@ -360,7 +391,10 @@ const STORAGE_KEYS = {
   LANDING_PAGES: 'skybridge_crm_landing_pages',
   SOCIAL_MEDIA_POSTS: 'skybridge_crm_social_posts',
   MARKETING_CAMPAIGNS: 'skybridge_crm_campaigns',
-  SHEETS_21_TABS: 'skybridge_crm_sheets_21_tabs'
+  SHEETS_21_TABS: 'skybridge_crm_sheets_21_tabs',
+  STAFF_USERS: 'skybridge_crm_staff_users',
+  ACCESS_REQUESTS: 'skybridge_crm_access_requests',
+  RESET_TOKENS: 'skybridge_crm_reset_tokens'
 };
 
 export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -451,7 +485,17 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [exportLogs, setExportLogs] = useState<ExportLog[]>([]);
 
-  const [staffUsers] = useState<StaffUser[]>(INITIAL_STAFF_USERS);
+  const [staffUsers, setStaffUsers] = useState<StaffUser[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.STAFF_USERS);
+    return saved ? JSON.parse(saved) : INITIAL_STAFF_USERS;
+  });
+
+  const [accessRequests, setAccessRequests] = useState<StaffAccessRequest[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.ACCESS_REQUESTS);
+    return saved ? JSON.parse(saved) : INITIAL_ACCESS_REQUESTS;
+  });
+
+  const [authError, setAuthError] = useState<string | null>(null);
 
   // Suppliers & B2B State
   const [suppliers, setSuppliers] = useState<Supplier[]>(() => {
@@ -585,16 +629,18 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const saved = localStorage.getItem(STORAGE_KEYS.AUTH);
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.isAuthenticated && parsed.user) {
+          return parsed;
+        }
       } catch {
         return { user: null, isAuthenticated: false };
       }
     }
-    // Default logged in as Super Admin for convenient demo testing
+    // Confidential Security Gate: Unauthenticated by default
     return {
-      user: INITIAL_STAFF_USERS[0],
-      isAuthenticated: true,
-      token: 'jwt_demo_token_sb_2026'
+      user: null,
+      isAuthenticated: false
     };
   });
 
@@ -859,6 +905,14 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [googleSheets21Tabs]);
 
   useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.STAFF_USERS, JSON.stringify(staffUsers));
+  }, [staffUsers]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.ACCESS_REQUESTS, JSON.stringify(accessRequests));
+  }, [accessRequests]);
+
+  useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(auth));
   }, [auth]);
 
@@ -876,35 +930,123 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setAuditLogs(prev => [newLog, ...prev]);
   };
 
-  // Login handler with real credential validation
-  const login = async (email: string, password?: string): Promise<boolean> => {
-    const masterPwd = localStorage.getItem('skybridge_master_pwd') || 'admin123';
-    
-    // Validate password:
-    const isPasswordValid = !password || password === masterPwd || password === 'admin123';
-    if (!isPasswordValid) {
-      logAuditAction('Failed Login Attempt', 'Auth', email, `Failed login attempt for ${email} - Invalid password.`);
-      return false;
+  // Detailed login handler with strict Director approval and custom passwords
+  const loginWithDetails = async (email: string, password?: string): Promise<{ success: boolean; message?: string }> => {
+    setAuthError(null);
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPassword = (password || '').trim();
+
+    if (!cleanEmail) {
+      const msg = 'Please enter your email address.';
+      setAuthError(msg);
+      return { success: false, message: msg };
     }
 
-    const matchedStaff = staffUsers.find(u => u.email.toLowerCase() === email.toLowerCase()) || {
-      id: 'staff-admin',
-      name: (email && typeof email === 'string' && email.includes('@')) ? (email.split('@')[0] || 'Administrator') : 'Administrator',
-      email: email || 'admin@skybridge.com',
-      role: 'CEO & Founder',
-      active: true
-    };
+    if (!cleanPassword) {
+      const msg = 'Please enter your password.';
+      setAuthError(msg);
+      return { success: false, message: msg };
+    }
 
+    const masterPwd = localStorage.getItem('skybridge_master_pwd') || 'admin123';
+    const isDirectorEmail =
+      cleanEmail === 'skybridgetravel20@gmail.com' ||
+      cleanEmail === 'info@skybridgetravelandtourism.com' ||
+      cleanEmail === 'director@skybridge.com';
+
+    // 1. Master Director / CEO Authentication
+    if (isDirectorEmail) {
+      if (cleanPassword !== masterPwd) {
+        logAuditAction('Failed Director Login', 'Auth', cleanEmail, 'Invalid password attempt for Director account.');
+        const msg = 'Incorrect password for Director account. Use "Forgot Password?" to reset if needed.';
+        setAuthError(msg);
+        return { success: false, message: msg };
+      }
+
+      const directorUser: StaffUser = {
+        id: 'staff-director',
+        name: 'Urwa Ali (Director / CEO)',
+        email: cleanEmail,
+        role: 'Director, Skybridge Travel and Tourism',
+        phone: '+92 324 4444167',
+        active: true,
+        status: 'approved'
+      };
+
+      const newSession: AuthSession = {
+        user: directorUser,
+        isAuthenticated: true,
+        token: `sb_dir_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+      };
+
+      setAuth(newSession);
+      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(newSession));
+      logAuditAction('Director Login', 'Auth', directorUser.id, `Director ${directorUser.name} signed into CRM.`);
+      return { success: true, message: 'Welcome back, Director.' };
+    }
+
+    // 2. Staff / Agent Authentication - MUST be Director-approved!
+    const matchedStaff = staffUsers.find(u => u.email.trim().toLowerCase() === cleanEmail);
+
+    if (!matchedStaff) {
+      // Check if there is an access request in pending or rejected state
+      const existingReq = accessRequests.find(r => r.email.trim().toLowerCase() === cleanEmail);
+      if (existingReq) {
+        if (existingReq.status === 'pending_approval') {
+          const msg = 'Access Pending: Your registration is waiting for Director approval. Once the Director approves and assigns your password from the dashboard, you will be able to log in.';
+          setAuthError(msg);
+          return { success: false, message: msg };
+        } else if (existingReq.status === 'rejected') {
+          const msg = `Access Declined: Your access request was declined by the Director. ${existingReq.rejectionReason ? `Reason: ${existingReq.rejectionReason}` : ''}`;
+          setAuthError(msg);
+          return { success: false, message: msg };
+        }
+      }
+
+      const msg = 'Access Denied: Unrecognized account. You must click "Request Access / Register as Agent" to be vetted and approved by the Director.';
+      setAuthError(msg);
+      return { success: false, message: msg };
+    }
+
+    // Validate staff status
+    if (matchedStaff.status === 'pending_approval') {
+      const msg = 'Access Pending: Your account has not yet been approved by the Director.';
+      setAuthError(msg);
+      return { success: false, message: msg };
+    }
+
+    if (matchedStaff.status === 'rejected' || matchedStaff.status === 'revoked' || !matchedStaff.active) {
+      const msg = 'Access Revoked: Your staff portal access has been suspended or revoked by the Director.';
+      setAuthError(msg);
+      return { success: false, message: msg };
+    }
+
+    // Validate staff password (assigned by Director or reset by user)
+    const assignedPassword = matchedStaff.password;
+    if (!assignedPassword || cleanPassword !== assignedPassword) {
+      logAuditAction('Failed Staff Login', 'Auth', cleanEmail, `Invalid password attempt for staff ${matchedStaff.name}.`);
+      const msg = 'Incorrect password. Please enter the password assigned to you by the Director.';
+      setAuthError(msg);
+      return { success: false, message: msg };
+    }
+
+    // Valid authenticated staff session
     const newSession: AuthSession = {
       user: matchedStaff,
       isAuthenticated: true,
-      token: `sb_token_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+      token: `sb_agent_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
     };
 
     setAuth(newSession);
     localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(newSession));
-    logAuditAction('Admin Login', 'Auth', matchedStaff.id, `User ${matchedStaff.name} signed into CRM.`);
-    return true;
+    logAuditAction('Staff Login', 'Auth', matchedStaff.id, `Staff agent ${matchedStaff.name} (${matchedStaff.role}) signed in.`);
+    return { success: true, message: `Welcome back, ${matchedStaff.name}.` };
+  };
+
+  // Boolean wrapper for legacy calls
+  const login = async (email: string, password?: string): Promise<boolean> => {
+    const res = await loginWithDetails(email, password);
+    return res.success;
   };
 
   const logout = () => {
@@ -914,6 +1056,368 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const emptySession: AuthSession = { user: null, isAuthenticated: false };
     setAuth(emptySession);
     localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(emptySession));
+  };
+
+  // Staff Access Request & Approval Workflow
+  const submitAccessRequest = async (data: {
+    fullName: string;
+    email: string;
+    phone: string;
+    requestedRole: string;
+    department?: string;
+    reason: string;
+  }): Promise<{ success: boolean; message: string }> => {
+    const cleanEmail = data.email.trim().toLowerCase();
+
+    // Check if duplicate request exists
+    const existing = accessRequests.find(r => r.email.toLowerCase() === cleanEmail);
+    if (existing && existing.status === 'pending_approval') {
+      return {
+        success: false,
+        message: 'An access request for this email is already pending approval from the Director.'
+      };
+    }
+
+    const newReq: StaffAccessRequest = {
+      id: `req-sb-${Date.now().toString(36)}-${Math.floor(Math.random() * 1000)}`,
+      fullName: data.fullName.trim(),
+      email: cleanEmail,
+      phone: data.phone.trim(),
+      requestedRole: data.requestedRole,
+      department: data.department || 'General Operations',
+      reason: data.reason.trim(),
+      status: 'pending_approval',
+      createdAt: new Date().toISOString()
+    };
+
+    setAccessRequests(prev => [newReq, ...prev]);
+
+    // Push notification for Director
+    setNotifications(prev => [
+      {
+        id: `notif-${Date.now()}`,
+        title: 'New Staff Access Request',
+        message: `${newReq.fullName} requested ${newReq.requestedRole} access. Awaiting Director approval.`,
+        timestamp: new Date().toISOString(),
+        type: 'task',
+        read: false,
+        link: '/admin/dashboard'
+      },
+      ...prev
+    ]);
+
+    logAuditAction('Access Request Submitted', 'StaffAccess', newReq.id, `${newReq.fullName} applied for ${newReq.requestedRole} access.`);
+    return {
+      success: true,
+      message: 'Access request submitted to Director (skybridgetravel20@gmail.com). Status: PENDING APPROVAL. You will be able to log in once approved and assigned a password.'
+    };
+  };
+
+  const approveAccessRequest = async (
+    requestId: string,
+    assignedPassword: string,
+    role?: string
+  ): Promise<{ success: boolean; message: string }> => {
+    const req = accessRequests.find(r => r.id === requestId);
+    if (!req) {
+      return { success: false, message: 'Access request not found.' };
+    }
+
+    if (!assignedPassword || assignedPassword.trim().length < 4) {
+      return { success: false, message: 'Assigned password must be at least 4 characters long.' };
+    }
+
+    // 1. Update request status
+    setAccessRequests(prev =>
+      prev.map(r =>
+        r.id === requestId
+          ? {
+              ...r,
+              status: 'approved',
+              assignedPassword: assignedPassword.trim(),
+              reviewedBy: 'Urwa Ali (Director)',
+              reviewedAt: new Date().toISOString()
+            }
+          : r
+      )
+    );
+
+    // 2. Add or update StaffUser in staffUsers directory
+    const existingStaff = staffUsers.find(u => u.email.toLowerCase() === req.email.toLowerCase());
+    const finalRole = (role || req.requestedRole) as any;
+
+    if (existingStaff) {
+      setStaffUsers(prev =>
+        prev.map(u =>
+          u.email.toLowerCase() === req.email.toLowerCase()
+            ? {
+                ...u,
+                name: req.fullName,
+                phone: req.phone,
+                role: finalRole,
+                active: true,
+                status: 'approved',
+                password: assignedPassword.trim(),
+                approvedBy: 'Urwa Ali (Director)',
+                approvedAt: new Date().toISOString()
+              }
+            : u
+        )
+      );
+    } else {
+      const newStaff: StaffUser = {
+        id: `staff-${Date.now()}`,
+        name: req.fullName,
+        email: req.email,
+        phone: req.phone,
+        role: finalRole,
+        active: true,
+        status: 'approved',
+        password: assignedPassword.trim(),
+        approvedBy: 'Urwa Ali (Director)',
+        approvedAt: new Date().toISOString()
+      };
+      setStaffUsers(prev => [...prev, newStaff]);
+    }
+
+    logAuditAction('Access Request Approved', 'StaffAccess', req.id, `Director approved ${req.fullName} (${finalRole}) with password.`);
+    return {
+      success: true,
+      message: `Access approved for ${req.fullName}! They can now log in using email: ${req.email} and assigned password.`
+    };
+  };
+
+  const rejectAccessRequest = async (
+    requestId: string,
+    reason?: string
+  ): Promise<{ success: boolean; message: string }> => {
+    setAccessRequests(prev =>
+      prev.map(r =>
+        r.id === requestId
+          ? {
+              ...r,
+              status: 'rejected',
+              rejectionReason: reason || 'Application declined by Director.',
+              reviewedBy: 'Urwa Ali (Director)',
+              reviewedAt: new Date().toISOString()
+            }
+          : r
+      )
+    );
+
+    logAuditAction('Access Request Rejected', 'StaffAccess', requestId, `Director declined access request.`);
+    return { success: true, message: 'Access request has been rejected.' };
+  };
+
+  const revokeStaffAccess = async (staffIdOrEmail: string): Promise<{ success: boolean; message: string }> => {
+    const target = staffUsers.find(
+      u => u.id === staffIdOrEmail || u.email.toLowerCase() === staffIdOrEmail.toLowerCase()
+    );
+
+    if (!target) {
+      return { success: false, message: 'Staff member not found.' };
+    }
+
+    if (target.email === 'skybridgetravel20@gmail.com' || target.email === 'info@skybridgetravelandtourism.com') {
+      return { success: false, message: 'Cannot revoke Director master account.' };
+    }
+
+    setStaffUsers(prev =>
+      prev.map(u =>
+        u.id === target.id
+          ? { ...u, active: false, status: 'revoked' }
+          : u
+      )
+    );
+
+    // If target is currently logged in, force logout
+    if (auth.user && auth.user.email.toLowerCase() === target.email.toLowerCase()) {
+      logout();
+    }
+
+    logAuditAction('Staff Access Revoked', 'StaffAccess', target.id, `Director revoked access for ${target.name}.`);
+    return { success: true, message: `Access revoked for ${target.name}. They can no longer log in.` };
+  };
+
+  const createApprovedStaff = async (staffData: {
+    name: string;
+    email: string;
+    role: any;
+    phone: string;
+    password: string;
+  }): Promise<{ success: boolean; message: string }> => {
+    const cleanEmail = staffData.email.trim().toLowerCase();
+    if (!cleanEmail || !staffData.password) {
+      return { success: false, message: 'Email and password are required.' };
+    }
+
+    const newStaff: StaffUser = {
+      id: `staff-${Date.now()}`,
+      name: staffData.name.trim(),
+      email: cleanEmail,
+      phone: staffData.phone.trim(),
+      role: staffData.role,
+      active: true,
+      status: 'approved',
+      password: staffData.password.trim(),
+      approvedBy: 'Urwa Ali (Director)',
+      approvedAt: new Date().toISOString()
+    };
+
+    setStaffUsers(prev => {
+      const filtered = prev.filter(u => u.email.toLowerCase() !== cleanEmail);
+      return [...filtered, newStaff];
+    });
+
+    logAuditAction('Staff Created', 'StaffAccess', newStaff.id, `Director created new staff ${newStaff.name} with password.`);
+    return {
+      success: true,
+      message: `Staff member ${newStaff.name} created successfully. Password active.`
+    };
+  };
+
+  const updateStaffPassword = async (staffEmail: string, newPassword: string): Promise<{ success: boolean; message: string }> => {
+    const cleanEmail = staffEmail.trim().toLowerCase();
+    if (!newPassword || newPassword.trim().length < 4) {
+      return { success: false, message: 'Password must be at least 4 characters long.' };
+    }
+
+    let found = false;
+    setStaffUsers(prev =>
+      prev.map(u => {
+        if (u.email.toLowerCase() === cleanEmail) {
+          found = true;
+          return { ...u, password: newPassword.trim() };
+        }
+        return u;
+      })
+    );
+
+    if (!found) {
+      return { success: false, message: 'Staff user not found.' };
+    }
+
+    logAuditAction('Staff Password Updated', 'StaffAccess', cleanEmail, `Director updated password for ${cleanEmail}.`);
+    return { success: true, message: `Password updated for ${cleanEmail}. Previous password is now invalid.` };
+  };
+
+  // Password Reset & Change Operations
+  const changeMasterPassword = async (newPassword: string, oldPassword?: string): Promise<{ success: boolean; message: string }> => {
+    if (!newPassword || newPassword.trim().length < 4) {
+      return { success: false, message: 'New password must be at least 4 characters long.' };
+    }
+
+    const currentMaster = localStorage.getItem('skybridge_master_pwd') || 'admin123';
+    if (oldPassword && oldPassword.trim() !== currentMaster) {
+      return { success: false, message: 'Current password does not match.' };
+    }
+
+    // Overwrite previous password completely
+    localStorage.setItem('skybridge_master_pwd', newPassword.trim());
+
+    logAuditAction('Master Password Changed', 'Security', 'Director', 'Director master security key changed. Previous password revoked.');
+    return {
+      success: true,
+      message: 'Director security password successfully changed! The previous password has been revoked and only the new password will work.'
+    };
+  };
+
+  const requestPasswordResetToken = async (email: string): Promise<{ success: boolean; token: string; message: string }> => {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    if (!cleanEmail) {
+      return { success: false, token: '', message: 'Please enter your registered email address.' };
+    }
+
+    const isDirector =
+      cleanEmail === 'skybridgetravel20@gmail.com' ||
+      cleanEmail === 'info@skybridgetravelandtourism.com' ||
+      cleanEmail === 'director@skybridge.com';
+
+    const isStaff = staffUsers.some(u => u.email.toLowerCase() === cleanEmail);
+
+    if (!isDirector && !isStaff) {
+      return {
+        success: false,
+        token: '',
+        message: 'No registered account found with this email. Please check your email or contact the Director.'
+      };
+    }
+
+    // Generate 6-digit secure numeric verification OTP code
+    const token = Math.floor(100000 + Math.random() * 900000).toString();
+    const tokenData = {
+      email: cleanEmail,
+      token,
+      expiresAt: Date.now() + 15 * 60 * 1000 // 15 minutes expiry
+    };
+
+    localStorage.setItem(STORAGE_KEYS.RESET_TOKENS, JSON.stringify(tokenData));
+    logAuditAction('Password Reset Token Requested', 'Security', cleanEmail, `Verification code generated for password reset.`);
+
+    return {
+      success: true,
+      token,
+      message: `Verification code generated: ${token}. Use this code to authorize your password reset.`
+    };
+  };
+
+  const resetPasswordWithToken = async (
+    email: string,
+    token: string,
+    newPassword: string
+  ): Promise<{ success: boolean; message: string }> => {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanToken = (token || '').trim();
+    const cleanNewPwd = (newPassword || '').trim();
+
+    if (!cleanNewPwd || cleanNewPwd.length < 4) {
+      return { success: false, message: 'New password must be at least 4 characters long.' };
+    }
+
+    const raw = localStorage.getItem(STORAGE_KEYS.RESET_TOKENS);
+    if (!raw) {
+      return { success: false, message: 'No active password reset request found. Please request a new code.' };
+    }
+
+    try {
+      const stored = JSON.parse(raw);
+      if (stored.email !== cleanEmail || stored.token !== cleanToken) {
+        return { success: false, message: 'Invalid verification code. Please check the code and try again.' };
+      }
+
+      if (Date.now() > stored.expiresAt) {
+        return { success: false, message: 'Verification code has expired. Please request a fresh code.' };
+      }
+
+      const isDirector =
+        cleanEmail === 'skybridgetravel20@gmail.com' ||
+        cleanEmail === 'info@skybridgetravelandtourism.com' ||
+        cleanEmail === 'director@skybridge.com';
+
+      if (isDirector) {
+        // Completely overwrite and revoke previous master password
+        localStorage.setItem('skybridge_master_pwd', cleanNewPwd);
+        localStorage.removeItem(STORAGE_KEYS.RESET_TOKENS);
+        logAuditAction('Director Password Reset', 'Security', 'Director', 'Director master password reset with verification code. Previous password revoked.');
+        return {
+          success: true,
+          message: 'Password successfully reset! Previous password has been completely revoked. You can now log in with your new password.'
+        };
+      } else {
+        // Update staff user password and wipe old one
+        setStaffUsers(prev =>
+          prev.map(u => (u.email.toLowerCase() === cleanEmail ? { ...u, password: cleanNewPwd } : u))
+        );
+        localStorage.removeItem(STORAGE_KEYS.RESET_TOKENS);
+        logAuditAction('Staff Password Reset', 'Security', cleanEmail, `Staff password reset with verification code. Previous password revoked.`);
+        return {
+          success: true,
+          message: 'Password successfully reset! Previous password has been completely revoked. You can now log in with your new password.'
+        };
+      }
+    } catch {
+      return { success: false, message: 'Failed to process password reset. Please try again.' };
+    }
   };
 
   // Helper to generate IDs
@@ -2827,7 +3331,19 @@ export const CrmProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       value={{
         auth,
         login,
+        loginWithDetails,
         logout,
+        authError,
+        accessRequests,
+        submitAccessRequest,
+        approveAccessRequest,
+        rejectAccessRequest,
+        revokeStaffAccess,
+        createApprovedStaff,
+        updateStaffPassword,
+        changeMasterPassword,
+        requestPasswordResetToken,
+        resetPasswordWithToken,
         leads: leads.filter(l => !l.deletedAt),
         customers,
         cases,

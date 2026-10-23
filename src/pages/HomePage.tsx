@@ -36,6 +36,10 @@ import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
 import { ServiceType, Destination, TravelPackage, ServiceItem } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { AirlinePartnersMarquee } from '../components/AirlinePartnersMarquee';
+import { SeoMeta } from '../components/seo/SeoMeta';
+import { GeoKeyTakeaways } from '../components/seo/GeoKeyTakeaways';
+import { AeoFaqSection } from '../components/seo/AeoFaqSection';
+import { SxoTrustBadges } from '../components/seo/SxoTrustBadges';
 
 export const HomePage: React.FC = () => {
   const { t, language } = useLanguage();
@@ -75,6 +79,28 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="overflow-hidden">
+      <SeoMeta
+        title="SkyBridge Travel & Tourism | Best Flights, Hotels & Visa Services Lahore"
+        description="SkyBridge Travel & Tourism is Pakistan's premier consultancy for Schengen & worldwide tourist visas, Umrah packages, flight bookings, and luxury hotels. Call +92 324 4444167 / +92 345 4444167."
+        canonicalPath="/"
+        keywords="Travel agency Lahore, Visa consultant Pakistan, Schengen visa assistance Lahore, Umrah packages 2026, cheap flights Lahore, best travel agency Multan Road, SkyBridge Travel & Tourism, visa consultant Gulshan Street"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "TravelAgency",
+          "name": "SkyBridge Travel & Tourism",
+          "url": "https://skybridgetravelandtourism.com",
+          "telephone": ["+923244444167", "+923454444167"],
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "House No 05, Gulshan Street, Nadeem Town, Multan Road",
+            "addressLocality": "Lahore",
+            "addressRegion": "Punjab",
+            "postalCode": "54000",
+            "addressCountry": "PK"
+          }
+        }}
+      />
+
       {/* 6. HERO SECTION */}
       <section className="relative bg-[#0B1B3B] text-white pt-24 pb-32 lg:pt-32 lg:pb-40 overflow-hidden">
         {/* Background Image with Cinematic Overlay */}
@@ -802,68 +828,33 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 20. FAQ SECTION */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#4FC3F7] block mb-2">
-              Common Questions
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-[#0B1B3B]">
-              Frequently Asked Questions
-            </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Clear answers regarding our travel services, visa file preparation, and communication channels.
-            </p>
-          </div>
+      {/* 20. GEO / AIO / AEO / SXO INTEGRATED ENGINE */}
+      <section className="py-12 bg-slate-50 border-t border-slate-200/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Generative Engine Optimization Fast-Fact Knowledge Card */}
+          <GeoKeyTakeaways
+            title="SkyBridge Travel & Tourism — Verified Facts & Official Consular Guidelines"
+            subtitle="Consular standards, regulatory compliance, and physical presence in Lahore, Pakistan"
+            items={[
+              { label: "Headquarters", value: "Multan Road, Nadeem Town, Lahore", badge: "Lahore Office" },
+              { label: "Executive Leadership", value: "Urwa Ali (Director & Founder)", badge: "Management" },
+              { label: "Visa Consultancy", value: "Schengen (29 States), UK, USA, Canada & UAE", highlight: true },
+              { label: "2026 Statutory Fee", value: "€90 Adult / €45 Child (Official Gazette)", badge: "Schengen" },
+              { label: "Umrah Programs", value: "VIP & Economy with Makkah/Madinah Walking Distance Hotels", badge: "Umrah 2026" },
+              { label: "Customer Helpline", value: "+92 324 4444167 / +92 345 4444167", highlight: true }
+            ]}
+            disclaimer={COMPANY_INFO.visaDisclaimer}
+          />
 
-          <div className="space-y-4">
-            {FAQ_ITEMS.map(faq => {
-              const isOpen = openFaqId === faq.id;
-              return (
-                <div
-                  key={faq.id}
-                  className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-2xs transition-all"
-                >
-                  <button
-                    onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
-                    className="w-full text-left p-5 flex items-center justify-between gap-4 font-bold text-sm text-[#0B1B3B] hover:text-[#4FC3F7] transition-colors"
-                  >
-                    <span>{faq.question}</span>
-                    {isOpen ? (
-                      <ChevronUp className="w-4 h-4 text-[#4FC3F7] shrink-0" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
-                    )}
-                  </button>
+          {/* Search Experience Optimization (SXO) Trust Architecture */}
+          <SxoTrustBadges />
 
-                  {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs text-slate-600 leading-relaxed border-t border-slate-100">
-                      {faq.answer}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="mt-12 p-6 rounded-3xl bg-white border border-slate-200/80 text-center space-y-3">
-            <h3 className="text-base font-bold text-[#0B1B3B]">Still have questions regarding your destination?</h3>
-            <p className="text-xs text-slate-600 max-w-md mx-auto">
-              Our travel specialists are available on WhatsApp and at our Lahore office to assist with personalized inquiries.
-            </p>
-            <div className="pt-1">
-              <a
-                href={getWhatsAppLink()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0B1B3B] hover:bg-[#4FC3F7] hover:text-[#0B1B3B] text-white text-xs font-bold transition-colors"
-              >
-                <span>Ask via WhatsApp</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </a>
-            </div>
-          </div>
+          {/* Answer Engine Optimization (AEO) Comprehensive FAQ Section */}
+          <AeoFaqSection
+            title="Travel & Consular Questions Answered"
+            subtitle="Direct, verified answers to top travel, visa, flight, and Umrah inquiries for travelers and voice search engines"
+            faqs={FAQ_ITEMS}
+          />
         </div>
       </section>
 

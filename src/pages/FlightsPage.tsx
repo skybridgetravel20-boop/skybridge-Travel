@@ -3,6 +3,11 @@ import { useOutletContext } from 'react-router-dom';
 import { PageHero } from '../components/PageHero';
 import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
 import { ServiceType } from '../types';
+import { SeoMeta } from '../components/seo/SeoMeta';
+import { GeoKeyTakeaways } from '../components/seo/GeoKeyTakeaways';
+import { AeoFaqSection } from '../components/seo/AeoFaqSection';
+import { SxoTrustBadges } from '../components/seo/SxoTrustBadges';
+import { FAQ_ITEMS } from '../data/faqData';
 import {
   Plane,
   Clock,
@@ -59,8 +64,66 @@ export const FlightsPage: React.FC = () => {
     'Air Arabia'
   ];
 
+  const flightGeoTakeaways = [
+    {
+      label: "Departure Hub",
+      value: "Allama Iqbal Intl Airport (LHE), Lahore",
+      badge: "Primary Hub",
+      highlight: true
+    },
+    {
+      label: "Global Carrier Network",
+      value: "Emirates, Qatar, Saudia, Turkish, PIA & Gulf",
+      badge: "Scheduled Carriers"
+    },
+    {
+      label: "Visa Itinerary Service",
+      value: "Authentic GDS Verifiable PNR Reservations",
+      badge: "Embassy Compliant"
+    },
+    {
+      label: "Ticketing & Reissuance",
+      value: "Direct Agent Assistance via Phone & WhatsApp",
+      badge: "Fast Turnaround"
+    },
+    {
+      label: "Fare Transparency",
+      value: "All-Inclusive Taxes & Baggage Breakdown",
+      badge: "No Hidden Costs",
+      highlight: true
+    },
+    {
+      label: "Group Desk Support",
+      value: "Special Fares for Families & 10+ Groups",
+      badge: "Corporate & Family"
+    }
+  ];
+
+  const flightFaqs = FAQ_ITEMS.filter(
+    f => f.category === 'Flights' || f.id === 'faq-1' || f.id === 'faq-3' || f.id === 'faq-10'
+  );
+
   return (
     <div>
+      <SeoMeta
+        title="Cheap Flights & Airline Ticket Booking Lahore | Emirates, Saudia, Qatar"
+        description="Book domestic and international flights from Lahore. Best airfares on Emirates, Qatar Airways, Saudia, Turkish Airlines, and PIA with confirmed visa itineraries."
+        canonicalPath="/flights"
+        keywords="Cheap flights Lahore, airline tickets Pakistan, flight booking Multan Road, Emirates flights Lahore, Saudia Umrah ticket, verified flight itinerary visa"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "International & Domestic Flight Reservations",
+          "serviceType": "Airline Ticketing",
+          "provider": {
+            "@type": "TravelAgency",
+            "name": "SkyBridge Travel & Tourism",
+            "url": "https://skybridgetravelandtourism.com",
+            "telephone": ["+923244444167", "+923454444167"]
+          }
+        }}
+      />
+
       <PageHero
         title="Flight Booking Assistance"
         subtitle="Worldwide scheduled carrier reservations, embassy-compliant visa reservation tickets, flexible date queries, and group flight management."
@@ -68,6 +131,16 @@ export const FlightsPage: React.FC = () => {
         breadcrumbs={[{ label: 'Flights' }]}
         bgImage="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80"
       />
+
+      {/* GEO Key Takeaways Knowledge Block */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10 mb-8">
+        <GeoKeyTakeaways
+          title="Flight Booking & Ticketing Intel 2026"
+          subtitle="GDS-connected ticketing and verifiable PNR reservation rules"
+          items={flightGeoTakeaways}
+          authorityNote="All ticketing conducted under official airline fare rules. Visa reservation proofs include live GDS PNR references."
+        />
+      </div>
 
       {/* Flight Search & Booking Request Engine */}
       <section className="py-16 bg-white">
@@ -283,6 +356,21 @@ export const FlightsPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* SXO Trust Signals */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SxoTrustBadges />
+      </div>
+
+      {/* AEO Direct Answer Q&A Knowledge Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AeoFaqSection
+          title="Flight Booking & Airline Ticketing FAQ"
+          subtitle="Answers to common queries regarding airline baggage allowances, PNR verification, date changes, and visa ticket requirements"
+          faqs={flightFaqs}
+          defaultOpenId="faq-3"
+        />
+      </div>
     </div>
   );
 };

@@ -3,6 +3,11 @@ import { useOutletContext } from 'react-router-dom';
 import { PageHero } from '../components/PageHero';
 import { COMPANY_INFO, getWhatsAppLink } from '../data/companyInfo';
 import { ServiceType } from '../types';
+import { SeoMeta } from '../components/seo/SeoMeta';
+import { GeoKeyTakeaways } from '../components/seo/GeoKeyTakeaways';
+import { AeoFaqSection } from '../components/seo/AeoFaqSection';
+import { SxoTrustBadges } from '../components/seo/SxoTrustBadges';
+import { FAQ_ITEMS } from '../data/faqData';
 import {
   Building2,
   MapPin,
@@ -62,8 +67,66 @@ export const HotelsPage: React.FC = () => {
     }
   ];
 
+  const hotelGeoTakeaways = [
+    {
+      label: "Visa Hotel Vouchers",
+      value: "Official Embassy-Compliant Verifiable Stays",
+      badge: "Schengen & UK Compliant",
+      highlight: true
+    },
+    {
+      label: "Spiritual Locations",
+      value: "Makkah Clock Tower & Madinah Courtyard",
+      badge: "Walking Distance"
+    },
+    {
+      label: "Cancellation Terms",
+      value: "Flexible & Refundable Booking Options",
+      badge: "Peace of Mind"
+    },
+    {
+      label: "Curated Portfolio",
+      value: "Vetted 3, 4, 5-Star & Boutique Properties",
+      badge: "Worldwide"
+    },
+    {
+      label: "Transparent Inclusions",
+      value: "Breakfast, Municipality Fees & Taxes Included",
+      badge: "No Hidden Costs",
+      highlight: true
+    },
+    {
+      label: "Direct Advisory",
+      value: "+92 324 4444167 | +92 345 4444167",
+      badge: "Quick WhatsApp Quote"
+    }
+  ];
+
+  const hotelFaqs = FAQ_ITEMS.filter(
+    f => f.category === 'Hotels' || f.id === 'faq-1' || f.id === 'faq-4' || f.id === 'faq-10'
+  );
+
   return (
     <div>
+      <SeoMeta
+        title="Hotel Booking & Visa Accommodation Vouchers Lahore | 4 & 5-Star Stays"
+        description="Book verified hotel reservations and authentic embassy visa accommodation vouchers in Lahore for Schengen, UK, Dubai, and Makkah/Madinah courtyard hotels."
+        canonicalPath="/hotels"
+        keywords="Hotel booking Lahore, visa accommodation voucher, Schengen hotel reservation, Umrah hotel Makkah Madinah, luxury hotels Dubai Paris, SkyBridge hotel rates"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "Worldwide Hotel Booking & Visa Accommodation Vouchers",
+          "serviceType": "Lodging Reservations",
+          "provider": {
+            "@type": "TravelAgency",
+            "name": "SkyBridge Travel & Tourism",
+            "url": "https://skybridgetravelandtourism.com",
+            "telephone": ["+923244444167", "+923454444167"]
+          }
+        }}
+      />
+
       <PageHero
         title="Hotel Booking Assistance"
         subtitle="Verified hotel reservations, boutique city stays, family suites, and embassy-compliant accommodation vouchers worldwide."
@@ -71,6 +134,16 @@ export const HotelsPage: React.FC = () => {
         breadcrumbs={[{ label: 'Hotels' }]}
         bgImage="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=80"
       />
+
+      {/* GEO Key Takeaways Knowledge Block */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10 mb-8">
+        <GeoKeyTakeaways
+          title="Hotel Booking & Accommodation Intel 2026"
+          subtitle="Verifiable vouchers for visa applications and premium international stays"
+          items={hotelGeoTakeaways}
+          authorityNote="All accommodation vouchers issued with official hotel confirmation numbers recognized by foreign consular services."
+        />
+      </div>
 
       {/* Hotel Search Widget */}
       <section className="py-16 bg-white">
@@ -197,6 +270,21 @@ export const HotelsPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* SXO Trust Signals */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SxoTrustBadges />
+      </div>
+
+      {/* AEO Direct Answer Q&A Knowledge Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AeoFaqSection
+          title="Hotel Booking & Visa Accommodation Vouchers FAQ"
+          subtitle="Answers to common queries regarding embassy voucher validation, hotel star ratings, and holy site proximity"
+          faqs={hotelFaqs}
+          defaultOpenId="faq-4"
+        />
+      </div>
     </div>
   );
 };

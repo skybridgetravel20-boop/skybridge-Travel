@@ -32,18 +32,25 @@ import {
   Building2,
   Share2,
   ChevronDown,
-  Check
+  Check,
+  AlertTriangle
 } from 'lucide-react';
 
 const CATEGORIES: { label: string; value: SupplierCategory | 'All'; icon: React.ReactNode }[] = [
   { label: 'All Services', value: 'All', icon: <DollarSign className="w-4 h-4" /> },
   { label: 'Airline / Ticketing', value: 'Airline / Ticketing', icon: <Plane className="w-4 h-4" /> },
+  { label: 'Flight Consolidator', value: 'Flight Consolidator', icon: <Plane className="w-4 h-4" /> },
   { label: 'Hotel B2B', value: 'Hotel B2B', icon: <Building className="w-4 h-4" /> },
   { label: 'Visa Supplier', value: 'Visa Supplier', icon: <Stamp className="w-4 h-4" /> },
-  { label: 'Insurance Provider', value: 'Insurance Provider', icon: <Shield className="w-4 h-4" /> },
-  { label: 'Tour Operator', value: 'Tour Operator', icon: <Package className="w-4 h-4" /> },
   { label: 'Umrah Supplier', value: 'Umrah Supplier', icon: <Building2 className="w-4 h-4" /> },
-  { label: 'Airport Transfer', value: 'Airport Transfer', icon: <Plane className="w-4 h-4" /> }
+  { label: 'Tour Operator', value: 'Tour Operator', icon: <Package className="w-4 h-4" /> },
+  { label: 'Honeymoon Supplier', value: 'Honeymoon Supplier', icon: <Package className="w-4 h-4" /> },
+  { label: 'Insurance Provider', value: 'Insurance Provider', icon: <Shield className="w-4 h-4" /> },
+  { label: 'Airport Transfer', value: 'Airport Transfer', icon: <Plane className="w-4 h-4" /> },
+  { label: 'Transportation', value: 'Transportation', icon: <Plane className="w-4 h-4" /> },
+  { label: 'Documentation Service', value: 'Documentation Service', icon: <Stamp className="w-4 h-4" /> },
+  { label: 'Local Partner', value: 'Local Partner', icon: <Building className="w-4 h-4" /> },
+  { label: 'Other', value: 'Other', icon: <DollarSign className="w-4 h-4" /> }
 ];
 
 const CURRENCY_RATES_PKR: Record<string, number> = {
@@ -85,7 +92,12 @@ export const AdminPriceCheckPage: React.FC = () => {
   const [quickSupplierEmail, setQuickSupplierEmail] = useState('');
   const [quickAddError, setQuickAddError] = useState<string | null>(null);
 
-  // Searchable Supplier Combobox in Add Rate Modal
+  // Searchable Supplier Combobox & Manual Entry in Add Rate Modal
+  const [isManualSupplierEntry, setIsManualSupplierEntry] = useState(false);
+  const [manualSupplierName, setManualSupplierName] = useState('');
+  const [manualSupplierCode, setManualSupplierCode] = useState('');
+  const [alsoSaveManualToDirectory, setAlsoSaveManualToDirectory] = useState(true);
+  const [useNativeSelect, setUseNativeSelect] = useState(false);
   const [supplierSearchQuery, setSupplierSearchQuery] = useState('');
   const [isSupplierComboboxOpen, setIsSupplierComboboxOpen] = useState(false);
   const supplierComboboxRef = React.useRef<HTMLDivElement>(null);
@@ -187,23 +199,60 @@ export const AdminPriceCheckPage: React.FC = () => {
     const title = formData.product || formData.serviceTitle;
     if (!title) return;
 
-    const supplierObj = suppliers.find(s => s.id === formData.supplierId || s.companyName === formData.supplierName || s.name === formData.supplierName);
+    let finalSupplierId = formData.supplierId;
+    let finalSupplierName = formData.supplierName;
+
+    if (isManualSupplierEntry) {
+      if (!manualSupplierName.trim()) {
+        alert('Please enter a supplier name');
+        return;
+      }
+      const cleanName = manualSupplierName.trim();
+      finalSupplierName = cleanName;
+
+      if (alsoSaveManualToDirectory) {
+        const createdSup = addSupplier({
+          name: cleanName,
+          companyName: cleanName,
+          code: manualSupplierCode.trim() || cleanName.slice(0, 3).toUpperCase() + '-SUP',
+          category: formData.category && formData.category !== 'All' ? formData.category : 'Airline / Ticketing',
+          currency: formData.currency || 'PKR',
+          status: 'Active'
+        });
+        finalSupplierId = createdSup.id;
+        finalSupplierName = createdSup.companyName || createdSup.name;
+      } else {
+        finalSupplierId = formData.supplierId || `SUP-MANUAL-${Date.now().toString().slice(-6)}`;
+      }
+    } else {
+      const supplierObj = suppliers.find(
+        s => s.id === formData.supplierId || s.companyName === formData.supplierName || s.name === formData.supplierName
+      );
+      finalSupplierName = supplierObj?.companyName || supplierObj?.name || formData.supplierName || 'SkyBridge Partner';
+      finalSupplierId = supplierObj?.id || formData.supplierId || (suppliers[0]?.id || 'SUP-2026-00001');
+    }
+
     const payload: Partial<SupplierPrice> = {
       ...formData,
       product: title,
       serviceTitle: title,
-      supplierName: supplierObj?.companyName || supplierObj?.name || formData.supplierName || 'SkyBridge Partner',
-      supplierId: supplierObj?.id || formData.supplierId
+      supplierName: finalSupplierName,
+      supplierId: finalSupplierId
     };
 
     if (editingPrice) {
       updateSupplierPrice(editingPrice.id, payload);
       setEditingPrice(null);
+      setCopiedNotification(`Rate "${title}" updated successfully!`);
     } else {
       addSupplierPrice(payload);
       setIsAddModalOpen(false);
+      setCopiedNotification(`New supplier rate "${title}" saved successfully!`);
     }
     setFormData(initialFormState);
+    setIsManualSupplierEntry(false);
+    setManualSupplierName('');
+    setManualSupplierCode('');
   };
 
   // Quick Add Supplier Handler - saves to system and immediately selects it without losing price data
@@ -235,6 +284,7 @@ export const AdminPriceCheckPage: React.FC = () => {
       currency: newSup.currency || prev.currency || 'PKR'
     }));
 
+    setIsManualSupplierEntry(false);
     setCopiedNotification(`Supplier "${newSup.companyName || newSup.name}" added & selected!`);
     setIsQuickAddSupplierModalOpen(false);
     setQuickSupplierName('');
@@ -258,7 +308,8 @@ export const AdminPriceCheckPage: React.FC = () => {
       (s.name || '').toLowerCase().includes(q) ||
       (s.code || '').toLowerCase().includes(q) ||
       (s.category || '').toLowerCase().includes(q) ||
-      (s.country || '').toLowerCase().includes(q)
+      (s.country || '').toLowerCase().includes(q) ||
+      (s.city || '').toLowerCase().includes(q)
     );
   }, [suppliers, supplierSearchQuery]);
 
@@ -396,8 +447,12 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
               setFormData({
                 ...initialFormState,
                 supplierId: activeSup?.id || '',
-                supplierName: activeSup?.companyName || activeSup?.name || 'Contracted Supplier'
+                supplierName: activeSup?.companyName || activeSup?.name || ''
               });
+              setIsManualSupplierEntry(false);
+              setManualSupplierName('');
+              setManualSupplierCode('');
+              setAlsoSaveManualToDirectory(true);
               setIsSupplierComboboxOpen(false);
               setSupplierSearchQuery('');
               setIsAddModalOpen(true);
@@ -619,6 +674,16 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
                             onClick={() => {
                               setEditingPrice(p);
                               setFormData(p);
+                              const match = suppliers.find(
+                                s => s.id === p.supplierId || s.companyName === p.supplierName || s.name === p.supplierName
+                              );
+                              if (match) {
+                                setIsManualSupplierEntry(false);
+                                setManualSupplierName('');
+                              } else {
+                                setIsManualSupplierEntry(true);
+                                setManualSupplierName(p.supplierName || '');
+                              }
                             }}
                             className="p-1.5 rounded-lg text-slate-500 hover:text-[#0B1B3B] hover:bg-slate-100 transition-colors"
                             title="Edit Rate Sheet Item"
@@ -682,9 +747,10 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
 
             <form onSubmit={handleFormSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Contracted Supplier Selector with Combobox & Quick-Add */}
-                <div className="relative" ref={supplierComboboxRef}>
-                  <div className="flex items-center justify-between mb-1">
+                {/* Contracted Supplier Section with Directory Combobox, Native Select, and Manual Entry */}
+                <div className="relative md:col-span-1" ref={supplierComboboxRef}>
+                  {/* Mode Toggle Header */}
+                  <div className="flex items-center justify-between mb-1.5">
                     <label className="block text-xs font-bold text-slate-800">
                       Contracted Supplier <span className="text-rose-500">*</span>
                     </label>
@@ -702,132 +768,267 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
                     </button>
                   </div>
 
-                  {suppliers.length === 0 ? (
-                    <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center justify-between">
-                      <span>No suppliers found. Add a supplier first.</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setQuickAddError(null);
-                          setIsQuickAddSupplierModalOpen(true);
-                        }}
-                        className="px-2.5 py-1 bg-[#0B1B3B] text-white text-[11px] font-bold rounded-lg hover:bg-[#4FC3F7] hover:text-[#0B1B3B] transition-colors"
-                      >
-                        + Add Supplier
-                      </button>
-                    </div>
-                  ) : (
-                    <div>
-                      {/* Searchable Select Trigger */}
-                      <div
-                        onClick={() => setIsSupplierComboboxOpen(prev => !prev)}
-                        className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl cursor-pointer flex items-center justify-between shadow-2xs hover:border-[#4FC3F7] focus:outline-none transition-colors"
-                      >
-                        <div className="flex items-center gap-2 truncate">
-                          {selectedSupplierObj ? (
-                            <>
-                              <span className="font-bold text-slate-900 truncate">
-                                {selectedSupplierObj.companyName || selectedSupplierObj.name}
-                              </span>
-                              <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-mono font-bold shrink-0">
-                                {selectedSupplierObj.code}
-                              </span>
-                              <span className="text-[10px] text-slate-500 truncate hidden sm:inline">
-                                • {selectedSupplierObj.category}
-                              </span>
-                            </>
-                          ) : (
-                            <span className="text-slate-400">Select a contracted supplier...</span>
-                          )}
-                        </div>
-                        <ChevronDown className="w-4 h-4 text-slate-500 shrink-0 ml-2" />
+                  {/* Segmented Mode Selector: Directory vs Manual Entry */}
+                  <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl mb-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsManualSupplierEntry(false);
+                        setIsSupplierComboboxOpen(false);
+                      }}
+                      className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        !isManualSupplierEntry
+                          ? 'bg-white text-[#0B1B3B] shadow-2xs'
+                          : 'text-slate-500 hover:text-slate-800'
+                      }`}
+                    >
+                      <Building2 className="w-3.5 h-3.5 text-[#0288D1]" />
+                      <span>Saved Directory ({suppliers.length})</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsManualSupplierEntry(true);
+                        setIsSupplierComboboxOpen(false);
+                        if (!manualSupplierName && formData.supplierName) {
+                          setManualSupplierName(formData.supplierName);
+                        }
+                      }}
+                      className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        isManualSupplierEntry
+                          ? 'bg-white text-[#0B1B3B] shadow-2xs'
+                          : 'text-slate-500 hover:text-slate-800'
+                      }`}
+                    >
+                      <Edit2 className="w-3.5 h-3.5 text-[#0288D1]" />
+                      <span>Enter Manually</span>
+                    </button>
+                  </div>
+
+                  {/* Mode 1: Manual Supplier Entry */}
+                  {isManualSupplierEntry ? (
+                    <div className="space-y-2 p-3 bg-sky-50/50 rounded-2xl border border-sky-100">
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 mb-0.5">
+                          Supplier / Company Name <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Al-Rajhi Umrah Services, AirBlue Direct Desk, Agoda B2B"
+                          value={manualSupplierName}
+                          onChange={e => {
+                            setManualSupplierName(e.target.value);
+                            setFormData(prev => ({
+                              ...prev,
+                              supplierName: e.target.value
+                            }));
+                          }}
+                          className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4FC3F7] shadow-2xs font-semibold"
+                        />
                       </div>
 
-                      {/* Dropdown Menu with Search */}
-                      {isSupplierComboboxOpen && (
-                        <div className="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-2 space-y-1.5 animate-in fade-in zoom-in-95">
-                          <div className="relative">
-                            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[10px] font-bold text-slate-600 mb-0.5">
+                            Supplier Code (Optional)
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. AR-UMR"
+                            value={manualSupplierCode}
+                            onChange={e => setManualSupplierCode(e.target.value)}
+                            className="w-full px-2.5 py-1.5 text-xs bg-white text-slate-900 border border-slate-300 rounded-lg focus:outline-none font-mono"
+                          />
+                        </div>
+
+                        <div className="flex items-center pt-3.5">
+                          <label className="flex items-center gap-1.5 text-[11px] font-medium text-slate-700 cursor-pointer select-none">
                             <input
-                              type="text"
-                              autoFocus
-                              placeholder="Search supplier by name, code, or category..."
-                              value={supplierSearchQuery}
-                              onChange={e => setSupplierSearchQuery(e.target.value)}
-                              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:border-[#4FC3F7]"
+                              type="checkbox"
+                              checked={alsoSaveManualToDirectory}
+                              onChange={e => setAlsoSaveManualToDirectory(e.target.checked)}
+                              className="rounded text-[#0288D1] focus:ring-[#4FC3F7]"
                             />
+                            <span>Save to Supplier Directory</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Mode 2: Saved Supplier from Directory */
+                    <div>
+                      {suppliers.length === 0 ? (
+                        <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                            <span>No suppliers found. Add a supplier first.</span>
                           </div>
-
-                          <div className="max-h-52 overflow-y-auto space-y-1 pr-1">
-                            {filteredDropdownSuppliers.length === 0 ? (
-                              <div className="p-3 text-center text-xs text-slate-400">
-                                <p>No suppliers matching "{supplierSearchQuery}"</p>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setQuickSupplierName(supplierSearchQuery);
-                                    setIsSupplierComboboxOpen(false);
-                                    setIsQuickAddSupplierModalOpen(true);
-                                  }}
-                                  className="mt-2 px-3 py-1 bg-sky-50 text-[#0288D1] rounded-lg text-[11px] font-bold hover:bg-sky-100 transition-colors"
-                                >
-                                  + Create "{supplierSearchQuery}" as Supplier
-                                </button>
-                              </div>
-                            ) : (
-                              filteredDropdownSuppliers.map(s => {
-                                const isSelected = s.id === formData.supplierId;
-                                return (
-                                  <div
-                                    key={s.id}
-                                    onClick={() => {
-                                      setFormData({
-                                        ...formData,
-                                        supplierId: s.id,
-                                        supplierName: s.companyName || s.name
-                                      });
-                                      setIsSupplierComboboxOpen(false);
-                                      setSupplierSearchQuery('');
-                                    }}
-                                    className={`p-2 rounded-xl text-xs flex items-center justify-between cursor-pointer transition-colors ${
-                                      isSelected
-                                        ? 'bg-sky-50 text-[#0288D1] font-bold'
-                                        : 'hover:bg-slate-50 text-slate-800'
-                                    }`}
-                                  >
-                                    <div className="flex items-center gap-2 truncate">
-                                      <span className="font-semibold text-slate-900 truncate">
-                                        {s.companyName || s.name}
-                                      </span>
-                                      <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-mono font-bold">
-                                        {s.code}
-                                      </span>
-                                      <span className="text-[10px] text-slate-400">
-                                        {s.category}
-                                      </span>
-                                    </div>
-                                    {isSelected && <Check className="w-3.5 h-3.5 text-[#0288D1] shrink-0 ml-2" />}
-                                  </div>
-                                );
-                              })
-                            )}
-                          </div>
-
-                          <div className="pt-1.5 border-t border-slate-100 flex items-center justify-between px-1">
-                            <span className="text-[10px] text-slate-400">
-                              {suppliers.length} Saved Records
-                            </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setQuickAddError(null);
+                              setIsQuickAddSupplierModalOpen(true);
+                            }}
+                            className="px-2.5 py-1 bg-[#0B1B3B] text-white text-[11px] font-bold rounded-lg hover:bg-[#4FC3F7] hover:text-[#0B1B3B] transition-colors"
+                          >
+                            + Add Supplier
+                          </button>
+                        </div>
+                      ) : (
+                        <div>
+                          {/* Selector Type Toggle: Searchable Combobox vs Native Select */}
+                          <div className="flex items-center justify-between pb-1 px-0.5 text-[10px] text-slate-500">
+                            <span>{suppliers.length} Saved Suppliers</span>
                             <button
                               type="button"
-                              onClick={() => {
-                                setIsSupplierComboboxOpen(false);
-                                setIsQuickAddSupplierModalOpen(true);
-                              }}
-                              className="text-[11px] font-bold text-[#0288D1] hover:underline"
+                              onClick={() => setUseNativeSelect(prev => !prev)}
+                              className="text-[#0288D1] hover:underline font-semibold"
                             >
-                              + Add New Supplier
+                              {useNativeSelect ? 'Switch to Searchable Menu' : 'Switch to Native Dropdown'}
                             </button>
                           </div>
+
+                          {useNativeSelect ? (
+                            /* Native HTML Select (100% visible, failsafe) */
+                            <select
+                              value={formData.supplierId}
+                              onChange={e => {
+                                const sup = suppliers.find(s => s.id === e.target.value);
+                                if (sup) {
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    supplierId: sup.id,
+                                    supplierName: sup.companyName || sup.name,
+                                    currency: sup.currency || prev.currency || 'PKR'
+                                  }));
+                                }
+                              }}
+                              className="w-full px-3 py-2.5 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4FC3F7] shadow-2xs font-semibold cursor-pointer"
+                            >
+                              {suppliers.map(s => (
+                                <option key={s.id} value={s.id} className="text-slate-900 bg-white py-1">
+                                  {s.companyName || s.name} ({s.code || s.id}) — {s.category}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            /* Searchable Custom Combobox with High Layering */
+                            <div className="relative">
+                              <div
+                                onClick={() => setIsSupplierComboboxOpen(prev => !prev)}
+                                className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl cursor-pointer flex items-center justify-between shadow-2xs hover:border-[#4FC3F7] focus:outline-none transition-colors"
+                              >
+                                <div className="flex items-center gap-2 truncate">
+                                  {selectedSupplierObj ? (
+                                    <>
+                                      <span className="font-bold text-slate-900 truncate">
+                                        {selectedSupplierObj.companyName || selectedSupplierObj.name}
+                                      </span>
+                                      <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-mono font-bold shrink-0">
+                                        {selectedSupplierObj.code}
+                                      </span>
+                                      <span className="text-[10px] text-slate-500 truncate hidden sm:inline">
+                                        • {selectedSupplierObj.category}
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <span className="text-slate-400">Select a contracted supplier...</span>
+                                  )}
+                                </div>
+                                <ChevronDown className="w-4 h-4 text-slate-500 shrink-0 ml-2" />
+                              </div>
+
+                              {/* Search Dropdown Popover */}
+                              {isSupplierComboboxOpen && (
+                                <div className="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-300 rounded-2xl shadow-2xl z-[70] p-2 space-y-1.5 animate-in fade-in zoom-in-95">
+                                  <div className="relative">
+                                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                                    <input
+                                      type="text"
+                                      autoFocus
+                                      placeholder="Search supplier by name, code, or category..."
+                                      value={supplierSearchQuery}
+                                      onChange={e => setSupplierSearchQuery(e.target.value)}
+                                      className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:border-[#4FC3F7]"
+                                    />
+                                  </div>
+
+                                  <div className="max-h-52 overflow-y-auto space-y-1 pr-1">
+                                    {filteredDropdownSuppliers.length === 0 ? (
+                                      <div className="p-3 text-center text-xs text-slate-400">
+                                        <p>No suppliers matching "{supplierSearchQuery}"</p>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setQuickSupplierName(supplierSearchQuery);
+                                            setIsSupplierComboboxOpen(false);
+                                            setIsQuickAddSupplierModalOpen(true);
+                                          }}
+                                          className="mt-2 px-3 py-1 bg-sky-50 text-[#0288D1] rounded-lg text-[11px] font-bold hover:bg-sky-100 transition-colors"
+                                        >
+                                          + Create "{supplierSearchQuery}" as Supplier
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      filteredDropdownSuppliers.map(s => {
+                                        const isSelected = s.id === formData.supplierId;
+                                        return (
+                                          <div
+                                            key={s.id}
+                                            onClick={() => {
+                                              setFormData(prev => ({
+                                                ...prev,
+                                                supplierId: s.id,
+                                                supplierName: s.companyName || s.name,
+                                                currency: s.currency || prev.currency || 'PKR'
+                                              }));
+                                              setIsSupplierComboboxOpen(false);
+                                              setSupplierSearchQuery('');
+                                            }}
+                                            className={`p-2 rounded-xl text-xs flex items-center justify-between cursor-pointer transition-colors ${
+                                              isSelected
+                                                ? 'bg-sky-50 text-[#0288D1] font-bold'
+                                                : 'hover:bg-slate-50 text-slate-800'
+                                            }`}
+                                          >
+                                            <div className="flex items-center gap-2 truncate">
+                                              <span className="font-semibold text-slate-900 truncate">
+                                                {s.companyName || s.name}
+                                              </span>
+                                              <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-mono font-bold">
+                                                {s.code}
+                                              </span>
+                                              <span className="text-[10px] text-slate-400">
+                                                {s.category}
+                                              </span>
+                                            </div>
+                                            {isSelected && <Check className="w-3.5 h-3.5 text-[#0288D1] shrink-0 ml-2" />}
+                                          </div>
+                                        );
+                                      })
+                                    )}
+                                  </div>
+
+                                  <div className="pt-1.5 border-t border-slate-100 flex items-center justify-between px-1">
+                                    <span className="text-[10px] text-slate-400">
+                                      {suppliers.length} Saved Records
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setIsSupplierComboboxOpen(false);
+                                        setIsQuickAddSupplierModalOpen(true);
+                                      }}
+                                      className="text-[11px] font-bold text-[#0288D1] hover:underline"
+                                    >
+                                      + Add New Supplier
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -880,7 +1081,7 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
                   <select
                     value={formData.source}
                     onChange={e => setFormData({ ...formData, source: e.target.value as any })}
-                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none font-medium"
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4FC3F7] shadow-2xs font-medium"
                   >
                     <option value="Direct Portal" className="text-slate-900 bg-white">Direct Portal</option>
                     <option value="Excel Import" className="text-slate-900 bg-white">Excel Import</option>
@@ -905,10 +1106,10 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
                     <select
                       value={formData.currency}
                       onChange={e => handlePriceChange('currency', e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none"
+                      className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-[#4FC3F7] shadow-2xs"
                     >
                       {Object.keys(CURRENCY_RATES_PKR).map(c => (
-                        <option key={c} value={c}>
+                        <option key={c} value={c} className="text-slate-900 bg-white">
                           {c}
                         </option>
                       ))}
@@ -996,7 +1197,7 @@ Cancellation: ${p.cancellationPolicy || 'Standard policy'}`;
                   <select
                     value={formData.availability}
                     onChange={e => setFormData({ ...formData, availability: e.target.value as any })}
-                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none font-medium"
+                    className="w-full px-3 py-2 text-xs bg-white text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4FC3F7] shadow-2xs font-medium"
                   >
                     <option value="Instant Confirm" className="text-slate-900 bg-white">Instant Confirm</option>
                     <option value="On Request" className="text-slate-900 bg-white">On Request</option>

@@ -50,6 +50,133 @@ import {
   stopSpeaking
 } from '../../utils/speechVoiceService';
 
+// Clean and format agent messages, stripping garbled markdown artifacts (hashes, asterisks)
+// and converting them into beautiful semantic typography
+function parseInlineFormatting(text: string, isUser: boolean = false): React.ReactNode[] {
+  // Regex to match markdown links [label](url), bold **text** or __text__, or inline code `code`
+  const regex = /(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|__[^_]+__|`[^`]+`)/g;
+  const parts = text.split(regex);
+
+  return parts.map((part, idx) => {
+    if (!part) return null;
+
+    // Check for [label](url)
+    const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (linkMatch) {
+      return (
+        <a
+          key={idx}
+          href={linkMatch[2]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={isUser ? 'underline text-cyan-200 hover:text-white' : 'underline text-cyan-700 hover:text-cyan-900 font-semibold'}
+        >
+          {linkMatch[1]}
+        </a>
+      );
+    }
+
+    // Check for **bold** or __bold__
+    if ((part.startsWith('**') && part.endsWith('**')) || (part.startsWith('__') && part.endsWith('__'))) {
+      const inner = part.slice(2, -2).replace(/^\*+|\*+$/g, '').trim();
+      return (
+        <strong key={idx} className={isUser ? 'font-bold text-white' : 'font-bold text-slate-900'}>
+          {inner}
+        </strong>
+      );
+    }
+
+    // Check for `code`
+    if (part.startsWith('`') && part.endsWith('`')) {
+      const inner = part.slice(1, -1);
+      return (
+        <code key={idx} className="px-1.5 py-0.5 rounded bg-slate-200/80 text-slate-800 text-[11px] font-mono">
+          {inner}
+        </code>
+      );
+    }
+
+    // Strip any remaining stray raw asterisks or multi-hashes
+    const cleaned = part.replace(/\*\*/g, '').replace(/#{2,}/g, '');
+    return <span key={idx}>{cleaned}</span>;
+  });
+}
+
+export function CleanFormattedMessage({ text, isUser = false }: { text: string; isUser?: boolean }) {
+  if (!text) return null;
+
+  // Split into lines
+  const lines = text.split('\n');
+
+  return (
+    <div className="space-y-1.5 leading-relaxed text-xs sm:text-sm">
+      {lines.map((rawLine, idx) => {
+        const line = rawLine.trim();
+
+        // Empty line
+        if (!line) {
+          return <div key={idx} className="h-1.5" />;
+        }
+
+        // Headers: #, ##, ###, ####
+        const headerMatch = line.match(/^#{1,6}\s*(.*)$/);
+        if (headerMatch) {
+          const headerText = headerMatch[1].replace(/^\*+|\*+$/g, '').trim();
+          return (
+            <div
+              key={idx}
+              className={`font-bold tracking-tight mt-2.5 mb-1 text-xs sm:text-sm ${
+                isUser ? 'text-cyan-200' : 'text-[#0B1B3B] border-b border-slate-200/70 pb-1'
+              }`}
+            >
+              {parseInlineFormatting(headerText, isUser)}
+            </div>
+          );
+        }
+
+        // Bullet point: - or * or •
+        const bulletMatch = line.match(/^[-*•]\s+(.*)$/);
+        if (bulletMatch) {
+          return (
+            <div key={idx} className="flex items-start gap-2 pl-1 my-0.5">
+              <span className={`inline-block w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
+                isUser ? 'bg-cyan-300' : 'bg-cyan-600'
+              }`} />
+              <div className="flex-1">
+                {parseInlineFormatting(bulletMatch[1], isUser)}
+              </div>
+            </div>
+          );
+        }
+
+        // Numbered list: 1., 2., etc.
+        const numberedMatch = line.match(/^(\d+[\.\)])\s+(.*)$/);
+        if (numberedMatch) {
+          return (
+            <div key={idx} className="flex items-start gap-2 pl-1 my-0.5">
+              <span className={`font-semibold shrink-0 text-xs ${
+                isUser ? 'text-cyan-300' : 'text-[#0B1B3B]'
+              }`}>
+                {numberedMatch[1]}
+              </span>
+              <div className="flex-1">
+                {parseInlineFormatting(numberedMatch[2], isUser)}
+              </div>
+            </div>
+          );
+        }
+
+        // Regular paragraph
+        return (
+          <p key={idx} className="my-0.5">
+            {parseInlineFormatting(line, isUser)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 export const AdminSchengenAgentPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'agent' | 'directory' | 'dossier'>('agent');
   const [selectedRegion, setSelectedRegion] = useState<string>('All');
@@ -281,11 +408,11 @@ export const AdminSchengenAgentPage: React.FC = () => {
       text: `Good day, Director Urwa Ali! I am your Worldwide Visa Intelligence AI Specialist Agent.
 
 I provide verified consular intelligence and application procedures across all destinations:
-1. 🇦🇪 🇸🇦 🇶🇦 🇴🇲 **GCC & Gulf States**: Dubai / UAE, Saudi Arabia (Umrah/Tourist), Qatar (Hayya), Oman, Bahrain, Kuwait.
-2. 🇪🇺 **Schengen European Zone**: All 29 Member States (Germany, France, Italy, Spain, Switzerland, Netherlands, Poland, etc.).
-3. 🇬🇧 🇺🇸 🇨🇦 **Anglo & North America**: United Kingdom (Standard Visitor), USA (B1/B2 DS-160), Canada (TRV).
-4. 🇹🇷 🇦🇿 🇦🇱 🇷🇸 **Eurasia & Balkans**: Turkey (Sticker & eVisa), Azerbaijan (ASAN eVisa), Albania, Serbia, Georgia, Uzbekistan.
-5. 🇲🇾 🇹🇭 🇸🇬 🇯🇵 **Asia & Far East**: Malaysia, Thailand, Singapore, Japan, South Korea, China, Vietnam.
+1. 🇦🇪 🇸🇦 🇶🇦 🇴🇲 GCC & Gulf States: Dubai / UAE, Saudi Arabia (Umrah/Tourist), Qatar (Hayya), Oman, Bahrain, Kuwait.
+2. 🇪🇺 Schengen European Zone: All 29 Member States (Germany, France, Italy, Spain, Switzerland, Netherlands, Poland, etc.).
+3. 🇬🇧 🇺🇸 🇨🇦 Anglo & North America: United Kingdom (Standard Visitor), USA (B1/B2 DS-160), Canada (TRV).
+4. 🇹🇷 🇦🇿 🇦🇱 🇷🇸 Eurasia & Balkans: Turkey (Sticker & eVisa), Azerbaijan (ASAN eVisa), Albania, Serbia, Georgia, Uzbekistan.
+5. 🇲🇾 🇹🇭 🇸🇬 🇯🇵 Asia & Far East: Malaysia, Thailand, Singapore, Japan, South Korea, China, Vietnam.
 
 You can ask me any question or click any country below. You can also click "Get Official Form & Apply Link" to get the exact online portal and downloadable PDF visa application form for any country.`,
       timestamp: 'Active Session',
@@ -410,16 +537,16 @@ You can ask me any question or click any country below. You can also click "Get 
         ...prev,
         {
           sender: 'agent',
-          text: `### 🌐 SkyBridge Consular Intelligence: ${selectedCountry.name} (${selectedCountry.flag})
-- **Visa Category**: ${selectedCountry.visaType}
-- **Official Statutory Fee**: ${selectedCountry.officialVisaFeeLocal} (≈ PKR ${selectedCountry.officialVisaFeePkr.toLocaleString()})
-- **Biometric / Submission Partner**: ${selectedCountry.appointmentPartner} (${selectedCountry.submissionCentersInPakistan.join(', ')})
-- **Estimated Processing Duration**: ${selectedCountry.processingDays}
-- **Recommended Bank Balance**: ${selectedCountry.recommendedBankBalancePkr}
-- **Official Government Portal**: ${selectedCountry.officialPortalUrl}
-- **Appointment Booking Portal**: ${selectedCountry.appointmentUrl}
+          text: `🌐 SkyBridge Consular Intelligence: ${selectedCountry.name} (${selectedCountry.flag})
+• Visa Category: ${selectedCountry.visaType}
+• Official Statutory Fee: ${selectedCountry.officialVisaFeeLocal} (≈ PKR ${selectedCountry.officialVisaFeePkr.toLocaleString()})
+• Biometric / Submission Partner: ${selectedCountry.appointmentPartner} (${selectedCountry.submissionCentersInPakistan.join(', ')})
+• Estimated Processing Duration: ${selectedCountry.processingDays}
+• Recommended Bank Balance: ${selectedCountry.recommendedBankBalancePkr}
+• Official Government Portal: ${selectedCountry.officialPortalUrl}
+• Appointment Booking Portal: ${selectedCountry.appointmentUrl}
 
-**Key Mandatory Documents**:
+Key Mandatory Documents:
 ${selectedCountry.mandatoryDocuments.slice(0, 7).map((d, i) => `${i + 1}. ${d}`).join('\n')}`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           country: selectedCountry.name,
@@ -664,13 +791,13 @@ ${OFFICIAL_DIRECTOR_SIGNATURE_TEXT}`;
                     className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
                   >
                     <div
-                      className={`max-w-[85%] rounded-2xl p-4 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
+                      className={`max-w-[85%] rounded-2xl p-4 text-xs sm:text-sm leading-relaxed ${
                         msg.sender === 'user'
                           ? 'bg-[#0B1B3B] text-white shadow-md'
                           : 'bg-slate-50 text-slate-800 border border-slate-200 shadow-xs'
                       }`}
                     >
-                      {msg.text}
+                      <CleanFormattedMessage text={msg.text} isUser={msg.sender === 'user'} />
 
                       {/* Official Action Buttons */}
                       {msg.sender === 'agent' && (msg.officialApplyUrl || msg.officialFormDownloadUrl || msg.appointmentUrl) && (

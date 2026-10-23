@@ -1,6 +1,18 @@
-import { Lead, Customer, TravelCase, Booking, Payment, FollowUp, Task, DocumentItem, StaffUser, BackupRecord, AuditLog } from '../types';
+import { Lead, Customer, TravelCase, Booking, Payment, FollowUp, Task, DocumentItem, StaffUser, StaffAccessRequest, BackupRecord, AuditLog } from '../types';
 
 export const INITIAL_STAFF_USERS: StaffUser[] = [
+  {
+    id: 'staff-director',
+    name: 'Urwa Ali (Director / CEO)',
+    email: 'skybridgetravel20@gmail.com',
+    role: 'Director, Skybridge Travel and Tourism',
+    phone: '+92 324 4444167',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+    active: true,
+    status: 'approved',
+    password: 'admin123',
+    approvedBy: 'System Master'
+  },
   {
     id: 'staff-1',
     name: 'Urwa Ali (Director)',
@@ -8,7 +20,10 @@ export const INITIAL_STAFF_USERS: StaffUser[] = [
     role: 'Director, Skybridge Travel and Tourism',
     phone: '+92 324 4444167',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-    active: true
+    active: true,
+    status: 'approved',
+    password: 'admin123',
+    approvedBy: 'Director'
   },
   {
     id: 'staff-2',
@@ -17,7 +32,10 @@ export const INITIAL_STAFF_USERS: StaffUser[] = [
     role: 'Operations Manager',
     phone: '+92 324 4444167',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
-    active: true
+    active: true,
+    status: 'approved',
+    password: 'agent@bilal2026',
+    approvedBy: 'Urwa Ali (Director)'
   },
   {
     id: 'staff-3',
@@ -26,7 +44,35 @@ export const INITIAL_STAFF_USERS: StaffUser[] = [
     role: 'Senior Visa Consultant',
     phone: '+92 322 8889911',
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80',
-    active: true
+    active: true,
+    status: 'approved',
+    password: 'visa@ayesha2026',
+    approvedBy: 'Urwa Ali (Director)'
+  }
+];
+
+export const INITIAL_ACCESS_REQUESTS: StaffAccessRequest[] = [
+  {
+    id: 'req-sb-001',
+    fullName: 'Farhan Qureshi',
+    email: 'farhan.ticketing@gmail.com',
+    phone: '+92 301 5551234',
+    requestedRole: 'Ticketing Specialist',
+    department: 'IATA & GDS Operations',
+    reason: 'Joined as full-time ticketing agent for Lahore Multan Road desk. Need CRM booking and PNR access.',
+    status: 'pending_approval',
+    createdAt: '2026-10-22T09:30:00.000Z'
+  },
+  {
+    id: 'req-sb-002',
+    fullName: 'Zainab Tariq',
+    email: 'zainab.umrah@gmail.com',
+    phone: '+92 333 4447890',
+    requestedRole: 'Umrah Coordinator',
+    department: 'Religious Tourism Desk',
+    reason: 'Managing 2026 Umrah pilgrim document tracking, Nusuk Rawdah appointments, and hotel vouchers.',
+    status: 'pending_approval',
+    createdAt: '2026-10-23T08:15:00.000Z'
   }
 ];
 

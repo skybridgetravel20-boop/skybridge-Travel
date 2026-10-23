@@ -4,6 +4,11 @@ import { PageHero } from '../components/PageHero';
 import { PackageCard } from '../components/PackageCard';
 import { PACKAGES_DATA } from '../data/packagesData';
 import { ServiceType } from '../types';
+import { SeoMeta } from '../components/seo/SeoMeta';
+import { GeoKeyTakeaways } from '../components/seo/GeoKeyTakeaways';
+import { AeoFaqSection } from '../components/seo/AeoFaqSection';
+import { SxoTrustBadges } from '../components/seo/SxoTrustBadges';
+import { FAQ_ITEMS } from '../data/faqData';
 import { HeartHandshake, Sparkles, CheckCircle2, MessageCircle } from 'lucide-react';
 import { getWhatsAppLink } from '../data/companyInfo';
 
@@ -21,8 +26,66 @@ export const HoneymoonPackagesPage: React.FC = () => {
     p => p.category === 'Honeymoon' || p.id === 'switzerland-experience' || p.id === 'dubai-holiday'
   );
 
+  const honeymoonGeoTakeaways = [
+    {
+      label: "Romantic Destinations",
+      value: "Maldives, Bali, Switzerland, Turkey & Dubai",
+      badge: "Premier Escapes",
+      highlight: true
+    },
+    {
+      label: "Accommodations",
+      value: "Overwater Villas, Private Pool Suites, Alpine Chalets",
+      badge: "Luxury Stays"
+    },
+    {
+      label: "Couple Inclusions",
+      value: "Candlelit Dinners, Couple Spa, Romantic Excursions",
+      badge: "Curated Experiences"
+    },
+    {
+      label: "Discreet Ground Concierge",
+      value: "Private Luxury Transfers & Dedicated Coordinator",
+      badge: "VIP Service"
+    },
+    {
+      label: "Honeymoon Visa Support",
+      value: "NADRA Marriage Certificate (FRC/MRC) Integration",
+      badge: "File Clearance",
+      highlight: true
+    },
+    {
+      label: "Direct Consultation",
+      value: "+92 324 4444167 | +92 345 4444167",
+      badge: "Private WhatsApp"
+    }
+  ];
+
+  const honeymoonFaqs = FAQ_ITEMS.filter(
+    f => f.category === 'Packages' || f.id === 'faq-7' || f.id === 'faq-1' || f.id === 'faq-10'
+  );
+
   return (
     <div>
+      <SeoMeta
+        title="Luxury Honeymoon Packages Lahore | Maldives, Bali, Switzerland"
+        description="Book romantic honeymoon packages from Lahore. Private pool villas in Maldives and Bali, Swiss alpine getaways, and luxury Dubai holidays with couple experiences."
+        canonicalPath="/honeymoon-packages"
+        keywords="Honeymoon packages Lahore, Maldives honeymoon Pakistan, Bali couple tour, Switzerland honeymoon package Lahore, luxury honeymoon packages"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "Luxury Honeymoon Travel Packages",
+          "serviceType": "Honeymoon Travel Planning",
+          "provider": {
+            "@type": "TravelAgency",
+            "name": "SkyBridge Travel & Tourism",
+            "url": "https://skybridgetravelandtourism.com",
+            "telephone": ["+923244444167", "+923454444167"]
+          }
+        }}
+      />
+
       <PageHero
         title="Luxury Honeymoon Packages"
         subtitle="Unforgettable romantic celebrations, private pool villas, candlelit beach dinners, and serene alpine getaways designed exclusively for newlywed couples."
@@ -30,6 +93,16 @@ export const HoneymoonPackagesPage: React.FC = () => {
         breadcrumbs={[{ label: 'Packages', link: '/tour-packages' }, { label: 'Honeymoon Packages' }]}
         bgImage="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=1920&q=80"
       />
+
+      {/* GEO Key Takeaways Knowledge Block */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10 mb-8">
+        <GeoKeyTakeaways
+          title="Honeymoon Travel Planning Intel 2026"
+          subtitle="Curated romantic itineraries with bespoke privacy and luxury amenities"
+          items={honeymoonGeoTakeaways}
+          authorityNote="All honeymoon packages include verified bookings and honeymoon welcome amenities provided by resort partners."
+        />
+      </div>
 
       {/* Intro strip */}
       <section className="py-12 bg-white border-b border-slate-200/80">

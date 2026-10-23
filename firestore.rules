@@ -96,6 +96,11 @@ service cloud.firestore {
       allow write: if isAuthenticated();
     }
 
+    // Umrah Pilgrims Tracking: Authenticated staff access
+    match /umrah_pilgrims/{pilgrimId} {
+      allow read, write: if isAuthenticated();
+    }
+
     // Catch-all deny
     match /{document=**} {
       allow read, write: if false;

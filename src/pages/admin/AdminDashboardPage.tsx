@@ -31,8 +31,10 @@ import {
   Key,
   UploadCloud,
   Building2,
-  Mail
+  Mail,
+  Moon
 } from 'lucide-react';
+import { UmrahStatusTracker } from '../../components/admin/UmrahStatusTracker';
 
 export const AdminDashboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -623,6 +625,14 @@ export const AdminDashboardPage: React.FC = () => {
             <Mail className="w-4 h-4 text-rose-600 group-hover:text-white" />
             <span>Gmail Dispatch</span>
           </Link>
+
+          <a
+            href="#umrah-status-tracker"
+            className="p-3 rounded-2xl bg-emerald-50/70 hover:bg-emerald-700 hover:text-white transition-all text-emerald-800 flex flex-col items-center gap-1.5 text-center group border border-emerald-200/80"
+          >
+            <Moon className="w-4 h-4 text-emerald-600 group-hover:text-white" />
+            <span>Umrah Tracker</span>
+          </a>
         </div>
       </div>
 
@@ -710,6 +720,11 @@ export const AdminDashboardPage: React.FC = () => {
             <span className="text-[11px] text-sky-800 font-semibold mt-0.5 block">Live Feeds →</span>
           </Link>
         </div>
+      </div>
+
+      {/* 5.6 DEDICATED UMRAH PILGRIM STATUS TRACKING & STAGE WORKFLOW */}
+      <div id="umrah-status-tracker" className="scroll-mt-6">
+        <UmrahStatusTracker />
       </div>
 
       {/* 6. FOCUSED REAL-TIME WORKSPACE: Essential Live Lists (No table overload) */}

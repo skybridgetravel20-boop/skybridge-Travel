@@ -1,6 +1,6 @@
 {
   "name": "SkyBridge Travel & Tourism",
-  "description": "SkyBridge Travel & Tourism provides flight, hotel, visa, holiday, honeymoon, Umrah and worldwide travel assistance with UAE and Pakistan support.",
+  "description": "SkyBridge Travel & Tourism is Pakistan's premier consultancy for Schengen & worldwide tourist visas, Umrah packages, flight bookings, and luxury hotels. Call +92 324 4444167 / +92 345 4444167.",
   "requestFramePermissions": ["microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
